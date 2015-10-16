@@ -87,6 +87,9 @@ class Object {
  
 public:
     
+    
+    
+    
     enum ObjectType {
         Nothing = 256,
         Coin,
@@ -144,6 +147,16 @@ public:
     };
     
     data_t data;
+   
+    
+    Object() {
+        elements().push_back(this);
+    }
+    
+    ~Object() {
+        elements().erase(std::remove(elements().begin(), elements().end(), this), elements().end());
+    }
+    
     
     virtual string getName() = 0;
     virtual DEBT interactable() = 0;
@@ -204,6 +217,12 @@ public:
         static map<Object::ObjectType, ObjectFactory*> f;
         return f;
     }
+    
+    static std::vector<Object*> &elements(){
+        static std::vector<Object*> v;
+        return v;
+    }
+    
     
 };
 
