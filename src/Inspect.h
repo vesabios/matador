@@ -25,7 +25,7 @@ class Inspect {
     bool visible = false;
     float menuPos = 100.0f;
     
-    Object * currentObject = NULL;
+    ofPtr<Object> currentObject;
     
     class Clickable {
     public:
@@ -58,7 +58,8 @@ public:
     static void toggleBoolean(void* b_ptr);
     static void incInteger(void* i_ptr);
     static void decInteger(void* i_ptr);
-
+    static void incUnsignedChar(void* i_ptr);
+    static void decUnsignedChar(void* i_ptr);
     
     void clearMenu();
     void createMenu();
@@ -66,7 +67,7 @@ public:
     void mouseDragged(int x, int y, int button);
     void mousePressed(int x, int y, int button);
     
-    void inspectObject(Object * o);
+    void inspectObject(ofPtr<Object>);
     
     void update(const float deltaTime);
     void render();

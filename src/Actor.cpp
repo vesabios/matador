@@ -30,7 +30,7 @@ bool Actor::canAttackTarget() {
 DEBT Actor::attackTarget() {
     if (target==NULL) return 0;
     
-    return attack(static_cast<Actor*>(target));
+    return attack(static_pointer_cast<Actor>(target));
 
     
 }
@@ -74,6 +74,7 @@ void Actor::moveTowardTarget() {
     
   
     if (abs(abs(d.x) - abs(d.y)) < 0.5) {
+        ofLog() << "moving diagonally!";
         tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
     } else if (abs(d.x)>abs(d.y)) {
         tryMoving(ofVec2i(sgn(d.x), 0));
@@ -131,7 +132,7 @@ DEBT Actor::standStill() {
 }
 
 
-DEBT Actor::attack(Actor * a) {
+DEBT Actor::attack(ofPtr<Actor> a) {
     
     int d20 = (int)ofRandom(0,20)+1;
     
@@ -140,40 +141,83 @@ DEBT Actor::attack(Actor * a) {
     
     
     if (d20==1) {
-        //ofLog() << getName() << " rolled a natural 1! whiff!";
+        ofLog() << getName() << " rolled a natural 1! whiff!";
         hit = false;
     } else if (d20==20) {
-        //ofLog() << getName() << " rolled a natural 20! crit!";
+        ofLog() << getName() << " rolled a natural 20! crit!";
         hit = true;
         crit = true;
     } else {
-        //ofLog() << getName() << " rolled a " << d20;
-        
+        ofLog() << getName() << " rolled a " << d20;
+       
         int ac = 10;
         if (d20>=ac) {
             hit = true;
-            //ofLog()<< getName() << " hit the " << a->getName();
+            ofLog()<< getName() << " hit the " << a->getName();
             
         }
     }
     
-    if (crit) {
-        ofLog()<< getName() << " critted the " << a->getName();
+    ofPtr<Weapon> w = rightHand();
+    
+    if (w!=NULL) {
+        if (crit) {
+            
+            BYTE dmg = w->rollAttack();
+            dmg += w->rollAttack();
+            
+            ofLog()<< getName() << " critted the " << a->getName() << " for " << (int)dmg << " damage";
+            
 
-    } else if (hit) {
-        ofLog()<< getName() << " hit the " << a->getName();
 
+            
+        } else if (hit) {
+            BYTE dmg = w->rollAttack();
+
+            ofLog()<< getName() << " hit the " << a->getName() << " for " << (int)dmg << " damage";;
+            
+
+        } else {
+            ofLog()<< getName() << " missed " << a->getName();
+        }
     } else {
-        ofLog()<< getName() << " missed " << a->getName();
+        ofLog() << "no weapon in hand!";
     }
+
+
+
+    
     
     return round((float)100 * speedMultiplier);
 
-    
-    
-    
-    
 }
+
+
+ofPtr<Weapon> Actor::rightHand() {
+    ofPtr<Weapon> w;
+    if (data.rightHandGuid!=0) {
+        for (int i=0; i<core->objects.size(); i++) {
+            if (core->objects[i]->guid == data.rightHandGuid) {
+                return static_pointer_cast<Weapon >(core->objects[i]);
+            }
+        }
+    }
+    return w;
+}
+
+ofPtr<Weapon> Actor::leftHand() {
+    ofPtr<Weapon> w;
+
+    if (data.leftHandGuid!=0) {
+        for (int i=0; i<core->objects.size(); i++) {
+            if (core->objects[i]->guid == data.leftHandGuid) {
+                return static_pointer_cast<Weapon >(core->objects[i]);
+            }
+        }
+    }
+    return w;
+}
+
 
 DEBT Actor::tryMoving(ofVec2i moveVector) {
     

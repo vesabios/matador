@@ -10,24 +10,6 @@
 
 Serializer serializer;
 
-/*
- void add( const T data )
- {
- if ( file != NULL )clear();
- if ( pkr != NULL) pkr->pack( data );
- else
- {
- ofLogError() << "please call ofxMsgPacker::setup";
- }
- size_t dSize = size();
- if ( file != NULL ) //write to file
- {
- fwrite( &dSize, sizeof(size_t), 1, file);
- fwrite( sbuff.data(), size(), 1, file);
- }
- }
- */
-
 
 void Serializer::save() {
     
@@ -62,7 +44,8 @@ void Serializer::save() {
 void Serializer::load() {
     
     printf("loading\n");
-
+    
+    core->objects.clear();
     
     FILE * file = NULL;
     file = fopen(ofToDataPath("data.dat", true).c_str(), "rb");
@@ -71,14 +54,12 @@ void Serializer::load() {
     
     bool end = false;
     while (!end) {
-        printf("loading next...\n");
         size_t size = 0;
         fread(&size, sizeof(size_t),1,file);
         if ( size > 0) {
             char *buf = new char[size];
             fread(buf, size,1, file);
             msgpack::unpack( &result, buf, size);
-            
             msgpack::object o = result.get();
             
             Msg h;
@@ -88,17 +69,17 @@ void Serializer::load() {
             
             if (Object::doesObjectTypeExist(t)) {
 
-                Object * n;
+                ofPtr<Object> n;
                 
                 if (t==Object::Player) {
                     
                     n = core->player;
-                    o.convert(n);
+                    o.convert(n.get());
                     n->unpack();
                     
                 } else {
                     n = Object::create(t);
-                    o.convert(n);
+                    o.convert(n.get());
                     n->unpack();
                     
                     core->objects.push_back(n);
@@ -110,9 +91,14 @@ void Serializer::load() {
                 printf("object type %d not found\n", t);
             }
             
+            delete buf;
+            
         } else {
             end=true;
         }
     }
+    
+    fclose(file);
+    
     
 }

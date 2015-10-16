@@ -129,6 +129,7 @@
 		CE2CD48B1BC2FDC9000014AC /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		CE2CD4901BC369F6000014AC /* AStar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AStar.cpp; sourceTree = "<group>"; };
 		CE2CD4911BC369F6000014AC /* AStar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AStar.h; sourceTree = "<group>"; };
+		CE6A566B1BD06798007C8BBC /* Weapons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Weapons.h; sourceTree = "<group>"; };
 		CEB05CB41BC553F4008343B3 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
 		CEB9D1F41BCC52C7003FC036 /* ObjectFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectFactory.cpp; sourceTree = "<group>"; };
 		CEB9D1F51BCC52C7003FC036 /* ObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectFactory.h; sourceTree = "<group>"; };
@@ -356,6 +357,7 @@
 			children = (
 				CEB9D1F41BCC52C7003FC036 /* ObjectFactory.cpp */,
 				CEB9D1F51BCC52C7003FC036 /* ObjectFactory.h */,
+				CE6A566B1BD06798007C8BBC /* Weapons.h */,
 				CEDB241C1BCEF46500D8CBE4 /* Actor.cpp */,
 				CEDB241D1BCEF46500D8CBE4 /* Actor.h */,
 				CEDB24221BCEF53300D8CBE4 /* Kobold.cpp */,

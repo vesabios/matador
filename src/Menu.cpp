@@ -16,7 +16,6 @@
 Menu menu;
 
 
-
 void Menu::toggle() {
     if (menuVisible) {
         hideMenu();

@@ -23,13 +23,23 @@ void Core::setup(){
     
     map = new Map(512,512);
     
-    player = (Player*)Object::create(Object::Player);
+    // create the player!
+    
+    player = static_pointer_cast<Player >(Object::create(Object::Player));
     
     player->x = map->startingPosition.x;
     player->y = map->startingPosition.y;
     player->z = map->mapNumber;
     
+    player->init();
+    
     core->objects.push_back(player);
+    
+    
+    // give the player a weapon!
+    
+
+    
 
     map->setWindow(player->x-40,player->x-25);
     
@@ -45,17 +55,20 @@ void Core::setup(){
 
 
 //--------------------------------------------------------------
-void Core::placeObject(int x, int y, int mapNumber, Object::ObjectType it) {
+ofPtr<Object> Core::placeObject(int x, int y, int mapNumber, Object::ObjectType it) {
     
     printf("placing object: %d\n", it);
     
-    Object * o = Object::create((Object::ObjectType)it);
+    ofPtr<Object> o = Object::create((Object::ObjectType)it);
     
+    o->init();
     o->x = x;
     o->y = y;
     o->z = mapNumber;
     
     objects.push_back(o);
+    
+    return o;
     
     
 }
@@ -216,7 +229,7 @@ void Core::renderWorld() {
     
     
     for (int i=0; i<objects.size(); i++) {
-        Object * o = objects[i];
+        ofPtr<Object> o = objects[i];
         
         if (o->z == map->mapNumber) {
             ofVec2i pp = worldToWindow(ofVec2i(o->x, o->y));
@@ -301,7 +314,7 @@ DEBT Core::traversable(int dx, int dy) {
     DEBT d = map->traversable(dx, dy);
     if (d>0) {
         for (int i=0; i<objects.size(); i++) {
-            Object * o = objects[i];
+            ofPtr<Object>  o = objects[i];
             
            // ofLog()<< "checking " << o->getName() << "..." ;
             
@@ -409,19 +422,14 @@ void Core::update(){
                     moveVector.x = 1;
                 }
                 
-                //newPlayerDebt = 0;
-                
                 newPlayerDebt = player->tryInteracting(moveVector);
                 
                 if (newPlayerDebt < DEBT_TURN_THRESHOLD ) {
                     newPlayerDebt += player->tryMoving(moveVector);
-                
                     if (newPlayerDebt >= DEBT_TURN_THRESHOLD) {
                         moved = true;
                     }
-                    
                 }
-
                 
                 playerMvt += newPlayerDebt;
                 
@@ -764,10 +772,10 @@ void Core::mousePressed(int x, int y, int button){
         
             ofVec2i pp = windowToWorld(mousePos);
             bool hit = false;
-            Object * io = NULL;
+            ofPtr<Object> io;
             
             for (int i=0; i<objects.size(); i++) {
-                Object * o = objects[i];
+               ofPtr<Object> o = objects[i];
                 
                 if (o->z == map->mapNumber) {
                     if (o->x == (int)pp.x) {

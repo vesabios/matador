@@ -13,18 +13,32 @@ string Player::getName() {
     return "Player";
 }
 
+
+void Player::init() {
+    
+    ofPtr<Weapon> weapon = static_pointer_cast<Weapon >(Object::create(Object::Club));
+    
+    weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
+    
+    data.rightHandGuid = weapon->guid;
+    
+    core->objects.push_back(weapon);
+    
+}
+
+
 DEBT Player::traversable()  {
     return TRAVERSE_BLOCKED;
 }
 
-InteractionType Player::getInteractionTypeForInteractor(Object * o) {
+InteractionType Player::getInteractionTypeForInteractor(Object *) {
     return Attack;
 }
 
 DEBT Player::tryInteracting(ofVec2i moveVector) {
 
     for (int i=0; i<core->objects.size(); i++) {
-        Object * o = core->objects[i];
+        ofPtr<Object> o = core->objects[i];
         if (o->z == core->map->mapNumber) {
             if (o->x == x + moveVector.x) {
                 if (o->y == y + moveVector.y) {
@@ -39,11 +53,14 @@ DEBT Player::tryInteracting(ofVec2i moveVector) {
     return 0;
 }
 
-DEBT Player::interact(Object*o) {
+DEBT Player::interact(ofPtr<Object> o) {
     
-    //ofLog() << "interacting with " << o->getName() << endl;
+    ofLog() << "interacting with " << o->getName() << endl;
     
-    InteractionType it = o->getInteractionTypeForInteractor(this);
+    
+    InteractionType it = o->getInteractionTypeForInteractor(this); /// BAD CONVERSION HAPPENING HERE!!
+    
+    //InteractionType it = Attack;
     
     switch (it) {
         case Stare:
@@ -56,11 +73,12 @@ DEBT Player::interact(Object*o) {
             break;
         case Attack:
             //ofLog() << getName() << " is attacking " << o->getName();
-            return attack(static_cast<Actor*>(o));
+            return attack(static_pointer_cast<Actor >(o));
             break;
         default:
             break;
     }
+    return 0;
     
 }
 

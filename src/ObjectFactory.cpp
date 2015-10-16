@@ -18,6 +18,8 @@ public:
         int keyId = 0;
     };
     
+    data_t data;
+    
     void initReflectors() override  {
         REFLECT(open)
         REFLECT(keyId)
@@ -27,7 +29,7 @@ public:
     
     DEBT interactable() override { return 1; }
     
-    InteractionType getInteractionTypeForInteractor(Object * o) {
+    InteractionType getInteractionTypeForInteractor(Object *) override {
         return Use;
     }
     
@@ -42,8 +44,10 @@ public:
         return p;
     }
     
+    void init() override {};
+    
     OBJTYPE(Door);
-    MSGPACK_DEFINE(type, bundle, x, y, z);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
     
 };
 REGISTER_OBJTYPE(Door);
@@ -56,11 +60,14 @@ public:
         int amount = 0;
     };
     
+    data_t data;
+    
+    
     void initReflectors() override {
         REFLECT(amount)
     }
     
-    InteractionType getInteractionTypeForInteractor(Object * o) {
+    InteractionType getInteractionTypeForInteractor(Object *) override {
         return Take;
     }
     
@@ -78,8 +85,10 @@ public:
         return p;
     }
     
+    void init() override {};
+    
     OBJTYPE(Coin);
-    MSGPACK_DEFINE(type, bundle, x, y, z);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
     
 };
 
@@ -88,5 +97,39 @@ REGISTER_OBJTYPE(Coin);
 
 
 
+class Club : public Weapon {
+public:
+    
+    Club() {
+        data.die = 4;
+        data.numberOfDice = 1;
+    }
 
+    
+    InteractionType getInteractionTypeForInteractor(Object *) override {
+        return Take;
+    }
+    
+    
+    string getName() override  { return "Club"; }
+    DEBT interactable() override { return 1; }
+    DEBT traversable() override { return TRAVERSE_NORMAL; }
+    bool isPortable() override { return true; }
+    void update(DEBT d) override {}
+    Pixel render(float luma) override {
+        Pixel p;
+        p.fg = makeColor(5,5,0);
+        p.bg = 0;
+        p.c = toascii('/');
+        return p;
+    }
+    
+    void init() override {};
+    
+    OBJTYPE(Club);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
+    
+};
+
+REGISTER_OBJTYPE(Club);
 

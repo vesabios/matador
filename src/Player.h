@@ -15,24 +15,12 @@
 class Player : public Actor {
 public:
     
-    struct data_t {
-        int health = 10;
-        int movementSpeed = 100;
-        int attackSpeed = 100;
-    };
-    
-    void initReflectors() override {
-        REFLECT(health)
-        REFLECT(movementSpeed)
-        REFLECT(attackSpeed)
-        
-    }
  
-    InteractionType getInteractionTypeForInteractor(Object * o) override;
+    InteractionType getInteractionTypeForInteractor(Object *) override;
     DEBT interactable() override { return 0; }
 
     DEBT tryInteracting(ofVec2i moveVector);
-    DEBT interact(Object * o);
+    DEBT interact(ofPtr<Object>);
     
     string getName() override;
     DEBT traversable() override;
@@ -40,8 +28,11 @@ public:
     void update(DEBT d) override;
     Pixel render(float luma) override;
     
+    void init() override;
+
+    
     OBJTYPE(Player);
-    MSGPACK_DEFINE(type, bundle, x, y, z);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
     
 };
 #endif /* Player_h */

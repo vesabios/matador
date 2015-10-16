@@ -7,7 +7,27 @@
 //
 
 #include "Kobold.h"
+#include "Core.h"
+#include "ObjectFactory.h"
 
+void Kobold::init() {
+    
+    // kobolds need weapons too!
+    
+    ofPtr<Weapon> weapon = static_pointer_cast<Weapon >(Object::create(Object::Club));
+    
+    weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
+    
+    data.rightHandGuid = weapon->guid;
+    
+    core->objects.push_back(weapon);
+    
+    ofLog() << "Kobold initted with club id: " << data.rightHandGuid;
+    
+    
+
+
+};
 
 
 string Kobold::getName() {
@@ -18,7 +38,7 @@ DEBT Kobold::interactable() {
     return 1;
 }
 
-InteractionType Kobold::getInteractionTypeForInteractor(Object * o) {
+InteractionType Kobold::getInteractionTypeForInteractor(Object *) {
     return Attack;
 }
 
@@ -49,7 +69,6 @@ bool Kobold::canAttackTarget() {
 }
 
 void Kobold::update(DEBT d)  {
-    ofLog() << "---------" ;
     
     if (actionDebt>0) actionDebt -= d;
     

@@ -16,7 +16,6 @@ ot * pack() override { \
     return this; \
 } \
 \
-data_t data; \
 unsigned char type = Object::ot; \
 void unpack() override { \
     memcpy(&data, bundle.ptr, bundle.size); \
@@ -31,9 +30,10 @@ public: \
         Object::registerType(Object::klass, this); \
         name = #klass; \
     } \
-    virtual Object *create() { \
-        Object * i = new class klass(); \
+    virtual ofPtr<Object> create() { \
+        ofPtr<Object> i(new class klass()); \
         i->initReflectors(); \
+        i->guid = genereateGuid(); \
         i->type = Object::klass; \
         return i; \
     } \
@@ -60,7 +60,7 @@ class ObjectFactory
 {
 public:
     std::string name;
-    virtual Object *create() = 0;
+    virtual ofPtr<Object> create() = 0;
 };
 
 
@@ -88,16 +88,53 @@ class Object {
 public:
     
     enum ObjectType {
-        Nothing = 1<<8,
+        Nothing = 256,
         Coin,
         Door,
+        Club = 10000,
+        Dagger,
+        Greatclub,
+        Handaxe,
+        Javelin,
+        LightHammer,
+        Mace,
+        Quarterstaff,
+        Sickle,
+        Spear,
+        Fists,
+        LightCrossbow,
+        Dart,
+        Shortbow,
+        Sling,
+        Battleaxe,
+        Flail,
+        Glaive,
+        Greataxe,
+        Greatsword,
+        Halberd,
+        Lance,
+        Longsword,
+        Maul,
+        Morningstar,
+        Pike,
+        Rapier,
+        Scimitar,
+        Shortsword,
+        Trident,
+        WarPick,
+        Whip,
+        Blowgun,
+        HandCrossbow,
+        HeavyCrossbow,
+        Longbow,
         Sword,
-        Kobold = 1<<16,
+        Kobold = 65536,
         Player
         
     };
     
     DWORD                       type;
+    DWORD                       guid;
     WORD                        x;
     WORD                        y;
     WORD                        z;
@@ -116,12 +153,13 @@ public:
     virtual Pixel render(float luma) = 0;
     virtual void update(DEBT d) = 0;
     
-    virtual InteractionType getInteractionTypeForInteractor(Object * o) = 0;
+    virtual InteractionType getInteractionTypeForInteractor(Object *) = 0;
     
     vector<Reflector> reflectors;
     virtual void initReflectors() = 0;
-    virtual Object *pack() = 0;
+    virtual Object * pack() = 0;
     virtual void unpack() = 0;
+    virtual void init() = 0;
     
    
     ofVec2i getPos() { return ofVec2i(x,y); }
@@ -130,7 +168,7 @@ public:
         factories()[type] = factory;
     }
     
-    static Object * create(const ObjectType &type)
+    static ofPtr<Object> create(const ObjectType &type)
     {
         return factories()[type]->create();
     }
@@ -160,10 +198,8 @@ public:
     msgpack::type::raw_ref      bundle;
     msgpack::sbuffer *          sbuf;
     
-    MSGPACK_DEFINE(type, bundle, x, y, z);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
     
-private:
-
     static map<ObjectType, ObjectFactory*> &factories() {
         static map<Object::ObjectType, ObjectFactory*> f;
         return f;
@@ -176,7 +212,35 @@ class Item : public Object {
     
 };
 
+class Weapon : public Item {
+public:
+    struct data_t {
+        BYTE numberOfDice;
+        BYTE die;
+    };
+    
+    data_t data;
+    
+    void initReflectors() override {
+        REFLECT(numberOfDice)
+        REFLECT(die)
+    }
+    
+    BYTE rollAttack() {
+        BYTE dmg = 0;
+        for (int i=0; i<data.numberOfDice; i++) {
+            dmg += (int)ofRandom(data.die)+1;
+        }
+        printf("%dd%d rollAttack: %d\n", data.numberOfDice, data.die, dmg);
+        return dmg;
+    }
+    
+    
+};
 
+static DWORD genereateGuid() {
+    return rand();
+}
 
 
 #endif /* ObjectFactory_h */

@@ -47,6 +47,9 @@ typedef int DEBT;
 #define TRAVERSE_NORMAL 100
 #define TRAVERSE_SLIPPERY 120
 
+
+#define VOID_LOCATION 20000
+
 enum GameState {
     NormalState,
     EditState,
@@ -63,6 +66,16 @@ enum InteractionType {
     Attack
 };
 
+enum Race {
+    Human,
+    Elf,
+    Dwarf,
+    Halfling
+    
+};
+
+
+
 
 struct Pixel {
 public:
@@ -71,6 +84,8 @@ public:
     BYTE c;
     Pixel() : fg(0), bg(0), c(0) {}
 };
+
+
 
 
 static unsigned char makeColor(unsigned char r, unsigned char g, unsigned char b) {

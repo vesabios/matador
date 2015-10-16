@@ -12,14 +12,16 @@
 class StatBlock {
 public:
     
-    BYTE str;
-    BYTE dex;
-    BYTE con;
-    BYTE wis;
-    BYTE per;
-    
+
     
 };
 
 
 #endif /* StatBlock_h */
+
+
+/*
+ 
+    target->dexMod
+ 
+ */

@@ -85,15 +85,20 @@ void Inspect::toggleBoolean(void * ptr) {
 }
 
 void Inspect::incInteger(void * ptr) {
-    
     (*(int*)ptr)++;
-    printf("int is: %d\n", *(int*)ptr);
-
-    
-    
 }
 
 void Inspect::decInteger(void * ptr) {
+    (*(int*)ptr)--;
+}
+
+
+void Inspect::incUnsignedChar(void * ptr) {
+    (*(unsigned char*)ptr)++;
+}
+
+void Inspect::decUnsignedChar(void * ptr) {
+    (*(unsigned char*)ptr)--;
 }
 
 
@@ -119,8 +124,31 @@ void Inspect::createMenu() {
             printf("%s\n", v[i].name.c_str());
             printf("%s\n", v[i].t->name());
             
-            
-            if (*v[i].t == typeid(int)) {
+            if (*v[i].t == typeid(unsigned char)) {
+                printf("unsigned char identified\n");
+                printf("%d\n", *(BYTE*)v[i].ptr);
+                
+                Clickable c;
+                c.fg = fg;
+                c.bg = bg;
+                c.text = CHAR_LEFT;
+                c.r = ofRectangle(x,y,1,1);
+                c.funptr = &decUnsignedChar;
+                c.t = v[i].t;
+                c.valuePtr = v[i].ptr;
+                btns.push_back(c);
+                
+                c.text = CHAR_RIGHT;
+                c.r = ofRectangle(x+1,y,1,1);
+                c.funptr = &incUnsignedChar;
+                btns.push_back(c);
+                
+                c.text = v[i].name;
+                c.r = ofRectangle(x+3,y,1,1);
+                c.funptr = NULL;
+                btns.push_back(c);
+                
+            } else if (*v[i].t == typeid(int)) {
                 printf("int identified\n");
                 printf("%d\n", *(int*)v[i].ptr);
 
@@ -176,10 +204,10 @@ void Inspect::createMenu() {
     
 }
 
-void Inspect::inspectObject(Object * o) {
+void Inspect::inspectObject(ofPtr<Object> o) {
     
     if (o==NULL) {
-        currentObject = NULL;
+        currentObject.reset();
         clearMenu();
     } else {
         if (currentObject!=o) {
@@ -209,7 +237,10 @@ void Inspect::render() {
                 
                 string valueString;
                 
-                if (*(it->t) == typeid(int)) {
+                if (*(it->t) == typeid(unsigned char)) {
+                    BYTE * i = (BYTE*)it->valuePtr;
+                    valueString = ofToString((int)*i);
+                } else if (*(it->t) == typeid(int)) {
                     int * i = (int*)it->valuePtr;
                     valueString = ofToString(*i);
                 } else  if (*(it->t) == typeid(bool)) {
