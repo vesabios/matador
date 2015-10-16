@@ -12,20 +12,27 @@
 
 void Kobold::init() {
     
+    data.strength = 9;
+    data.dexterity = 13;
+    data.constitution = 10;
+    data.intelligence = 10;
+    data.wisdom = 9;
+    data.charisma = 8;
+    
     // kobolds need weapons too!
     
     ofPtr<Weapon> weapon = static_pointer_cast<Weapon >(Object::create(Object::Club));
-    
     weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
-    
     data.rightHandGuid = weapon->guid;
-    
     core->objects.push_back(weapon);
     
     ofLog() << "Kobold initted with club id: " << data.rightHandGuid;
-    
-    
 
+    
+    // hit dice 1d8
+    data.maxhp = data.hp = (int)ofRandom(8)+1;
+
+    
 
 };
 

@@ -77,6 +77,7 @@ enum Race {
 
 
 
+
 struct Pixel {
 public:
     BYTE fg;

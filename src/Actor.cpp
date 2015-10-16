@@ -168,14 +168,14 @@ DEBT Actor::attack(ofPtr<Actor> a) {
             
             ofLog()<< getName() << " critted the " << a->getName() << " for " << (int)dmg << " damage";
             
-
-
+            a->takeDamage(dmg);
             
         } else if (hit) {
             BYTE dmg = w->rollAttack();
 
             ofLog()<< getName() << " hit the " << a->getName() << " for " << (int)dmg << " damage";;
             
+            a->takeDamage(dmg);
 
         } else {
             ofLog()<< getName() << " missed " << a->getName();
@@ -216,6 +216,35 @@ ofPtr<Weapon> Actor::leftHand() {
         }
     }
     return w;
+}
+
+void Actor::takeDamage(BYTE dmg) {
+    
+    data.hp -= dmg;
+    
+    if (data.hp<=0) {
+        die();
+    }
+    
+}
+
+void Actor::die() {
+    ofLog() << "death!";
+    
+    // any on-death actions should happen here.
+    // class removal/cleanup/GC should happen at a higher level
+    
+    
+    // TODO:remove items in possesion
+    
+    
+    for (int i=0; i<core->objects.size(); i++) {
+        ofPtr<Object> o = core->objects[i];
+        if (o.get() == this) {
+            core->objects.erase (core->objects.begin()+i);
+        }
+    }
+    
 }
 
 

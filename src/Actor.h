@@ -35,7 +35,9 @@ public:
     
     
     struct data_t {
-        int hp = 10;
+        
+        int maxhp = 10;
+        int hp = maxhp;
         int movementSpeed = 100;
         int attackSpeed = 100;
         
@@ -48,6 +50,7 @@ public:
         BYTE intelligence = 10;
         BYTE wisdom = 10;
         BYTE charisma = 10;
+        
         
         int xp;
     };
@@ -257,6 +260,9 @@ public:
     void moveTowardTarget();
     
     void setSpeedMultiplier(float s);
+    
+    void takeDamage(BYTE dmg);
+    void die();
     
     
     float chargeProbability();

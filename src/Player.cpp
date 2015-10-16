@@ -24,6 +24,8 @@ void Player::init() {
     
     core->objects.push_back(weapon);
     
+    data.maxhp = data.hp = 20;
+    
 }
 
 

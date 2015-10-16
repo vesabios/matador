@@ -607,7 +607,13 @@ void Core::update(){
     if (state==NormalState) {
         
         console.setPixel(3, 3, makeColor(4,0,0), 0, CHAR_HEART);
-        writeString(5,3,"18/18 HP", makeColor(3,3,3), 0);
+        
+        
+        char buf[255];
+        
+        sprintf(buf,"%d/%d HP", player->data.hp, player->data.maxhp);
+        
+        writeString(5,3,buf, makeColor(3,3,3), 0);
         
         console.setPixel(3, 4, makeColor(4,4,1), 0, toascii('0'));
         writeString(5,4,"0 GP", makeColor(3,3,3), 0);
