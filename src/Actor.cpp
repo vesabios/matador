@@ -30,7 +30,7 @@ bool Actor::canAttackTarget() {
 DEBT Actor::attackTarget() {
     if (target==NULL) return 0;
     
-    return attack(static_pointer_cast<Actor>(target));
+    return attack((Actor*)(target));
 
     
 }
@@ -132,7 +132,7 @@ DEBT Actor::standStill() {
 }
 
 
-DEBT Actor::attack(ofPtr<Actor> a) {
+DEBT Actor::attack(Actor * a) {
     
     int d20 = (int)ofRandom(0,20)+1;
     
@@ -158,7 +158,7 @@ DEBT Actor::attack(ofPtr<Actor> a) {
         }
     }
     
-    ofPtr<Weapon> w = rightHand();
+    Weapon * w = rightHand();
     
     if (w!=NULL) {
         if (crit) {
@@ -181,7 +181,7 @@ DEBT Actor::attack(ofPtr<Actor> a) {
             ofLog()<< getName() << " missed " << a->getName();
         }
     } else {
-        ofLog() << "no weapon in hand!";
+        ofLog() << getName() << " has no weapon in hand!";
     }
 
 
@@ -193,25 +193,25 @@ DEBT Actor::attack(ofPtr<Actor> a) {
 }
 
 
-ofPtr<Weapon> Actor::rightHand() {
-    ofPtr<Weapon> w;
+Weapon * Actor::rightHand() {
+    Weapon * w;
     if (data.rightHandGuid!=0) {
-        for (int i=0; i<core->objects.size(); i++) {
-            if (core->objects[i]->guid == data.rightHandGuid) {
-                return static_pointer_cast<Weapon >(core->objects[i]);
+        for (int i=0; i<Weapon::weapons().size(); i++) {
+            if (Weapon::weapons()[i]->guid == data.rightHandGuid) {
+                return Weapon::weapons()[i];
             }
         }
     }
     return w;
 }
 
-ofPtr<Weapon> Actor::leftHand() {
-    ofPtr<Weapon> w;
+Weapon * Actor::leftHand() {
+    Weapon * w;
 
     if (data.leftHandGuid!=0) {
-        for (int i=0; i<core->objects.size(); i++) {
-            if (core->objects[i]->guid == data.leftHandGuid) {
-                return static_pointer_cast<Weapon >(core->objects[i]);
+        for (int i=0; i<Weapon::weapons().size(); i++) {
+            if (Weapon::weapons()[i]->guid == data.rightHandGuid) {
+                return Weapon::weapons()[i];
             }
         }
     }
@@ -238,12 +238,7 @@ void Actor::die() {
     // TODO:remove items in possesion
     
     
-    for (int i=0; i<core->objects.size(); i++) {
-        ofPtr<Object> o = core->objects[i];
-        if (o.get() == this) {
-            core->objects.erase (core->objects.begin()+i);
-        }
-    }
+    delete this;
     
 }
 

@@ -9,18 +9,25 @@
 #define ObjectFactory_h
 
 
-#define OBJTYPE(ot) \
-ot * pack() override { \
+#define OBJTYPE(T) \
+T * pack() override { \
     bundle.size = sizeof(data_t); \
     bundle.ptr = (const char*) &data; \
     return this; \
 } \
 \
-unsigned char type = Object::ot; \
+unsigned char type = Object::T; \
 void unpack() override { \
     memcpy(&data, bundle.ptr, bundle.size); \
 } \
-
+T() {\
+    ofLog() << #T<<" ctor"; \
+    elements().push_back(this);\
+}\
+~T() {\
+    ofLog() << #T << " dtor";\
+    elements().erase(std::remove(elements().begin(), elements().end(), this), elements().end());\
+}
 
 #define REGISTER_OBJTYPE(klass) \
 class klass##Factory : public ObjectFactory { \
@@ -30,8 +37,8 @@ public: \
         Object::registerType(Object::klass, this); \
         name = #klass; \
     } \
-    virtual ofPtr<Object> create() { \
-        ofPtr<Object> i(new class klass()); \
+    virtual Object * create() { \
+        Object * i(new class klass()); \
         i->initReflectors(); \
         i->guid = genereateGuid(); \
         i->type = Object::klass; \
@@ -60,7 +67,7 @@ class ObjectFactory
 {
 public:
     std::string name;
-    virtual ofPtr<Object> create() = 0;
+    virtual Object * create() = 0;
 };
 
 
@@ -86,10 +93,7 @@ public:
 class Object {
  
 public:
-    
-    
-    
-    
+
     enum ObjectType {
         Nothing = 256,
         Coin,
@@ -149,11 +153,20 @@ public:
     data_t data;
    
     
+    
+    
+    static std::vector<Object*> &elements(){
+        static std::vector<Object*> v;
+        return v;
+    }
+    
     Object() {
+        //ofLog() << "object ctor";
         elements().push_back(this);
     }
     
-    ~Object() {
+    virtual ~Object() {
+        //ofLog() << "object dtor";
         elements().erase(std::remove(elements().begin(), elements().end(), this), elements().end());
     }
     
@@ -181,7 +194,7 @@ public:
         factories()[type] = factory;
     }
     
-    static ofPtr<Object> create(const ObjectType &type)
+    static Object * create(const ObjectType &type)
     {
         return factories()[type]->create();
     }
@@ -217,11 +230,7 @@ public:
         static map<Object::ObjectType, ObjectFactory*> f;
         return f;
     }
-    
-    static std::vector<Object*> &elements(){
-        static std::vector<Object*> v;
-        return v;
-    }
+
     
     
 };
@@ -231,31 +240,7 @@ class Item : public Object {
     
 };
 
-class Weapon : public Item {
-public:
-    struct data_t {
-        BYTE numberOfDice;
-        BYTE die;
-    };
-    
-    data_t data;
-    
-    void initReflectors() override {
-        REFLECT(numberOfDice)
-        REFLECT(die)
-    }
-    
-    BYTE rollAttack() {
-        BYTE dmg = 0;
-        for (int i=0; i<data.numberOfDice; i++) {
-            dmg += (int)ofRandom(data.die)+1;
-        }
-        printf("%dd%d rollAttack: %d\n", data.numberOfDice, data.die, dmg);
-        return dmg;
-    }
-    
-    
-};
+
 
 static DWORD genereateGuid() {
     return rand();

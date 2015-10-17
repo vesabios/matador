@@ -100,16 +100,14 @@ REGISTER_OBJTYPE(Coin);
 class Club : public Weapon {
 public:
     
-    Club() {
+    void init() override {
         data.die = 4;
         data.numberOfDice = 1;
     }
-
     
     InteractionType getInteractionTypeForInteractor(Object *) override {
         return Take;
     }
-    
     
     string getName() override  { return "Club"; }
     DEBT interactable() override { return 1; }
@@ -124,7 +122,6 @@ public:
         return p;
     }
     
-    void init() override {};
     
     OBJTYPE(Club);
     MSGPACK_DEFINE(type, guid, bundle, x, y, z);

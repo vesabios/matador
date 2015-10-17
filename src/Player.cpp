@@ -16,13 +16,14 @@ string Player::getName() {
 
 void Player::init() {
     
-    ofPtr<Weapon> weapon = static_pointer_cast<Weapon >(Object::create(Object::Club));
+    Weapon * weapon = static_cast<Weapon *>(Object::create(Object::Club));
+    weapon->init();
+
     
     weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
     
     data.rightHandGuid = weapon->guid;
     
-    core->objects.push_back(weapon);
     
     data.maxhp = data.hp = 20;
     
@@ -39,8 +40,8 @@ InteractionType Player::getInteractionTypeForInteractor(Object *) {
 
 DEBT Player::tryInteracting(ofVec2i moveVector) {
 
-    for (int i=0; i<core->objects.size(); i++) {
-        ofPtr<Object> o = core->objects[i];
+    for (int i=0; i<Object::elements().size(); i++) {
+        Object * o = Object::elements()[i];
         if (o->z == core->map->mapNumber) {
             if (o->x == x + moveVector.x) {
                 if (o->y == y + moveVector.y) {
@@ -55,7 +56,7 @@ DEBT Player::tryInteracting(ofVec2i moveVector) {
     return 0;
 }
 
-DEBT Player::interact(ofPtr<Object> o) {
+DEBT Player::interact(Object * o) {
     
     ofLog() << "interacting with " << o->getName() << endl;
     
@@ -75,7 +76,7 @@ DEBT Player::interact(ofPtr<Object> o) {
             break;
         case Attack:
             //ofLog() << getName() << " is attacking " << o->getName();
-            return attack(static_pointer_cast<Actor >(o));
+            return attack(static_cast<Actor*>(o));
             break;
         default:
             break;
@@ -98,7 +99,12 @@ Pixel Player::render(float luma)  {
 }
 
 
-
+void Player::die() {
+    ofLog() << "PLAYER death!";
+    
+    
+    
+}
 
 
 

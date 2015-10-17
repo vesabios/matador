@@ -429,9 +429,13 @@ bool Map::isWindowOpaque(int x, int y) {
     
     Tile * t = getWindowTile(x,y);
     if (t!=NULL) {
-        return t->mat->isOpaque();
+        if (t->mat==NULL) {
+            return true;
+        } else {
+            return t->mat->isOpaque();
+        }
     }
-    return false;
+    return true;
 }
 
 Tile * Map::getWindowTile(int x, int y) {

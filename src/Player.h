@@ -20,14 +20,15 @@ public:
     DEBT interactable() override { return 0; }
 
     DEBT tryInteracting(ofVec2i moveVector);
-    DEBT interact(ofPtr<Object>);
+    DEBT interact(Object * o);
     
     string getName() override;
     DEBT traversable() override;
     bool isPortable() override;
     void update(DEBT d) override;
     Pixel render(float luma) override;
-    
+    void die() override;
+
     void init() override;
 
     

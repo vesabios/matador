@@ -7,6 +7,8 @@
 //
 
 #include "Serializer.hpp"
+#include "ObjectFactory.h"
+#include "Weapon.h"
 
 Serializer serializer;
 
@@ -21,14 +23,14 @@ void Serializer::save() {
     msgpack::sbuffer sbuf;
     msgpack::packer<msgpack::sbuffer> pk(&sbuf);
     
-    for (int i=0; i<core->objects.size(); i++) {
+    for (int i=0; i<Object::elements().size(); i++) {
         
         printf("saving object: %d\n", i);
         
         msgpack::sbuffer sbuf;
         msgpack::packer<msgpack::sbuffer> pk(&sbuf);
         
-        pk.pack(*(core->objects[i]->pack()));
+        pk.pack(*(Object::elements()[i]->pack()));
         size_t dSize = sbuf.size();
         
         fwrite( &dSize, sizeof(size_t), 1, file);
@@ -43,9 +45,14 @@ void Serializer::save() {
 
 void Serializer::load() {
     
-    printf("loading\n");
+
     
-    core->objects.clear();
+    for (int i=0; i<Object::elements().size(); i++) {
+        delete Object::elements()[i];
+    }
+    
+    printf("loading\n");
+    Object::elements().clear();
     
     FILE * file = NULL;
     file = fopen(ofToDataPath("data.dat", true).c_str(), "rb");
@@ -69,23 +76,22 @@ void Serializer::load() {
             
             if (Object::doesObjectTypeExist(t)) {
 
-                ofPtr<Object> n;
+                Object * n;
                 
                 if (t==Object::Player) {
                     
-                    n = core->player;
-                    o.convert(n.get());
+//                    n = core->player;
+                    n = Object::create(t);
+                    core->player = static_cast<Player *>(n);
+                    o.convert(n);
                     n->unpack();
                     
                 } else {
                     n = Object::create(t);
-                    o.convert(n.get());
+                    o.convert(n);
                     n->unpack();
                     
-                    core->objects.push_back(n);
                 }
-
-
                 
             } else {
                 printf("object type %d not found\n", t);
@@ -99,6 +105,8 @@ void Serializer::load() {
     }
     
     fclose(file);
+    
+    ofLog() << "Weapons: " << Weapon::elements().size();
     
     
 }

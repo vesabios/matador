@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "ObjectFactory.h"
+#include "Weapon.h"
 
 class Actor : public Object {
     
@@ -51,14 +52,13 @@ public:
         BYTE wisdom = 10;
         BYTE charisma = 10;
         
-        
-        int xp;
+        int xp = 0;
     };
     
     data_t data;
     
-    ofPtr<Weapon> leftHand();
-    ofPtr<Weapon> rightHand();
+    Weapon * leftHand();
+    Weapon * rightHand();
     
     void initReflectors() override {
         REFLECT(hp)
@@ -242,7 +242,7 @@ public:
     int damage = 0;
     int morale = 100;
     
-    ofPtr<Object> target;
+    Object * target = NULL;
     
     bool withinRange();
     bool canRunAwayFromTarget();
@@ -262,17 +262,15 @@ public:
     void setSpeedMultiplier(float s);
     
     void takeDamage(BYTE dmg);
-    void die();
-    
+    virtual void die();
     
     float chargeProbability();
     float retreatProbability();
 
     DEBT standStill();
-    DEBT attack(ofPtr<Actor>);
-    DEBT actionDebt;
+    DEBT attack(Actor * a);
+    DEBT actionDebt = 0;
     DEBT tryMoving(ofVec2i moveVector);
-
 
 };
 

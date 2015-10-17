@@ -25,7 +25,7 @@ class Inspect {
     bool visible = false;
     float menuPos = 100.0f;
     
-    ofPtr<Object> currentObject;
+    Object * currentObject;
     
     class Clickable {
     public:
@@ -67,7 +67,7 @@ public:
     void mouseDragged(int x, int y, int button);
     void mousePressed(int x, int y, int button);
     
-    void inspectObject(ofPtr<Object>);
+    void inspectObject(Object * o);
     
     void update(const float deltaTime);
     void render();

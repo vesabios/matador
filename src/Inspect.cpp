@@ -32,6 +32,8 @@ void Inspect::show() {
 
 void Inspect::hide() {
     visible = false;
+    currentObject = NULL;
+
     core->state = InspectState;
 }
 
@@ -204,10 +206,10 @@ void Inspect::createMenu() {
     
 }
 
-void Inspect::inspectObject(ofPtr<Object> o) {
+void Inspect::inspectObject(Object * o) {
     
     if (o==NULL) {
-        currentObject.reset();
+        currentObject = NULL;
         clearMenu();
     } else {
         if (currentObject!=o) {

@@ -25,7 +25,7 @@ void Core::setup(){
     
     // create the player!
     
-    player = static_pointer_cast<Player >(Object::create(Object::Player));
+    player = static_cast<Player *>(Object::create(Object::Player));
     
     player->x = map->startingPosition.x;
     player->y = map->startingPosition.y;
@@ -33,7 +33,7 @@ void Core::setup(){
     
     player->init();
     
-    core->objects.push_back(player);
+   
     
     
     // give the player a weapon!
@@ -55,18 +55,16 @@ void Core::setup(){
 
 
 //--------------------------------------------------------------
-ofPtr<Object> Core::placeObject(int x, int y, int mapNumber, Object::ObjectType it) {
+Object * Core::placeObject(int x, int y, int mapNumber, Object::ObjectType it) {
     
     printf("placing object: %d\n", it);
     
-    ofPtr<Object> o = Object::create((Object::ObjectType)it);
+    Object * o = Object::create((Object::ObjectType)it);
     
     o->init();
     o->x = x;
     o->y = y;
     o->z = mapNumber;
-    
-    objects.push_back(o);
     
     return o;
     
@@ -228,8 +226,8 @@ void Core::renderWorld() {
      */
     
     
-    for (int i=0; i<objects.size(); i++) {
-        ofPtr<Object> o = objects[i];
+    for (int i=0; i<Object::elements().size(); i++) {
+        Object * o = Object::elements()[i];
         
         if (o->z == map->mapNumber) {
             ofVec2i pp = worldToWindow(ofVec2i(o->x, o->y));
@@ -313,8 +311,8 @@ DEBT Core::traversable(int dx, int dy) {
     
     DEBT d = map->traversable(dx, dy);
     if (d>0) {
-        for (int i=0; i<objects.size(); i++) {
-            ofPtr<Object>  o = objects[i];
+        for (int i=0; i<Object::elements().size(); i++) {
+            Object* o = Object::elements()[i];
             
            // ofLog()<< "checking " << o->getName() << "..." ;
             
@@ -438,9 +436,9 @@ void Core::update(){
                     moved = true;
                 }
                 
-                for (int i=0; i<objects.size(); i++) {
-                    if (objects[i]->z== map->mapNumber) {
-                        objects[i]->update(newPlayerDebt);
+                for (int i=0; i<Object::elements().size(); i++) {
+                    if (Object::elements()[i]->z== map->mapNumber) {
+                        Object::elements()[i]->update(newPlayerDebt);
                     }
                 }
                 
@@ -778,10 +776,10 @@ void Core::mousePressed(int x, int y, int button){
         
             ofVec2i pp = windowToWorld(mousePos);
             bool hit = false;
-            ofPtr<Object> io;
+            Object * io;
             
-            for (int i=0; i<objects.size(); i++) {
-               ofPtr<Object> o = objects[i];
+            for (int i=0; i<Object::elements().size(); i++) {
+               Object * o = Object::elements()[i];
                 
                 if (o->z == map->mapNumber) {
                     if (o->x == (int)pp.x) {

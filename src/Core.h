@@ -93,7 +93,7 @@ public:
     
     void populateMap();
     
-    ofPtr<Object> placeObject(int x, int y, int mapNumber, Object::ObjectType it);
+    Object * placeObject(int x, int y, int mapNumber, Object::ObjectType it);
     
     void renderWorld();
     
@@ -103,7 +103,7 @@ public:
 
     BYTE vis[80*50];
     
-    ofPtr<Player> player;
+    Player * player;
     
     
     MaterialType currentMaterial = (MaterialType)0;
@@ -124,7 +124,6 @@ public:
     //vector<Actor> actors;
 
     DWORD currentObject = 0;
-    vector<ofPtr<Object> > objects;
 
     int playerMvt = 0;
 
