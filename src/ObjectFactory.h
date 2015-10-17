@@ -88,9 +88,11 @@ class Object {
 public:
 
     enum ObjectType {
+        MapData = 1,
         Nothing = 256,
         Coin,
         Door,
+        Transit,
         Club = 10000,
         Dagger,
         Greatclub,

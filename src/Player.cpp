@@ -70,10 +70,7 @@ DEBT Player::interact(Object * o) {
     
     ofLog() << "interacting with " << o->getName() << endl;
     
-    
-    InteractionType it = o->getInteractionTypeForInteractor(this); /// BAD CONVERSION HAPPENING HERE!!
-    
-    //InteractionType it = Attack;
+    InteractionType it = o->getInteractionTypeForInteractor(this);
     
     switch (it) {
         case Stare:
@@ -83,11 +80,31 @@ DEBT Player::interact(Object * o) {
         case Take:
             break;
         case Use:
+        {
+            Item* i = dynamic_cast<Item*>(o);
+            if (i) {
+                
+                // call the object's use function and pass the player object along as the argument
+                
+                return i->use(static_cast<Actor*>(this));
+            } else {
+                return 0;
+            }
             break;
+        }
         case Attack:
-            //ofLog() << getName() << " is attacking " << o->getName();
-            return attack(static_cast<Actor*>(o));
+        {
+            Actor* a = dynamic_cast<Actor*>(o);
+            if (a) {
+                
+                // call the player's attack function and pass along the targeted actor (if it is one!) (it should be)
+
+                return attack(a);
+            } else {
+                return 0;
+            }
             break;
+        }
         default:
             break;
     }
@@ -95,7 +112,10 @@ DEBT Player::interact(Object * o) {
     
 }
 
-bool Player::isPortable()  {return false;}
+bool Player::isPortable()  {
+    return false;
+}
+
 void Player::update(DEBT d)  {
     actionDebt -= d;
 }

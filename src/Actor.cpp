@@ -212,7 +212,6 @@ DEBT Actor::attack(Actor * a) {
 }
 
 
-
 Weapon * Actor::rightHand() {
     Weapon * w;
     

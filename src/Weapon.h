@@ -10,6 +10,9 @@
 #define Weapons_h
 
 #include "Item.h"
+#include "Actor.h"
+
+
 
 class Weapon : public Item {
 public:
@@ -31,7 +34,9 @@ public:
     DEBT traversable() override { return TRAVERSE_NORMAL; }
     bool isPortable() override { return true; }
     void update(DEBT d) override {}
-    
+    DEBT use(Actor * a) override {
+        return 0;
+    }
     BYTE rollAttack() {
         BYTE dmg = 0;
         for (int i=0; i<data.numberOfDice; i++) {

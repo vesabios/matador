@@ -13,6 +13,8 @@
 #include "ObjectFactory.h"
 #include "Weapon.h"
 
+class Weapon;
+
 class Actor : public Object {
     
 public:

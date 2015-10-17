@@ -17,7 +17,9 @@ public:
         data.die = 4;
         data.numberOfDice = 1;
     }
+    
 
+    
     string getName() override  { return "Club"; }
 
     Pixel render(float luma) override {

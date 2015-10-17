@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include "ObjectFactory.h"
 #include "Item.h"
+#include "Actor.h"
+#include "Core.h"
 
 class Door : public Item {
 public:
@@ -25,9 +27,17 @@ public:
         REFLECT(keyId)
     }
     
-    string getName() override { return "Door"; }
+    DEBT use(Actor * a) override {
+        return 0;
+    }
     
-    DEBT interactable() override { return 1; }
+    string getName() override {
+        return "Door";
+    }
+    
+    DEBT interactable() override {
+        return 1;
+    }
     
     InteractionType getInteractionTypeForInteractor(Object *) override {
         return Use;
@@ -53,6 +63,78 @@ public:
 REGISTER_OBJTYPE(Door);
 
 
+
+class Transit : public Item {
+public:
+    
+    struct data_t {
+        int from = 0;
+        int to = 0;
+    };
+    
+    data_t data;
+    
+    void initReflectors() override  {
+        REFLECT(from)
+        REFLECT(to)
+    }
+    
+    DEBT use(Actor * a) override {
+        ofLog() << "trying to use transit...";
+        
+        for (int i=0; i< Object::elements().size(); i++) {
+            Object * o = Object::elements()[i];
+            
+            Transit * t = dynamic_cast<Transit*>(o);
+            if (t) {
+                if (t->data.to == data.from) {
+                    // we found our transit!!
+                    
+                    ofLog()<< "bingo!";
+                    
+                    core->transitActor(a, o->x, o->y, o->z);
+
+                    
+                    return -1;
+                    
+                }
+            }
+        }
+        
+        return 0;
+        
+    }
+    
+    string getName() override { return "Transit"; }
+    
+    DEBT interactable() override { return 1; }
+    
+    InteractionType getInteractionTypeForInteractor(Object *) override {
+        return Use;
+    }
+    
+    DEBT traversable() override { return TRAVERSE_NORMAL; }
+    bool isPortable() override { return false; }
+    void update(DEBT d) override {}
+    Pixel render(float luma) override {
+        Pixel p;
+        p.fg = makeColor(5,5,5);
+        p.bg = 0;
+        p.c = toascii('>');
+        return p;
+    }
+    
+    void init() override {};
+    
+    OBJTYPE(Transit);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
+    
+};
+REGISTER_OBJTYPE(Transit);
+
+
+
+
 class Coin : public Item {
 public:
     
@@ -71,6 +153,9 @@ public:
         return Take;
     }
     
+    DEBT use(Actor * a) override {
+        return 0;
+    }
     
     string getName() override  { return "Coin"; }
     DEBT interactable() override { return 1; }

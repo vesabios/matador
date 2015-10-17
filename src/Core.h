@@ -22,6 +22,7 @@
 class Actor;
 class Engine;
 class Console;
+class Player;
 
 class Core : public ofBaseApp {
     
@@ -83,6 +84,8 @@ public:
     bool isOpaque(int x, int y);
 
     void raytrace(int x0, int y0, int x1, int y1);
+    
+    void transitActor(Actor* a, int x, int y, int z);
 
     void adjustWindow();
     ofVec2i worldToWindow(const ofVec2i p);

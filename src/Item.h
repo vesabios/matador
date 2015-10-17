@@ -8,8 +8,14 @@
 
 #ifndef Item_h
 #define Item_h
+#include "ObjectFactory.h"
+
+class Actor;
 
 class Item : public Object {
+public:
+    
+    virtual DEBT use(Actor * a) = 0;
     
 };
 

@@ -26,22 +26,15 @@ void Core::setup(){
     // create the player!
     
     player = static_cast<Player *>(Object::create(Object::Player));
-    
     player->x = map->startingPosition.x;
     player->y = map->startingPosition.y;
     player->z = map->mapNumber;
-    
     player->init();
-    
-    
-    
-    
-    // give the player a weapon!
-    
-
     
 
     map->setWindow(player->x-40,player->x-25);
+
+    
     
     //populateMap();
     //sound.loadSound("afro_afro.mod");
@@ -365,6 +358,35 @@ bool Core::isVisible(const ofVec2i pos) {
     
 }
 
+void Core::transitActor(Actor * a, int x, int y, int z) {
+    
+    Player*p = dynamic_cast<Player*>(a);
+    
+    if (p) {
+        
+        ofLog() << "core transiting player...";
+        
+        p->x = x;
+        p->y = y;
+        p->z = z;
+        
+        map->mapNumber = z;
+        map->load();
+        
+        
+    } else {
+        
+        ofLog() << "core transiting NPC...";
+        a->x = x;
+        a->y = y;
+        a->z = z;
+        
+    }
+    
+
+    
+}
+
 
 //--------------------------------------------------------------
 void Core::update(){
@@ -422,7 +444,7 @@ void Core::update(){
                 
                 newPlayerDebt = player->tryInteracting(moveVector);
                 
-                if (newPlayerDebt < DEBT_TURN_THRESHOLD ) {
+                if (newPlayerDebt>=0 && newPlayerDebt < DEBT_TURN_THRESHOLD ) {
                     newPlayerDebt += player->tryMoving(moveVector);
                     if (newPlayerDebt >= DEBT_TURN_THRESHOLD) {
                         moved = true;
