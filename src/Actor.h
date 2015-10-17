@@ -52,7 +52,12 @@ public:
         BYTE wisdom = 10;
         BYTE charisma = 10;
         
+        BYTE tohit = 0;
+        BYTE armorBonus = 10;
+
         int xp = 0;
+        int gold = 0;
+        
     };
     
     data_t data;
@@ -72,6 +77,9 @@ public:
         REFLECT(charisma)
         
     }
+    
+    virtual int armorBonus();
+    int ac();
     
     int strength() {
         return data.strength;
@@ -242,7 +250,7 @@ public:
     int damage = 0;
     int morale = 100;
     
-    Object * target = NULL;
+    Actor * target = NULL;
     
     bool withinRange();
     bool canRunAwayFromTarget();
@@ -261,7 +269,7 @@ public:
     
     void setSpeedMultiplier(float s);
     
-    void takeDamage(BYTE dmg);
+    void takeDamage(int dmg);
     virtual void die();
     
     float chargeProbability();

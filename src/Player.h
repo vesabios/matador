@@ -30,6 +30,7 @@ public:
     void die() override;
 
     void init() override;
+    int armorBonus() override;
 
     
     OBJTYPE(Player);

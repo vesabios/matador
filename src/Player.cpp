@@ -19,16 +19,26 @@ void Player::init() {
     Weapon * weapon = static_cast<Weapon *>(Object::create(Object::Club));
     weapon->init();
 
-    
     weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
     
     data.rightHandGuid = weapon->guid;
+    
+    data.strength = 11;
+    data.dexterity = 17;
+    data.constitution = 16;
+    data.intelligence = 10;
+    data.wisdom = 10;
+    data.charisma = 10;
+    data.tohit = 2;
     
     
     data.maxhp = data.hp = 20;
     
 }
 
+int Player::armorBonus() {
+    return 11;
+}
 
 DEBT Player::traversable()  {
     return TRAVERSE_BLOCKED;
@@ -101,8 +111,6 @@ Pixel Player::render(float luma)  {
 
 void Player::die() {
     ofLog() << "PLAYER death!";
-    
-    
     
 }
 

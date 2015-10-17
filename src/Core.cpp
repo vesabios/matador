@@ -33,7 +33,7 @@ void Core::setup(){
     
     player->init();
     
-   
+    
     
     
     // give the player a weapon!
@@ -472,7 +472,7 @@ void Core::update(){
             if (menu.currentMainMenu==0) {
                 map->placeMaterial(cursorPos.x, cursorPos.y, (MaterialType)map->currentMaterial);
                 
-            } else if (menu.currentMainMenu==1) {
+            } else if (menu.currentMainMenu>=1) {
                 placeObject(cursorPos.x, cursorPos.y, map->mapNumber, (Object::ObjectType)currentObject);
             }
             
@@ -767,7 +767,18 @@ void Core::mousePressed(int x, int y, int button){
     mousePos = ofVec2i((x-1) / 16,(y-1) /16);
 
     if (state==EditState) {
-        menu.mousePressed(mousePos.x, mousePos.y, button);
+        
+        if (mousePos.x<50) {
+            ofVec2i pp = windowToWorld(mousePos);
+            placeObject(pp.x, pp.y, map->mapNumber, (Object::ObjectType)currentObject);
+        } else {
+            menu.mousePressed(mousePos.x, mousePos.y, button);
+
+        }
+        
+        
+
+        
     } else if (state==PaintState) {
         paint.mousePressed(mousePos.x, mousePos.y, button);
     } else if (state==InspectState) {

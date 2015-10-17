@@ -22,6 +22,8 @@
 		CEDB241E1BCEF46500D8CBE4 /* Actor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB241C1BCEF46500D8CBE4 /* Actor.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB24241BCEF53300D8CBE4 /* Kobold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB24221BCEF53300D8CBE4 /* Kobold.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB24271BCEFAFF00D8CBE4 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB24251BCEFAFF00D8CBE4 /* Player.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEE6BFEB1BD24B61000C5478 /* Weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEE6BFEE1BD24CAD000C5478 /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFED1BD24CAD000C5478 /* Item.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEF10E901BC62C6D00CDB768 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEF10E8E1BC62C6D00CDB768 /* Console.cpp */; settings = {ASSET_TAGS = (); }; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -154,7 +156,9 @@
 		CEDB24291BCF80B600D8CBE4 /* FSM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSM.h; sourceTree = "<group>"; };
 		CEDB242A1BCF811200D8CBE4 /* ofVec4i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofVec4i.h; sourceTree = "<group>"; };
 		CEDB242B1BCF816C00D8CBE4 /* ofVec2i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofVec2i.h; sourceTree = "<group>"; };
-		CEDB242C1BD016B600D8CBE4 /* StatBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatBlock.h; sourceTree = "<group>"; };
+		CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Weapon.cpp; sourceTree = "<group>"; };
+		CEE6BFEC1BD24C91000C5478 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
+		CEE6BFED1BD24CAD000C5478 /* Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
 		CEF10E8E1BC62C6D00CDB768 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		CEF10E8F1BC62C6D00CDB768 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		CEFCE5951BBF55CB00D68A81 /* s.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = s.frag; path = bin/data/shaders/s.frag; sourceTree = SOURCE_ROOT; };
@@ -357,6 +361,9 @@
 			children = (
 				CEB9D1F41BCC52C7003FC036 /* ObjectFactory.cpp */,
 				CEB9D1F51BCC52C7003FC036 /* ObjectFactory.h */,
+				CEE6BFED1BD24CAD000C5478 /* Item.cpp */,
+				CEE6BFEC1BD24C91000C5478 /* Item.h */,
+				CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */,
 				CE6A566B1BD06798007C8BBC /* Weapon.h */,
 				CEDB241C1BCEF46500D8CBE4 /* Actor.cpp */,
 				CEDB241D1BCEF46500D8CBE4 /* Actor.h */,
@@ -364,7 +371,6 @@
 				CEDB24231BCEF53300D8CBE4 /* Kobold.h */,
 				CEDB24251BCEFAFF00D8CBE4 /* Player.cpp */,
 				CEDB24261BCEFAFF00D8CBE4 /* Player.h */,
-				CEDB242C1BD016B600D8CBE4 /* StatBlock.h */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -588,9 +594,11 @@
 				CE2CD48C1BC2FDC9000014AC /* Map.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				CED0B15F1BC76F4700FD1361 /* Menu.cpp in Sources */,
+				CEE6BFEB1BD24B61000C5478 /* Weapon.cpp in Sources */,
 				CEDB24241BCEF53300D8CBE4 /* Kobold.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* Core.cpp in Sources */,
 				CEBB0E0B1BC2FD7A007948D9 /* Delaunay.cpp in Sources */,
+				CEE6BFEE1BD24CAD000C5478 /* Item.cpp in Sources */,
 				CEB9D1F61BCC52C7003FC036 /* ObjectFactory.cpp in Sources */,
 				CEDB241E1BCEF46500D8CBE4 /* Actor.cpp in Sources */,
 				CE117CD51BCCE936003DFD6A /* Materials.cpp in Sources */,

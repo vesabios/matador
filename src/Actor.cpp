@@ -66,15 +66,15 @@ void Actor::moveAwayFromTarget() {
     
     ofLog() << "moving away..." ;
 }
+
 void Actor::moveTowardTarget() {
     if (target==NULL) return;
     
-    ofVec2i d = ofVec2i(target->x, target->y) - ofVec2i(x,y);
+    ofVec2f d = ofVec2f(target->x, target->y) - ofVec2f(x,y);
     d.normalize();
     
   
-    if (abs(abs(d.x) - abs(d.y)) < 0.5) {
-        ofLog() << "moving diagonally!";
+    if (abs(abs(d.x) - abs(d.y)) < 0.5f) {
         tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
     } else if (abs(d.x)>abs(d.y)) {
         tryMoving(ofVec2i(sgn(d.x), 0));
@@ -83,8 +83,6 @@ void Actor::moveTowardTarget() {
      
     }
     
-    
-    ofLog() << "moving toward..." ;
 }
 
 bool Actor::canRunAwayFromTarget() {
@@ -125,12 +123,28 @@ float Actor::retreatProbability() {
 DEBT Actor::standStill() {
     ofLog() << "standing still...";
     
-    target = core->player;
+    target = static_cast<Actor*>(core->player);
     
     return 100;
     
 }
 
+int Actor::armorBonus() {
+    return data.armorBonus;
+}
+
+int Actor::ac() {
+    
+    int a = 0;
+    
+    a+= armorBonus();
+    a+= dexMod();
+    return a;
+    
+    
+//   armor bonus + shield bonus + Dexterity modifier + other modifiers
+    
+}
 
 DEBT Actor::attack(Actor * a) {
     
@@ -148,10 +162,14 @@ DEBT Actor::attack(Actor * a) {
         hit = true;
         crit = true;
     } else {
-        ofLog() << getName() << " rolled a " << d20;
        
-        int ac = 10;
-        if (d20>=ac) {
+        int ac = a->ac();
+        
+        int m =strMod() + data.tohit;
+        
+        ofLog() << getName() << " rolled a " << d20 << " + " << m <<", (ac:"<<ac<<")";
+        
+        if (d20+m>=ac) {
             hit = true;
             ofLog()<< getName() << " hit the " << a->getName();
             
@@ -163,8 +181,9 @@ DEBT Actor::attack(Actor * a) {
     if (w!=NULL) {
         if (crit) {
             
-            BYTE dmg = w->rollAttack();
+            int dmg = w->rollAttack();
             dmg += w->rollAttack();
+            
             
             ofLog()<< getName() << " critted the " << a->getName() << " for " << (int)dmg << " damage";
             
@@ -193,12 +212,18 @@ DEBT Actor::attack(Actor * a) {
 }
 
 
+
 Weapon * Actor::rightHand() {
     Weapon * w;
+    
     if (data.rightHandGuid!=0) {
-        for (int i=0; i<Weapon::weapons().size(); i++) {
-            if (Weapon::weapons()[i]->guid == data.rightHandGuid) {
-                return Weapon::weapons()[i];
+        for (int i=0; i<Object::elements().size(); i++) {
+            Object * o = Object::elements()[i];
+            if (Weapon* w = dynamic_cast<Weapon*>(o)) {
+                if (w->guid == data.rightHandGuid) {
+                    return w;
+                
+                }
             }
         }
     }
@@ -209,16 +234,21 @@ Weapon * Actor::leftHand() {
     Weapon * w;
 
     if (data.leftHandGuid!=0) {
-        for (int i=0; i<Weapon::weapons().size(); i++) {
-            if (Weapon::weapons()[i]->guid == data.rightHandGuid) {
-                return Weapon::weapons()[i];
+        for (int i=0; i<Object::elements().size(); i++) {
+            Object * o = Object::elements()[i];
+            if (Weapon* w = dynamic_cast<Weapon*>(o)) {
+                if (w->guid == data.rightHandGuid) {
+                    return w;
+                    
+                }
             }
         }
+        
     }
     return w;
 }
 
-void Actor::takeDamage(BYTE dmg) {
+void Actor::takeDamage(int dmg) {
     
     data.hp -= dmg;
     
@@ -237,6 +267,11 @@ void Actor::die() {
     
     // TODO:remove items in possesion
     
+    Weapon * rhw = rightHand();
+    if (rhw!=NULL) {
+        delete rhw;
+    };
+    
     
     delete this;
     
@@ -244,7 +279,7 @@ void Actor::die() {
 
 
 DEBT Actor::tryMoving(ofVec2i moveVector) {
-    
+   
     bool vert = false;
     
     DEBT newDebt = 0;

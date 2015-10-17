@@ -25,7 +25,7 @@ void Serializer::save() {
     
     for (int i=0; i<Object::elements().size(); i++) {
         
-        printf("saving object: %d\n", i);
+        ofLog() << "saving object " << i <<": "<<Object::elements()[i]->getName();
         
         msgpack::sbuffer sbuf;
         msgpack::packer<msgpack::sbuffer> pk(&sbuf);
@@ -44,8 +44,6 @@ void Serializer::save() {
 
 
 void Serializer::load() {
-    
-
     
     for (int i=0; i<Object::elements().size(); i++) {
         delete Object::elements()[i];
@@ -78,19 +76,12 @@ void Serializer::load() {
 
                 Object * n;
                 
+                n = Object::create(t);
+                o.convert(n);
+                n->unpack();
+                
                 if (t==Object::Player) {
-                    
-//                    n = core->player;
-                    n = Object::create(t);
                     core->player = static_cast<Player *>(n);
-                    o.convert(n);
-                    n->unpack();
-                    
-                } else {
-                    n = Object::create(t);
-                    o.convert(n);
-                    n->unpack();
-                    
                 }
                 
             } else {
@@ -106,7 +97,7 @@ void Serializer::load() {
     
     fclose(file);
     
-    ofLog() << "Weapons: " << Weapon::elements().size();
+    ofLog() << "Elements: " << Object::elements().size();
     
     
 }

@@ -12,12 +12,14 @@
 
 void Kobold::init() {
     
-    data.strength = 9;
-    data.dexterity = 13;
-    data.constitution = 10;
-    data.intelligence = 10;
-    data.wisdom = 9;
+    data.strength = 7;
+    data.dexterity = 15;
+    data.constitution = 9;
+    data.intelligence = 8;
+    data.wisdom = 7;
     data.charisma = 8;
+    
+    data.tohit = 4;
     
     // kobolds need weapons too!
     

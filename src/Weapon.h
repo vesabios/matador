@@ -1,5 +1,5 @@
 //
-//  Weapons.h
+//  Weapon.h
 //  matador
 //
 //  Created by vesabios on 10/15/15.
@@ -9,11 +9,14 @@
 #ifndef Weapons_h
 #define Weapons_h
 
+#include "Item.h"
+
 class Weapon : public Item {
 public:
     struct data_t {
-        BYTE numberOfDice;
-        BYTE die;
+        BYTE numberOfDice = 1;
+        BYTE die = 4;
+        BYTE modifier = 0;
     };
     
     data_t data;
@@ -23,6 +26,12 @@ public:
         REFLECT(die)
     }
     
+    DEBT interactable() override { return 1; }
+    InteractionType getInteractionTypeForInteractor(Object *) override { return Take; }
+    DEBT traversable() override { return TRAVERSE_NORMAL; }
+    bool isPortable() override { return true; }
+    void update(DEBT d) override {}
+    
     BYTE rollAttack() {
         BYTE dmg = 0;
         for (int i=0; i<data.numberOfDice; i++) {
@@ -31,28 +40,6 @@ public:
         printf("%dd%d rollAttack: %d\n", data.numberOfDice, data.die, dmg);
         return dmg;
     }
-    
-    
-    
-    static std::vector<Weapon*> &weapons() {
-        static std::vector<Weapon*> v;
-        return v;
-    }
-    
-    
-    Weapon() {
-        ofLog() << "weapon ctor";
-        weapons().push_back(this);
-    }
-    
-    virtual ~Weapon() {
-        ofLog() << "weapon dtor";
-        weapons().erase(std::remove(weapons().begin(), weapons().end(), this), weapons().end());
-    }
-     
-    
-    
-    
 };
 
 

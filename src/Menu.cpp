@@ -85,7 +85,17 @@ void Menu::mousePressed(int x, int y, int button) {
             };
         }
         
+    }else if (currentMainMenu==2) {
+        for(auto it = actorBtns.begin(); it != actorBtns.end(); it++)
+        {
+            ofRectangle r = it->r;
+            r.translate(menuPos, 0);
+            if (r.inside(x, y)) {
+                it->funptr(it->arg);
+            };
+        }
     }
+
     
     
     
@@ -158,6 +168,16 @@ void Menu::_setItem(int v) {
         }
     }
     
+    for(auto it = actorBtns.begin(); it != actorBtns.end(); it++)
+    {
+        if (it->arg==v) {
+            it->fg = makeColor(0,5,5);
+        } else {
+            it->fg = makeColor(5,5,5);
+        }
+    }
+    
+    
 }
 
 
@@ -224,18 +244,25 @@ void Menu::createMenu() {
     vector<Object::ObjectType> v = Object::getKeys();
     
     for (int j=0; j<v.size(); j++) {
-        c.text = Object::getNameFromType(v[j]);
-        c.funptr = &setItem;
-        c.arg = v[j];
-        c.r = ofRectangle(x,y++,30,1);
-        itemBtns.push_back(c);
+        if (dynamic_cast<Item *>(ofPtr<Object>(Object::create(v[j])).get())) {
+            c.text = Object::getNameFromType(v[j]);
+            c.funptr = &setItem;
+            c.arg = v[j];
+            c.r = ofRectangle(x,y++,30,1);
+            itemBtns.push_back(c);
+        }
     }
 
-        
-    
-    
-    
-    
+    y = 10;
+    for (int j=0; j<v.size(); j++) {
+        if (dynamic_cast<Actor *>(ofPtr<Object>(Object::create(v[j])).get())) {
+            c.text = Object::getNameFromType(v[j]);
+            c.funptr = &setItem;
+            c.arg = v[j];
+            c.r = ofRectangle(x,y++,30,1);
+            actorBtns.push_back(c);
+        }
+    }
     
     
     c.fg = makeColor(5,5,0);
@@ -300,6 +327,12 @@ void Menu::render() {
             {
                 console.writeString((int)menuPos+it->r.x, it->r.y, it->text, it->fg, it->bg);
             }
+        } else if (currentMainMenu==2) {
+            for(auto it = actorBtns.begin(); it != actorBtns.end(); it++)
+            {
+                console.writeString((int)menuPos+it->r.x, it->r.y, it->text, it->fg, it->bg);
+            }
+            
         }
         
     }

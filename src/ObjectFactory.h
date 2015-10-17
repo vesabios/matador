@@ -20,32 +20,25 @@ unsigned char type = Object::T; \
 void unpack() override { \
     memcpy(&data, bundle.ptr, bundle.size); \
 } \
-T() {\
-    ofLog() << #T<<" ctor"; \
-    elements().push_back(this);\
-}\
-~T() {\
-    ofLog() << #T << " dtor";\
-    elements().erase(std::remove(elements().begin(), elements().end(), this), elements().end());\
-}
 
-#define REGISTER_OBJTYPE(klass) \
-class klass##Factory : public ObjectFactory { \
+
+#define REGISTER_OBJTYPE(T) \
+class T##Factory : public ObjectFactory { \
 public: \
-    klass##Factory() \
+    T##Factory() \
     { \
-        Object::registerType(Object::klass, this); \
-        name = #klass; \
+        Object::registerType(Object::T, this); \
+        name = #T; \
     } \
     virtual Object * create() { \
-        Object * i(new class klass()); \
-        i->initReflectors(); \
-        i->guid = genereateGuid(); \
-        i->type = Object::klass; \
-        return i; \
+        Object * o(new class T()); \
+        o->initReflectors(); \
+        o->guid = genereateGuid(); \
+        o->type = Object::T; \
+        return o; \
     } \
 }; \
-static klass##Factory global_##klass##Factory;
+static T##Factory global_##T##Factory;
 
 
 #define REFLECT(key) \
@@ -161,19 +154,18 @@ public:
     }
     
     Object() {
-        //ofLog() << "object ctor";
+        ofLog() << "object ctor: " ;
         elements().push_back(this);
     }
     
     virtual ~Object() {
-        //ofLog() << "object dtor";
+        ofLog() << "object dtor" ;
         elements().erase(std::remove(elements().begin(), elements().end(), this), elements().end());
     }
     
     
     virtual string getName() = 0;
     virtual DEBT interactable() = 0;
-
     virtual DEBT traversable() = 0;
     virtual bool isPortable() = 0;
     virtual Pixel render(float luma) = 0;
@@ -236,14 +228,12 @@ public:
 };
 
 
-class Item : public Object {
-    
-};
-
 
 
 static DWORD genereateGuid() {
-    return rand();
+    static DWORD guid = 0;
+    
+    return ++guid;
 }
 
 
