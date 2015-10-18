@@ -125,6 +125,7 @@ Pixel Player::render(float luma)  {
     p.fg = makeColor(5,5,5);
     p.bg = 0;
     p.c = CHAR_PLAYER;
+    p.a = 0;
     return p;
 }
 

@@ -38,6 +38,12 @@ public:
         void operator()() {};
     };
     
+    enum MAIN_MENU {
+        MaterialMenu,
+        ItemMenu,
+        ActorMenu
+    };
+    
     
     typedef void (Menu::*callback)(int v);
     
@@ -48,8 +54,9 @@ public:
     
     MaterialType currentMaterial = (MaterialType)0;
 
-    int currentMainMenu = 0;
-    
+    MAIN_MENU currentMainMenu = MaterialMenu;
+    Axis orthoAxis = AXIS_NONE;
+
     
     vector<Clickable> categoryBtns;
     vector<Clickable> materialBtns;
@@ -61,6 +68,10 @@ public:
     
     void toggle();
     
+    
+    void keyPressed(int key);
+    void keyReleased(int key);
+    void mouseDragged(int x, int y, int button);
     void mousePressed(int x, int y, int button);
     
     static void setMainMenu(int v);
@@ -74,9 +85,19 @@ public:
     
     static void cycleMap(int v);
     void _cycleMap(int v);
+
+    void brushMaterial(ofVec2i p, MaterialType mt);
+
     
     void update(const float deltaTime);
     void render();
+    
+    
+    bool mouseDown = false;
+    bool ortho = false;
+    ofPoint startMousePoint;
+    char brush = 0;
+    BYTE brushSize = 1;
     
 };
 

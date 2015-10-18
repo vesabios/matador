@@ -130,7 +130,7 @@ public :
     int getWindowLastSeen(int x, int y);
 
     DEBT traversable(int x, int y);
-    bool isWindowOpaque(int x, int y);
+    float isWindowOpaque(int x, int y);
 
     void render();
     void setWindow(int x, int y);

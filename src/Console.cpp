@@ -27,11 +27,50 @@ void Console::init() {
 }
 
 //--------------------------------------------------------------
+Pixel Console::getPixel(BYTE x, BYTE y) {
+    Pixel p;
+
+    if (x>=0 && y>=0 && x<80 && y<50) {
+        
+        int idx = ((y*80)+x)*4;
+        
+        p.fg = pixels[idx];
+        
+        // background color
+        p.bg = pixels[idx+1];
+        
+        // character
+        p.c = pixels[idx+2];
+        
+    }
+    
+    return p;
+}
+
+//--------------------------------------------------------------
 void Console::setPixel(ofVec2f pp, Pixel p) {
     setPixel(pp.x, pp.y, p.fg, p.bg, p.c);
     
 }
 
+
+//--------------------------------------------------------------
+void Console::setFGPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c) {
+    
+    if (x>=0 && y>=0 && x<80 && y<50) {
+        int idx = ((y*80)+x)*4;
+        
+        pixels[idx] = f;
+        
+        // character
+        pixels[idx+2] = c;
+        
+        // not used
+        pixels[idx+3] = 0;
+        
+    }
+    
+}
 //--------------------------------------------------------------
 void Console::setPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c) {
     

@@ -20,7 +20,7 @@ public:
 
     MVoid(MaterialType mt) : Material(mt) {}
     string getName() override { return "Void"; }
-    bool isOpaque() override { return true; }
+    float isOpaque() override { return 1.0f; }
     DEBT traversable() override { return TRAVERSE_BLOCKED; }
     Pixel operator()(ofVec2i pos, float luma) override {
         

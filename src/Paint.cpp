@@ -38,15 +38,11 @@ void Paint::hide() {
 }
 
 void Paint::update(const float delaTime) {
-    
     if (visible) {
         menuPos += (62.0f - menuPos) * 0.2f;
     } else {
         menuPos += (85.0f - menuPos) * 0.2f;
     }
-    
-
-    
 }
 
 
@@ -77,6 +73,14 @@ void Paint::keyPressed(int key) {
         fg = pixels[(x+y*80)*4];
         bg = pixels[(x+y*80)*4+1];
         c = pixels[(x+y*80)*4+2];
+        
+        fg_r= (fg / 36) %6;
+        fg_g= (fg / 6) %6;
+        fg_b= fg % 6;
+        bg_r= (bg / 36) %6;
+        bg_g= (bg / 6) %6;
+        bg_b= bg % 6;
+        
         
     } else if (key=='o') {
         ortho = true;
@@ -158,8 +162,14 @@ void Paint::mousePressed(int inx, int iny, int button) {
             
             if (button==0) {
                 fg = makeColor(r,g,b);
+                fg_r=r;
+                fg_g=g;
+                fg_b=b;
             } else if (button==2) {
                 bg = makeColor(r,g,b);
+                bg_r=r;
+                bg_g=g;
+                bg_b=b;
             }
         }
     }
@@ -337,6 +347,14 @@ void Paint::render() {
                 }
             }
         }
+        
+        console.writeString((int)menuPos+14, 22, ofToString((int)fg_r), makeColor(5,5,0), lbg);
+        console.writeString((int)menuPos+14, 23, ofToString((int)fg_g), makeColor(5,5,0), lbg);
+        console.writeString((int)menuPos+14, 24, ofToString((int)fg_b), makeColor(5,5,0), lbg);
+
+        console.writeString((int)menuPos+14, 26, ofToString((int)bg_r), makeColor(5,5,0), lbg);
+        console.writeString((int)menuPos+14, 27, ofToString((int)bg_g), makeColor(5,5,0), lbg);
+        console.writeString((int)menuPos+14, 28, ofToString((int)bg_b), makeColor(5,5,0), lbg);
         
 
         

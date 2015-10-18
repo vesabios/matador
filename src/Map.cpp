@@ -405,8 +405,12 @@ void Map::drawLine(ofVec2f p0, ofVec2f p1) {
 //--------------------------------------------------------------
 void Map::placeMaterial(int x, int y, MaterialType mt) {
     
-    Tile * t = &tiles[x+y*width];
-    t->mat = materials.mats[currentMaterial];
+    if (x>=0 && x<width && y>=0 && y<width) {
+        Tile * t = &tiles[x+y*width];
+        t->mat = materials.mats[currentMaterial];
+        
+    }
+    
     
 }
 
@@ -422,7 +426,7 @@ DEBT Map::traversable(int x, int y) {
 
 
 //--------------------------------------------------------------
-bool Map::isWindowOpaque(int x, int y) {
+float Map::isWindowOpaque(int x, int y) {
 
     //return !tiles[(x+(int)window.getMinX())+(y+(int)window.getMinY())*width].mat->isOpaque();
 
@@ -430,12 +434,12 @@ bool Map::isWindowOpaque(int x, int y) {
     Tile * t = getWindowTile(x,y);
     if (t!=NULL) {
         if (t->mat==NULL) {
-            return true;
+            return 1.0f;
         } else {
             return t->mat->isOpaque();
         }
     }
-    return true;
+    return 1.0f;
 }
 
 Tile * Map::getWindowTile(int x, int y) {

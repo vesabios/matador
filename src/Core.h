@@ -1,12 +1,14 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+
 #include "ofVec2i.h"
 #include "Serializer.hpp"
 #include "Map.h"
 #include "Material.h"
 #include "ObjectFactory.h"
-#include "Items.h"
+#include "MapData.h"
 #include "Player.h"
 #include "Defines.h"
 #include "Engine.h"
@@ -77,11 +79,11 @@ public:
 
     float torchBrightness = 0.0f;
     float visionRadius = 0.0f;
-    bool isVisible(const ofVec2i pos);
+    BYTE isVisible(const ofVec2i pos);
 
     DEBT traversable(int dx, int dy);
     
-    bool isOpaque(int x, int y);
+    float isOpaque(int x, int y, float currentOpaque);
 
     void raytrace(int x0, int y0, int x1, int y1);
     
@@ -111,6 +113,8 @@ public:
     
     MaterialType currentMaterial = (MaterialType)0;
     
+    MapData * mapData[256];
+    
     
 
     ofVec2i cursorPos;
@@ -130,11 +134,24 @@ public:
 
     int playerMvt = 0;
 
+    ofxPanel gui;
 
-
+    bool controlsHaveBeenActive = false;
+    
+    ofxFloatSlider  aFreq;
+    ofxFloatSlider  aAmp;
+    ofxFloatSlider  aOffset;
+    ofxFloatSlider  bFreq;
+    ofxFloatSlider  bAmp;
+    ofxFloatSlider  bOffset;
+    ofxFloatSlider  cFreq;
+    ofxFloatSlider  cAmp;
+    ofxFloatSlider  cOffset;
+    
 
 
 };
+
 
 extern Core * core;
 

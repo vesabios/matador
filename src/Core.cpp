@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Console.h"
 #include "Menu.h"
+#include "Item.h"
 #define STRINGIFY(A) #A
 
 extern Engine engine;
@@ -16,10 +17,49 @@ extern Menu menu;
 //--------------------------------------------------------------
 void Core::setup(){
     
+    
+    gui.setup();
+    
+    
+    materials.mats[DenseForestMat]->aFreq = &aFreq;
+    materials.mats[DenseForestMat]->aAmp = &aAmp;
+    materials.mats[DenseForestMat]->aOffset = &aOffset;
+    materials.mats[DenseForestMat]->bFreq = &bFreq;
+    materials.mats[DenseForestMat]->bAmp = &bAmp;
+    materials.mats[DenseForestMat]->bOffset = &bOffset;
+    materials.mats[DenseForestMat]->cFreq = &cFreq;
+    materials.mats[DenseForestMat]->cAmp = &cAmp;
+    materials.mats[DenseForestMat]->cOffset = &cOffset;
+    
+    gui.add(aFreq.setup("Freq A",0.5,0,2));
+    gui.add(aAmp.setup("Amp A",0.5,0,10));
+    gui.add(aOffset.setup("Offset A",0,-2,2 ));
+    gui.add(bFreq.setup("Freq B",0.5,0,2));
+    gui.add(bAmp.setup("Amp B",0.5,0,10));
+    gui.add(bOffset.setup("Offset B",0,-2,2 ));
+    gui.add(cFreq.setup("Freq C",0.5,0,2));
+    gui.add(cAmp.setup("Amp C",0.5,0,10));
+    gui.add(cOffset.setup("Offset C",0,-2,2 ));
+
+ 
     console.init();
     engine.init();
     
     state = NormalState;
+    
+    for (int i=0; i<256; i++) {
+        MapData* md = dynamic_cast<MapData*>(Object::create(Object::MapData));
+        if (md) {
+            mapData[i] = md;
+            md->id = i;
+            
+            if (i==2) {
+                md->data.ambient = 255;
+            } if (i==3) {
+                md->data.ambient = 255;
+            }
+        }
+    }
     
     map = new Map(512,512);
     
@@ -131,9 +171,12 @@ void Core::raytrace(int x0, int y0, int x1, int y1)
     dx *= 2;
     dy *= 2;
     
+    float opaque = 0;
+    
     for (; n > 0; --n)
     {
-        if (isOpaque(x, y)) break;
+        opaque += isOpaque(x, y, opaque);
+        if (opaque>=1.0f) break;
         
         if (error > 0)
         {
@@ -153,8 +196,8 @@ void Core::raytrace(int x0, int y0, int x1, int y1)
 
 
 //--------------------------------------------------------------
-bool Core::isOpaque(int x, int y) {
-    vis[x+y*80]=1;
+float Core::isOpaque(int x, int y, float currentOpaque) {
+    vis[x+y*80]=255 - (currentOpaque*255.0f);
     return (map->isWindowOpaque(x,y));
 }
 
@@ -174,13 +217,29 @@ void Core::renderWorld() {
             
             float att = 0.0f;
             float luma = 0.0f;
+            float ambient = 0.0f;
             
-            if (isVisible(windowPos)) {
+            ambient = ((float)mapData[map->mapNumber]->data.ambient) / 255.0f;
+            
+            BYTE visible = isVisible(windowPos);
+            if (state == EditState) {
+                visible = 255;
+                ambient = 1.0;
+            }
+            
+            if (visible>0) {
+                
+                radius += (float)ambient * 0.25f;
+                
                 float d = windowPos.distance(worldToWindow(player->getPos()) +flickerOffset);
                 att = clamp(1.0 - ((d*d)/(radius*radius)), 0.0, 1.0);
                 att *= att;
                 luma = (att * flickerValue);
-                
+                luma *= 1.3f;
+                luma += (float)ambient/512.0f;
+                luma *= ((float)visible) / 255.0f;
+                luma = MIN(luma, 1.0f);
+                luma = MAX(luma, 0.0f);
             }
             
             
@@ -225,75 +284,35 @@ void Core::renderWorld() {
         if (o->z == map->mapNumber) {
             ofVec2i pp = worldToWindow(ofVec2i(o->x, o->y));
             if ((pp.x>=0) && (pp.x<80) && (pp.y>=0) && (pp.y<50)) {
-                if (vis[(int)pp.x+((int)pp.y*80)]==1) {
+                if (vis[(int)pp.x+((int)pp.y*80)]>0) {
                     
                     Pixel p = o->render(1.0f);
                     
-                    console.setPixel(pp.x, pp.y, p.fg, p.bg, p.c);
-                    
-                }
-                
-            }         
-        }
-
-        
-    }
-    
-    
-    /*
-    for (int i=0; i<actors.size(); i++) {
-        
-        Actor *a = &actors[i];
-        ofVec2i pp = a->pos - map->window.getTopLeft();
-        
-        
-        if ((pp.x>=0) && (pp.x<80) && (pp.y>=0) && (pp.y<50)) {
-            
-            if (vis[(int)pp.x+((int)pp.y*80)]==1) {
-                
-                if (ofNoise((float)i*0.4)>0.5f) {
-                    console.setPixel(pp.x, pp.y-1, makeColor(5,5,5), makeColor(2,2,2), CHAR_TEXT);
-                    
-                    console.setPixel(pp.x, pp.y, makeColor(2,2,2), 0, toascii('h'));
-                    if (playerPos == a->pos - ofVec2i(0,1)) {
-                        
-                        BYTE fg = makeColor(5,5,5);
-                        BYTE bg = makeColor(2,2,2);
-                        
-                        
-                        int tx = playerPos.x- map->window.getMinX() - 12;
-                        int ty = playerPos.y- map->window.getMinY() - 7;
-                        
-                        
-                        writeString(tx,ty,  "                       ", fg, bg);
-                        writeString(tx,ty+1," The quick brown fox   ", fg, bg);
-                        writeString(tx,ty+2," Jumped over the lazy       ", fg, bg);
-                        writeString(tx,ty+3," And find his tr    ", fg, bg);
-                        writeString(tx,ty+4,"                       ", fg, bg);
+                    if (p.a>0) {
+                        console.setPixel(pp.x, pp.y, p.fg, p.bg, p.c);
+                    } else {
+                        console.setFGPixel(pp.x, pp.y, p.fg, p.bg, p.c);
                     }
-                } else {
-                    
-                    BYTE c = toascii('0');
-                    int v = 5;
-                    if (ofGetFrameNum()%41>20) {
-                        c = toascii('!');
-                        v = 2;
-                        
-                    }
-                    
-                    console.setPixel(pp.x, pp.y, makeColor(v,v,1), 0, c);
-                    
                 }
             }
         }
     }
-    */
     
-    ofPoint tl = map->window.getTopLeft();
     
-    ofVec2i pp = player->getPos() - ofVec2i(tl.x, tl.y);
-    console.setPixel(pp.x, pp.y, makeColor(3,3,3), 0, CHAR_PLAYER);
-
+    ofVec2i pp = worldToWindow(ofVec2i(player->x, player->y));
+    if ((pp.x>=0) && (pp.x<80) && (pp.y>=0) && (pp.y<50)) {
+        if (vis[(int)pp.x+((int)pp.y*80)]>0) {
+            
+            Pixel p = player->render(1.0f);
+            
+            if (p.a>0) {
+                console.setPixel(pp.x, pp.y, p.fg, p.bg, p.c);
+            } else {
+                console.setFGPixel(pp.x, pp.y, p.fg, p.bg, p.c);
+            }
+        }
+    }
+    
     
 }
 
@@ -353,7 +372,7 @@ ofVec2i Core::windowToWorld(const ofVec2i p) {
 
 //--------------------------------------------------------------
 
-bool Core::isVisible(const ofVec2i pos) {
+BYTE Core::isVisible(const ofVec2i pos) {
     return vis[pos.x+pos.y*80];
     
 }
@@ -402,20 +421,22 @@ void Core::update(){
 
     if (torch) {
         torchBrightness += (1.1f - torchBrightness) * 0.1f;
-        visionRadius += (16 - visionRadius) * 0.02f;
+        visionRadius += (16 - visionRadius) * 0.2f;
     } else {
         torchBrightness += (0.6f - torchBrightness) * 0.1f;
-        visionRadius += (2 - visionRadius) * 0.02f;
+        visionRadius += (2 - visionRadius) * 0.2f;
     }
+    
     
     
     bool moved = false;
     
     if (state==NormalState) {
         
-        if (playerMvt>=0) playerMvt -= 10.0f * 60.0f * deltaTime;
+        if (playerMvt>=0) playerMvt -= 15.0f * 60.0f * deltaTime;
         
         if (controls.active()) {
+           
 
             bool vert = false;
             
@@ -451,6 +472,14 @@ void Core::update(){
                     }
                 }
                 
+                
+                if (!controlsHaveBeenActive) {
+                    if (newPlayerDebt>0) {
+                        playerMvt += 100;
+                    }
+                    
+                }
+                
                 playerMvt += newPlayerDebt;
                 
                 if (controls.rest) {
@@ -468,10 +497,14 @@ void Core::update(){
                 
             }
             
+            controlsHaveBeenActive = true;
+            
 
+        } else {
+            controlsHaveBeenActive = false;
         }
         
-        adjustWindow();
+        
         
         if (playerMvt<0) {
             flickerOffset = ofVec2i(ofRandomuf()-0.5f, ofRandomuf()-0.5f) ;
@@ -491,10 +524,10 @@ void Core::update(){
             cursorPos.x++;
         } else if (controls.space) {
             
-            if (menu.currentMainMenu==0) {
+            if (menu.currentMainMenu==Menu::MaterialMenu) {
                 map->placeMaterial(cursorPos.x, cursorPos.y, (MaterialType)map->currentMaterial);
                 
-            } else if (menu.currentMainMenu>=1) {
+            } else if (menu.currentMainMenu>=Menu::MaterialMenu) {
                 placeObject(cursorPos.x, cursorPos.y, map->mapNumber, (Object::ObjectType)currentObject);
             }
             
@@ -527,6 +560,8 @@ void Core::update(){
         controls.down = false;
         controls.space = false;
     }
+    
+    adjustWindow();
 
     
     // reset visibility
@@ -553,18 +588,18 @@ void Core::update(){
     for (int y=0; y<50; y++) {
         for (int x=0; x<80; x++) {
             int index = y*80+x;
-            if (vis[index]==0 && map->isWindowOpaque(x,y)) {
+            if (vis[index]<255 && map->isWindowOpaque(x,y)) {
                 // visibility is off here
                 if (x<pp.x) {
                     if (!map->isWindowOpaque(x+1,y)) {
-                        if (vis[index+1]==1) {
-                            vis[index] = 1;
+                        if (vis[index+1]==255) {
+                            vis[index] = 255;
                         }
                     }
                 } else if (x>pp.x) {
                     if (!map->isWindowOpaque(x-1,y)) {
-                        if (vis[index-1]==1) {
-                            vis[index] = 1;
+                        if (vis[index-1]==255) {
+                            vis[index] = 255;
                         }
                     }
                 }
@@ -572,14 +607,14 @@ void Core::update(){
                 
                 if (y<pp.y) {
                     if (!map->isWindowOpaque(x,y+1)) {
-                        if (vis[index+80]==1) {
-                            vis[index] = 1;
+                        if (vis[index+80]==255) {
+                            vis[index] = 255;
                         }
                     }
                 } else if (y>pp.y) {
                     if (!map->isWindowOpaque(x,y-1)) {
-                        if (vis[index-80]==1) {
-                            vis[index] = 1;
+                        if (vis[index-80]==255) {
+                            vis[index] = 255;
 
                         }
                     }
@@ -587,14 +622,14 @@ void Core::update(){
                 
                 // fix corners
                 
-                if (!map->isWindowOpaque(x+1,y+1) && (vis[index+81]==1))
-                    vis[index] = 1;
-                if (!map->isWindowOpaque(x+1,y-1) && (vis[index-79]==1))
-                    vis[index] = 1;
-                if (!map->isWindowOpaque(x-1,y+1) && (vis[index+79]==1))
-                    vis[index] = 1;
-                if (!map->isWindowOpaque(x-1,y-1) && (vis[index-81]==1))
-                    vis[index] = 1;
+                if (!map->isWindowOpaque(x+1,y+1) && (vis[index+81]==255))
+                    vis[index] = 255;
+                if (!map->isWindowOpaque(x+1,y-1) && (vis[index-79]==255))
+                    vis[index] = 255;
+                if (!map->isWindowOpaque(x-1,y+1) && (vis[index+79]==255))
+                    vis[index] = 255;
+                if (!map->isWindowOpaque(x-1,y-1) && (vis[index-81]==255))
+                    vis[index] = 255;
             }
         }
     }
@@ -609,7 +644,7 @@ void Core::update(){
     inspect.render();
     
     
-    if (vis[(int)mousePos.x+(int)mousePos.y*80]==1 && !map->isWindowOpaque((int)mousePos.x, (int)mousePos.y)) {
+    if (vis[(int)mousePos.x+(int)mousePos.y*80]>0 && !map->isWindowOpaque((int)mousePos.x, (int)mousePos.y)) {
         console.setPixel(mousePos.x, mousePos.y, makeColor(5,5,5), 0, '\\');
     } else {
         console.setPixel(mousePos.x, mousePos.y, makeColor(1,1,1), 0, 'X');
@@ -656,20 +691,30 @@ void Core::update(){
 
 //--------------------------------------------------------------
 void Core::adjustWindow() {
-    while ((player->x - map->window.getMinX()) < 15) {
-        map->window.translate(-1,0);
+    
+    if (state==NormalState) {
+        while ((player->x - map->window.getMinX()) < 35) {
+            map->window.translate(-1,0);
+        }
+        
+        while ((map->window.getMaxX() - player->x) < 35) {
+            map->window.translate(1,0);
+        }
+        
+        while ((player->y - map->window.getMinY()) < 20) {
+            map->window.translate(0,-1);
+        }
+        while((map->window.getMaxY() - player->y) < 20) {
+            map->window.translate(0,1);
+        }
+    } else {
+        map->window.x = cursorPos.x - 40;
+        map->window.y = cursorPos.y - 25;
     }
     
-    while ((map->window.getMaxX() - player->x) < 15) {
-        map->window.translate(1,0);
-    }
     
-    while ((player->y - map->window.getMinY()) < 15) {
-        map->window.translate(0,-1);
-    }
-    while((map->window.getMaxY() - player->y) < 15) {
-        map->window.translate(0,1);
-    }
+    
+
 }
 
 
@@ -681,6 +726,8 @@ void Core::draw(){
     ofSetColor(255,255,255);
     
     console.render();
+    
+    //gui.draw();
 
 }
 
@@ -708,11 +755,10 @@ void Core::keyPressed(int key){
         controls.space = true;
     }
     
-    if (key=='e') {
+    if (key==OF_KEY_F1) {
         menu.toggle();
-    } else if (key=='i') {
+    } else if (key==OF_KEY_F2) {
         inspect.toggle();
-
     } else if (key=='s') {
         map->save();
     } else if (key=='l') {
@@ -726,12 +772,14 @@ void Core::keyPressed(int key){
         map->load();
         adjustWindow();
         
-    } else if (key=='p') {
+    } else if (key==OF_KEY_F3) {
         paint.toggle();
     }
     
     if (state==PaintState) {
         paint.keyPressed(key);
+    } else if (state==EditState) {
+        menu.keyPressed(key);
     } else if (state==InspectState) {
         inspect.keyPressed(key);
     }
@@ -756,8 +804,10 @@ void Core::keyReleased(int key) {
     
     if (state==PaintState) {
         paint.keyReleased(key);
+    } else if (state==EditState) {
+        menu.keyReleased(key);
     } else if (state==InspectState) {
-        paint.keyReleased(key);
+        inspect.keyReleased(key);
     }
 }
 
@@ -777,6 +827,10 @@ void Core::mouseDragged(int x, int y, int button){
         if (np!=mousePos) {
             paint.mouseDragged(np.x, np.y, button);
         }
+    } else if (state==EditState) {
+        if (np!=mousePos) {
+            menu.mouseDragged(np.x, np.y, button);
+        }
     }
     
     mousePos = np;
@@ -789,18 +843,7 @@ void Core::mousePressed(int x, int y, int button){
     mousePos = ofVec2i((x-1) / 16,(y-1) /16);
 
     if (state==EditState) {
-        
-        if (mousePos.x<50) {
-            ofVec2i pp = windowToWorld(mousePos);
-            placeObject(pp.x, pp.y, map->mapNumber, (Object::ObjectType)currentObject);
-        } else {
-            menu.mousePressed(mousePos.x, mousePos.y, button);
-
-        }
-        
-        
-
-        
+        menu.mousePressed(mousePos.x, mousePos.y, button);
     } else if (state==PaintState) {
         paint.mousePressed(mousePos.x, mousePos.y, button);
     } else if (state==InspectState) {

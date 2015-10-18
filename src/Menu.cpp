@@ -54,61 +54,156 @@ void Menu::update(const float delaTime) {
 }
 
 
-void Menu::mousePressed(int x, int y, int button) {
-  
-    for(auto it = categoryBtns.begin(); it != categoryBtns.end(); it++)
-    {
-        ofRectangle r = it->r;
-        r.translate(menuPos, 0);
-        if (r.inside(x, y)) {
-            it->funptr(it->arg);
-        };
+void Menu::keyPressed(int key) {
+    
+    if (key=='=') {
+        brushSize+=2;
+        brushSize = MIN(brushSize,51);
+    } else if (key=='-') {
+        brushSize-=2;
+        brushSize = MAX(brushSize,1);
     }
     
-    if (currentMainMenu==0) {
-        for(auto it = materialBtns.begin(); it != materialBtns.end(); it++)
-        {
-            ofRectangle r = it->r;
-            r.translate(menuPos, 0);
-            if (r.inside(x, y)) {
-                it->funptr(it->arg);
-            };
-        }
+    if (key=='1') {
+        brush = 1;
+    } else if (key=='2') {
+        brush = 2;
+    } else if (key=='3') {
+        brush = 3;
+    } else if (key=='4') {
+        brush = 4;
+    } else if (key=='5') {
+        brush = 5;
+    } else if (key=='6') {
+        brush = 6;
+    } else if (key=='7') {
+        brush = 7;
+    } else if (key=='8') {
+        brush = 8;
+    } else if (key=='i') {
         
-    } else if (currentMainMenu==1) {
-        for(auto it = itemBtns.begin(); it != itemBtns.end(); it++)
-        {
-            ofRectangle r = it->r;
-            r.translate(menuPos, 0);
-            if (r.inside(x, y)) {
-                it->funptr(it->arg);
-            };
-        }
+        // TODO: get material under cursor
         
-    }else if (currentMainMenu==2) {
-        for(auto it = actorBtns.begin(); it != actorBtns.end(); it++)
-        {
-            ofRectangle r = it->r;
-            r.translate(menuPos, 0);
-            if (r.inside(x, y)) {
-                it->funptr(it->arg);
-            };
-        }
+    } else if (key=='o') {
+        ortho = true;
+        
     }
+    
+}
 
-    
-    
-    
-    
-    for(auto it = mapSelectBtns.begin(); it != mapSelectBtns.end(); it++)
-    {
-        ofRectangle r = it->r;
-        r.translate(menuPos, 0);
-        
-        if (r.inside(x, y)) {
-            it->funptr(it->arg);
-        };
+void Menu::keyReleased(int key) {
+    if (key=='o') {
+        ortho = false;
+        orthoAxis = AXIS_NONE;
     }
+}
+
+
+
+
+void Menu::mouseDragged(int inx, int iny, int button) {
+    
+    if (inx < (int)menuPos) {
+        
+        ofVec2i pp;
+        
+        if (ortho) {
+            printf("ortho\n");
+            
+            if (orthoAxis==AXIS_NONE) {
+                
+                if ((int)startMousePoint.x!=inx) {
+                    orthoAxis = AXIS_HORIZONTAL;
+                } else if ((int)startMousePoint.y!=iny) {
+                    orthoAxis = AXIS_VERTICAL;
+                }
+                
+                pp = core->windowToWorld(ofVec2i(inx, iny));
+
+            } else if (orthoAxis == AXIS_HORIZONTAL) {
+                pp = core->windowToWorld(ofVec2i(inx, startMousePoint.y));
+            } else if (orthoAxis == AXIS_VERTICAL) {
+                pp = core->windowToWorld(ofVec2i(startMousePoint.x, iny));
+            }
+            
+        } else {
+            pp = core->windowToWorld(ofVec2i(inx, iny));
+            
+        }
+        
+        brushMaterial(pp, (MaterialType)core->map->currentMaterial);
+
+    }
+    
+}
+
+
+void Menu::mousePressed(int x, int y, int button) {
+    
+    if (x>=50) {
+
+        for(auto it = categoryBtns.begin(); it != categoryBtns.end(); it++)
+        {
+            ofRectangle r = it->r;
+            r.translate(menuPos, 0);
+            if (r.inside(x, y)) {
+                it->funptr(it->arg);
+            };
+        }
+        
+        if (currentMainMenu==MaterialMenu) {
+            for(auto it = materialBtns.begin(); it != materialBtns.end(); it++)
+            {
+                ofRectangle r = it->r;
+                r.translate(menuPos, 0);
+                if (r.inside(x, y)) {
+                    it->funptr(it->arg);
+                };
+            }
+            
+        } else if (currentMainMenu==ItemMenu) {
+            for(auto it = itemBtns.begin(); it != itemBtns.end(); it++)
+            {
+                ofRectangle r = it->r;
+                r.translate(menuPos, 0);
+                if (r.inside(x, y)) {
+                    it->funptr(it->arg);
+                };
+            }
+            
+        } else if (currentMainMenu==ActorMenu) {
+            for(auto it = actorBtns.begin(); it != actorBtns.end(); it++)
+            {
+                ofRectangle r = it->r;
+                r.translate(menuPos, 0);
+                if (r.inside(x, y)) {
+                    it->funptr(it->arg);
+                };
+            }
+        }
+        
+        for(auto it = mapSelectBtns.begin(); it != mapSelectBtns.end(); it++)
+        {
+            ofRectangle r = it->r;
+            r.translate(menuPos, 0);
+            
+            if (r.inside(x, y)) {
+                it->funptr(it->arg);
+            };
+        }
+        
+    } else {
+        
+        if (currentMainMenu==MaterialMenu) {
+            ofVec2i pp = core->windowToWorld(ofVec2f(x,y));
+            
+            brushMaterial(pp, (MaterialType)core->map->currentMaterial);
+        }
+        
+    }
+    
+    startMousePoint = ofPoint(x, y);
+
 }
 
 
@@ -118,7 +213,7 @@ void Menu::setMainMenu(int v) {
 
 void Menu::_setMainMenu(int v) {
     
-    currentMainMenu = v;
+    currentMainMenu = (MAIN_MENU)v;
     
     for(auto it = categoryBtns.begin(); it != categoryBtns.end(); it++)
     {
@@ -287,6 +382,19 @@ void Menu::createMenu() {
 }
 
 
+
+void Menu::brushMaterial(ofVec2i p, MaterialType mt) {
+    
+    int offset = (brushSize -1) /2;
+    for (int y=0; y<brushSize; y++) {
+        for (int x=0; x<brushSize; x++) {
+            core->map->placeMaterial((p.x+x) - offset , (p.y+y) - offset, mt);
+            
+        }
+    }
+    
+}
+
 void Menu::render() {
     
     if (menuPos<80) {
@@ -317,17 +425,17 @@ void Menu::render() {
         
         //category list buttons
         
-        if (currentMainMenu==0) {
+        if (currentMainMenu==MaterialMenu) {
             for(auto it = materialBtns.begin(); it != materialBtns.end(); it++)
             {
                 console.writeString((int)menuPos+it->r.x, it->r.y, it->text, it->fg, it->bg);
             }
-        } else if (currentMainMenu==1) {
+        } else if (currentMainMenu==ItemMenu) {
             for(auto it = itemBtns.begin(); it != itemBtns.end(); it++)
             {
                 console.writeString((int)menuPos+it->r.x, it->r.y, it->text, it->fg, it->bg);
             }
-        } else if (currentMainMenu==2) {
+        } else if (currentMainMenu==ActorMenu) {
             for(auto it = actorBtns.begin(); it != actorBtns.end(); it++)
             {
                 console.writeString((int)menuPos+it->r.x, it->r.y, it->text, it->fg, it->bg);

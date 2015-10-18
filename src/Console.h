@@ -28,8 +28,10 @@ public:
     void drawBox(ofRectangle r, BYTE bg);
     
     void setPixel(ofVec2f pp, Pixel p);
-
     void setPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c);
+    void setFGPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c);
+    
+    Pixel getPixel(BYTE x, BYTE y);
     void writeString(int x, int y, string s, BYTE fg, BYTE bg);
     void writeString(int x, int y, string s);
     

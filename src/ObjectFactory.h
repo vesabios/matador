@@ -172,14 +172,13 @@ public:
     virtual bool isPortable() = 0;
     virtual Pixel render(float luma) = 0;
     virtual void update(DEBT d) = 0;
-    
     virtual InteractionType getInteractionTypeForInteractor(Object *) = 0;
-    
+    virtual void init() = 0;
+
     vector<Reflector> reflectors;
     virtual void initReflectors() = 0;
     virtual Object * pack() = 0;
     virtual void unpack() = 0;
-    virtual void init() = 0;
     
    
     ofVec2i getPos() { return ofVec2i(x,y); }

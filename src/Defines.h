@@ -59,6 +59,7 @@ enum GameState {
 
 
 enum InteractionType {
+    None,
     Stare,
     Read,
     Take,
@@ -74,6 +75,12 @@ enum Race {
     
 };
 
+enum Axis {
+    AXIS_NONE,
+    AXIS_HORIZONTAL,
+    AXIS_VERTICAL
+};
+
 
 
 
@@ -83,14 +90,15 @@ public:
     BYTE fg;
     BYTE bg;
     BYTE c;
-    Pixel() : fg(0), bg(0), c(0) {}
+    BYTE a;
+    Pixel() : fg(0), bg(0), c(0), a(255) {}
 };
 
 
 
 
 static unsigned char makeColor(unsigned char r, unsigned char g, unsigned char b) {
-    return  ((MIN(6,r) *36)  + ((MIN(6,g)*6)) + (MIN(6,b)));
+    return  (MAX(0,(MIN(5,r)) *36)  + (MAX(0,(MIN(5,g))*6)) + (MAX(0,MIN(5,b))));
 }
 
 template <typename T> int sgn(T val) {

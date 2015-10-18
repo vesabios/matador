@@ -56,7 +56,7 @@ public:
     MAlgae(MaterialType mt) : Material(mt) {}
     string getName() override { return "Algae"; }
     
-    bool isOpaque() override { return false; }
+    float isOpaque() override { 0.1f; }
     DEBT traversable() override { return TRAVERSE_SLIPPERY; }
     Pixel operator()(ofVec2i pos, float luma) override {
         

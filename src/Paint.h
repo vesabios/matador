@@ -15,12 +15,7 @@
 
 class Paint {
     
-    enum Axis {
-        AXIS_NONE,
-        AXIS_HORIZONTAL,
-        AXIS_VERTICAL
-    };
-    
+
     Axis orthoAxis = AXIS_NONE;
     
     bool visible = false;
@@ -43,6 +38,13 @@ public:
     
     void show();
     void hide();
+    
+    BYTE fg_r = 0;
+    BYTE fg_g = 0;
+    BYTE fg_b = 0;
+    BYTE bg_r = 0;
+    BYTE bg_g = 0;
+    BYTE bg_b = 0;
     
     
     void toggle();

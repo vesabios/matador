@@ -82,6 +82,11 @@ void Serializer::load() {
                 
                 if (t==Object::Player) {
                     core->player = static_cast<Player *>(n);
+                } else if (t==Object::MapData) {
+                    MapData* md = dynamic_cast<MapData*>(n);
+                    if (md) {
+                        core->mapData[md->id] = md;
+                    }
                 }
                 
             } else {

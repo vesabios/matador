@@ -54,7 +54,7 @@ public:
     
     MStoneFloor(MaterialType mt) : Material(mt) {}
     string getName() override { return "Stone Floor"; }
-    bool isOpaque() override { return false; }
+    float isOpaque() override { return 0.0f; }
     DEBT traversable() override { return TRAVERSE_NORMAL; }
     Pixel operator()(ofVec2i pos, float luma) override {
         
