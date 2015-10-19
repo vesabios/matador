@@ -33,6 +33,10 @@
 		CEE6C00C1BD30AE6000C5478 /* ofxSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6C0011BD30AE6000C5478 /* ofxSlider.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6C00D1BD30AE6000C5478 /* ofxSliderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6C0031BD30AE6000C5478 /* ofxSliderGroup.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6C00E1BD30AE6000C5478 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6C0051BD30AE6000C5478 /* ofxToggle.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEE6C0121BD43D87000C5478 /* Equip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6C0101BD43D87000C5478 /* Equip.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEE6C0151BD47A97000C5478 /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6C0131BD47A97000C5478 /* EventLog.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEE6C01A1BD4903C000C5478 /* ActorEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6C0181BD4903C000C5478 /* ActorEvent.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEE6C01E1BD4B951000C5478 /* CombatEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6C01C1BD4B951000C5478 /* CombatEvent.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEF10E901BC62C6D00CDB768 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEF10E8E1BC62C6D00CDB768 /* Console.cpp */; settings = {ASSET_TAGS = (); }; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -189,6 +193,14 @@
 		CEE6C0051BD30AE6000C5478 /* ofxToggle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxToggle.cpp; sourceTree = "<group>"; };
 		CEE6C0061BD30AE6000C5478 /* ofxToggle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxToggle.h; sourceTree = "<group>"; };
 		CEE6C00F1BD327DF000C5478 /* MDenseForest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDenseForest.h; sourceTree = "<group>"; };
+		CEE6C0101BD43D87000C5478 /* Equip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Equip.cpp; sourceTree = "<group>"; };
+		CEE6C0111BD43D87000C5478 /* Equip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Equip.h; sourceTree = "<group>"; };
+		CEE6C0131BD47A97000C5478 /* EventLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventLog.cpp; sourceTree = "<group>"; };
+		CEE6C0141BD47A97000C5478 /* EventLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventLog.h; sourceTree = "<group>"; };
+		CEE6C0181BD4903C000C5478 /* ActorEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActorEvent.cpp; sourceTree = "<group>"; };
+		CEE6C0191BD4903C000C5478 /* ActorEvent.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ActorEvent.hpp; sourceTree = "<group>"; };
+		CEE6C01C1BD4B951000C5478 /* CombatEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CombatEvent.cpp; sourceTree = "<group>"; };
+		CEE6C01D1BD4B951000C5478 /* CombatEvent.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CombatEvent.hpp; sourceTree = "<group>"; };
 		CEF10E8E1BC62C6D00CDB768 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		CEF10E8F1BC62C6D00CDB768 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		CEFCE5951BBF55CB00D68A81 /* s.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = s.frag; path = bin/data/shaders/s.frag; sourceTree = SOURCE_ROOT; };
@@ -486,6 +498,17 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		CEE6C0171BD49025000C5478 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				CEE6C0181BD4903C000C5478 /* ActorEvent.cpp */,
+				CEE6C0191BD4903C000C5478 /* ActorEvent.hpp */,
+				CEE6C01C1BD4B951000C5478 /* CombatEvent.cpp */,
+				CEE6C01D1BD4B951000C5478 /* CombatEvent.hpp */,
+			);
+			name = Events;
+			sourceTree = "<group>";
+		};
 		CEFCE5941BBF55A800D68A81 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
@@ -528,6 +551,7 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				CEE6C0171BD49025000C5478 /* Events */,
 				CE117CCE1BCCE923003DFD6A /* Materials */,
 				CE2B25551BC9E1DC0091BE45 /* Objects */,
 				CEFCE5941BBF55A800D68A81 /* shaders */,
@@ -535,6 +559,10 @@
 				CEBD73051BC5596C003B1D7D /* Engine.cpp */,
 				CEBD73061BC5596C003B1D7D /* Engine.h */,
 				CEDB24291BCF80B600D8CBE4 /* FSM.h */,
+				CEE6C0101BD43D87000C5478 /* Equip.cpp */,
+				CEE6C0131BD47A97000C5478 /* EventLog.cpp */,
+				CEE6C0141BD47A97000C5478 /* EventLog.h */,
+				CEE6C0111BD43D87000C5478 /* Equip.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* Core.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* Core.h */,
 				CEB05CB41BC553F4008343B3 /* Defines.h */,
@@ -659,6 +687,7 @@
 				CEDB24171BCE0BE800D8CBE4 /* Paint.cpp in Sources */,
 				CE117BA71BCCA8EC003DFD6A /* Serializer.cpp in Sources */,
 				CEDB24271BCEFAFF00D8CBE4 /* Player.cpp in Sources */,
+				CEE6C01A1BD4903C000C5478 /* ActorEvent.cpp in Sources */,
 				CEE6C0091BD30AE6000C5478 /* ofxGuiGroup.cpp in Sources */,
 				CE2CD48C1BC2FDC9000014AC /* Map.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
@@ -669,6 +698,7 @@
 				CEBB0E0B1BC2FD7A007948D9 /* Delaunay.cpp in Sources */,
 				CEE6BFEE1BD24CAD000C5478 /* Item.cpp in Sources */,
 				CEB9D1F61BCC52C7003FC036 /* ObjectFactory.cpp in Sources */,
+				CEE6C0121BD43D87000C5478 /* Equip.cpp in Sources */,
 				CEE6C0081BD30AE6000C5478 /* ofxButton.cpp in Sources */,
 				CEDB241E1BCEF46500D8CBE4 /* Actor.cpp in Sources */,
 				CE117CD51BCCE936003DFD6A /* Materials.cpp in Sources */,
@@ -676,8 +706,10 @@
 				CEE6C00A1BD30AE6000C5478 /* ofxLabel.cpp in Sources */,
 				CEE6BFF11BD2CC15000C5478 /* MapData.cpp in Sources */,
 				CEE6C00C1BD30AE6000C5478 /* ofxSlider.cpp in Sources */,
+				CEE6C01E1BD4B951000C5478 /* CombatEvent.cpp in Sources */,
 				CEBD73071BC5596C003B1D7D /* Engine.cpp in Sources */,
 				CEDB241B1BCECAC900D8CBE4 /* Inspect.cpp in Sources */,
+				CEE6C0151BD47A97000C5478 /* EventLog.cpp in Sources */,
 				CEE6C0071BD30AE6000C5478 /* ofxBaseGui.cpp in Sources */,
 				CEE6C00B1BD30AE6000C5478 /* ofxPanel.cpp in Sources */,
 				CEE6C00D1BD30AE6000C5478 /* ofxSliderGroup.cpp in Sources */,

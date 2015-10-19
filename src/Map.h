@@ -119,9 +119,9 @@ public :
     int mapNumber = 1;
 
 
-    int currentMaterial = (MaterialType)0;
+    int currentMaterial = (Material::MaterialType)0;
     
-    ofRectangle window = ofRectangle(0,0,80,50);
+    ofRectangle window = ofRectangle(0,0,CONSOLE_WIDTH,CONSOLE_HEIGHT);
 
     void setWindowSeen(int x, int y);
     void setSeen(int x, int y);
@@ -135,7 +135,7 @@ public :
     void render();
     void setWindow(int x, int y);
 
-    void placeMaterial(int x, int y, MaterialType mt);
+    void placeMaterial(int x, int y, Material::MaterialType mt);
     
     void save();
     void load();

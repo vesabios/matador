@@ -52,7 +52,7 @@ public:
     
     void createMenu();
     
-    MaterialType currentMaterial = (MaterialType)0;
+    Material::MaterialType currentMaterial = (Material::MaterialType)0;
 
     MAIN_MENU currentMainMenu = MaterialMenu;
     Axis orthoAxis = AXIS_NONE;
@@ -86,7 +86,7 @@ public:
     static void cycleMap(int v);
     void _cycleMap(int v);
 
-    void brushMaterial(ofVec2i p, MaterialType mt);
+    void brushMaterial(ofVec2i p, Material::MaterialType mt);
 
     
     void update(const float deltaTime);

@@ -83,7 +83,6 @@ void Kobold::update(DEBT d)  {
     if (actionDebt<=0) {
     
         setSpeedMultiplier(1.5f);
-        
         DEBT newDebt = 0;
     
         if (damage > morale) {
@@ -134,8 +133,9 @@ void Kobold::update(DEBT d)  {
 
 Pixel Kobold::render(float luma)  {
     Pixel p;
-    p.fg = makeColor(4,3,1);
+    p.fg = makeColor(5,4,1);
     p.bg = 0;
+    p.a = 0;
     p.c = toascii('k');
     return p;
 }

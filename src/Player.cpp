@@ -18,10 +18,24 @@ void Player::init() {
     
     Weapon * weapon = static_cast<Weapon *>(Object::create(Object::Club));
     weapon->init();
-
-    weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
+    weapon->z = VOID_LOCATION;
     
     data.rightHandGuid = weapon->guid;
+    data.inventory[1] = weapon->guid;
+
+
+    weapon = static_cast<Weapon *>(Object::create(Object::Sling));
+    weapon->init();
+    weapon->z = VOID_LOCATION;
+    data.inventory[2] = weapon->guid;
+
+    
+    weapon = static_cast<Weapon *>(Object::create(Object::Fists));
+    weapon->init();
+    weapon->z = VOID_LOCATION;
+    data.inventory[0] = weapon->guid;
+    
+    // set base stats
     
     data.strength = 11;
     data.dexterity = 17;
@@ -30,14 +44,78 @@ void Player::init() {
     data.wisdom = 10;
     data.charisma = 10;
     data.tohit = 2;
-    
-    
     data.maxhp = data.hp = 20;
     
 }
 
+bool Player::hasWeaponTypeEquipped(Weapon::WeaponType t) {
+    
+    Weapon * w = findWeaponByGuid(data.rightHandGuid);
+    if (w != NULL) {
+        if (w->data.weaponType == t) {
+            return true;
+        }
+    }
+    
+    return false;
+    
+}
+
+
+
+
+void Player::cycleWeapons() {
+    
+    
+    int startingIndex = -1;
+    
+    for (int i=0; i<254; i++) {
+        if (data.inventory[i]==data.rightHandGuid) {
+            startingIndex = i;
+        }
+    }
+    
+    Weapon * w = NULL;
+    
+    // search rest of inventory for next weapon
+    for (int i=startingIndex+1; i<255; i++) {
+        w = findWeaponByGuid(data.inventory[i]);
+        if (w != NULL) {
+            
+            data.rightHandGuid = w->guid;
+            return;
+        }
+    }
+
+    for (int i=0; i<startingIndex; i++) {
+        w = findWeaponByGuid(data.inventory[i]);
+        if (w != NULL) {
+            data.rightHandGuid = w->guid;
+            return;
+        }
+    }
+
+    
+    
+}
+
+
+Weapon * Player::findWeaponByGuid(DWORD guid) {
+    
+    for (int i=0; i<Object::elements().size(); i++) {
+        Object * o = Object::elements()[i];
+        if (Weapon* w = dynamic_cast<Weapon*>(o)) {
+            if (w->guid == guid) {
+                return w;
+            }
+        }
+    }
+    return NULL;
+    
+}
+
 int Player::armorBonus() {
-    return 11;
+    return 11; // TODO: base this on actual equipped armor
 }
 
 DEBT Player::traversable()  {

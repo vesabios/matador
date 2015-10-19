@@ -53,7 +53,7 @@ public:
     };
     
     
-    MAlgae(MaterialType mt) : Material(mt) {}
+    MAlgae(Material::MaterialType mt) : Material(mt) {}
     string getName() override { return "Algae"; }
     
     float isOpaque() override { 0.1f; }

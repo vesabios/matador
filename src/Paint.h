@@ -21,7 +21,7 @@ class Paint {
     bool visible = false;
     float menuPos = 100.0f;
     
-    unsigned char pixels[80*50*4];
+    unsigned char pixels[CONSOLE_WIDTH*CONSOLE_HEIGHT*4];
     
     bool mouseDown = false;
     bool ortho = false;

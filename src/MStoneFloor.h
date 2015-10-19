@@ -52,7 +52,7 @@ public:
         {0,  0,  0}
     };
     
-    MStoneFloor(MaterialType mt) : Material(mt) {}
+    MStoneFloor(Material::MaterialType mt) : Material(mt) {}
     string getName() override { return "Stone Floor"; }
     float isOpaque() override { return 0.0f; }
     DEBT traversable() override { return TRAVERSE_NORMAL; }

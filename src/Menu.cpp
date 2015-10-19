@@ -26,7 +26,7 @@ void Menu::toggle() {
 
 void Menu::showMenu() {
     menuVisible = true;
-    core->state = EditState;
+    core->state = EDIT_STATE;
     
     createMenu();
 }
@@ -34,7 +34,7 @@ void Menu::showMenu() {
 
 void Menu::hideMenu() {
     menuVisible = false;
-    core->state = NormalState;
+    core->state = NORMAL_STATE;
     
     categoryBtns.clear();
     materialBtns.clear();
@@ -131,7 +131,7 @@ void Menu::mouseDragged(int inx, int iny, int button) {
             
         }
         
-        brushMaterial(pp, (MaterialType)core->map->currentMaterial);
+        brushMaterial(pp, (Material::MaterialType)core->map->currentMaterial);
 
     }
     
@@ -197,7 +197,7 @@ void Menu::mousePressed(int x, int y, int button) {
         if (currentMainMenu==MaterialMenu) {
             ofVec2i pp = core->windowToWorld(ofVec2f(x,y));
             
-            brushMaterial(pp, (MaterialType)core->map->currentMaterial);
+            brushMaterial(pp, (Material::MaterialType)core->map->currentMaterial);
         }
         
     }
@@ -233,7 +233,7 @@ void Menu::setMaterial(int v) {
 
 void Menu::_setMaterial(int v) {
     
-    core->map->currentMaterial = (MaterialType)v;
+    core->map->currentMaterial = (Material::MaterialType)v;
     
     for(auto it = materialBtns.begin(); it != materialBtns.end(); it++)
     {
@@ -383,7 +383,7 @@ void Menu::createMenu() {
 
 
 
-void Menu::brushMaterial(ofVec2i p, MaterialType mt) {
+void Menu::brushMaterial(ofVec2i p, Material::MaterialType mt) {
     
     int offset = (brushSize -1) /2;
     for (int y=0; y<brushSize; y++) {
@@ -397,7 +397,7 @@ void Menu::brushMaterial(ofVec2i p, MaterialType mt) {
 
 void Menu::render() {
     
-    if (menuPos<80) {
+    if (menuPos<CONSOLE_WIDTH) {
         ofRectangle r = ofRectangle((int)menuPos,2,28,40);
         
         unsigned char bg = makeColor(0,1,3);

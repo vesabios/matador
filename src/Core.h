@@ -14,10 +14,10 @@
 #include "Engine.h"
 #include "Paint.h"
 #include "Inspect.h"
+#include "Equip.h"
+#include "EventLog.h"
 
-
-
-
+#include "ActorEvent.hpp"
 
 
 
@@ -42,9 +42,10 @@ public:
         bool t = false;
         bool rest = false;
         bool space = false;
+        bool fire = false;
         
         public: bool active() {
-            return up || down || left || right || t || rest || space;
+            return up || down || left || right || t || rest || space || fire;
         }
 
     
@@ -66,6 +67,8 @@ public:
     void gotMessage(ofMessage msg);
 
     float ditherValue(int x, int y, float c0);
+    
+    void actorEvent(ActorEvent &e);
 
 
     
@@ -96,6 +99,8 @@ public:
     void writeString(int x, int y, string s);
     void createRoom(int x, int y, int w, int h);
     
+    void reset();
+    
     void populateMap();
     
     Object * placeObject(int x, int y, int mapNumber, Object::ObjectType it);
@@ -104,16 +109,22 @@ public:
     
     ofFmodSoundPlayer sound;
 
-    uint32_t world[80*50];
+    uint32_t world[CONSOLE_WIDTH*CONSOLE_HEIGHT];
 
-    BYTE vis[80*50];
+    BYTE vis[CONSOLE_WIDTH*CONSOLE_HEIGHT];
     
     Player * player;
     
     
-    MaterialType currentMaterial = (MaterialType)0;
+    Material::MaterialType currentMaterial = (Material::MaterialType)0;
     
     MapData * mapData[256];
+    
+    
+    std::vector<Actor *> firingList;
+    int firingIndex = 0;
+    void toggleFiring();
+    bool fireTargeting = false;
     
     
 
@@ -132,8 +143,9 @@ public:
 
     DWORD currentObject = 0;
 
-    int playerMvt = 0;
-
+    int actionDebt = 0;
+    DEBT newPlayerDebt = 0;
+    
     ofxPanel gui;
 
     bool controlsHaveBeenActive = false;

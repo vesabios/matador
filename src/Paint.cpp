@@ -26,14 +26,14 @@ void Paint::toggle() {
 
 void Paint::show() {
     visible = true;
-    core->state = PaintState;
+    core->state = PAINT_STATE;
     load();
 }
 
 
 void Paint::hide() {
     visible = false;
-    core->state = NormalState;
+    core->state = NORMAL_STATE;
     save();
 }
 
@@ -70,9 +70,9 @@ void Paint::keyPressed(int key) {
         int y = core->mousePos.y;
 
         
-        fg = pixels[(x+y*80)*4];
-        bg = pixels[(x+y*80)*4+1];
-        c = pixels[(x+y*80)*4+2];
+        fg = pixels[(x+y*CONSOLE_WIDTH)*4];
+        bg = pixels[(x+y*CONSOLE_WIDTH)*4+1];
+        c = pixels[(x+y*CONSOLE_WIDTH)*4+2];
         
         fg_r= (fg / 36) %6;
         fg_g= (fg / 6) %6;
@@ -238,8 +238,8 @@ void Paint::placePixel(ofVec2i p) {
     int x = p.x;
     int y = p.y;
     
-    if (x>=0 && y>=0 && x<80 && y<50) {
-        int idx = ((y*80)+x)*4;
+    if (x>=0 && y>=0 && x<CONSOLE_WIDTH && y<CONSOLE_HEIGHT) {
+        int idx = ((y*CONSOLE_WIDTH)+x)*4;
         
         pixels[idx] = fg;
         
@@ -268,7 +268,7 @@ void Paint::save() {
 
     f.open("art.bin", ofFile::WriteOnly, true);
     
-    for(int i = 0; i < 80*50*4; i++) {
+    for(int i = 0; i < CONSOLE_WIDTH*CONSOLE_HEIGHT*4; i++) {
         f.write((const char *)&pixels[i], sizeof(BYTE));
     }
     
@@ -284,7 +284,7 @@ void Paint::load() {
     f.open("art.bin", ofFile::ReadOnly, true);
     if (f.exists()) {
         ofBuffer buffer(f);
-        for (int i = 0; i < 80*50*4; i++) {
+        for (int i = 0; i < CONSOLE_WIDTH*CONSOLE_HEIGHT*4; i++) {
             pixels[i] = (BYTE)buffer.getBinaryBuffer()[i];
         }
     }
@@ -296,14 +296,14 @@ void Paint::load() {
 
 void Paint::render() {
     
-    for (int i=0; i<80*50*4; i++) {
+    for (int i=0; i<CONSOLE_WIDTH*CONSOLE_HEIGHT*4; i++) {
         console.pixels[i] = pixels[i];
     }
     
 
     
     
-    if (menuPos<80) {
+    if (menuPos<CONSOLE_WIDTH) {
         ofRectangle r = ofRectangle((int)menuPos,2,28,40);
         
         BYTE lbg = makeColor(0,1,3);

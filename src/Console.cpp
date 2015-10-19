@@ -15,11 +15,11 @@ Console console;
 void Console::init() {
     
         
-    fontsheet.loadImage("vesa.bmp");
+    fontsheet.loadImage("vesa.png");
     fontsheet.getTextureReference().setTextureMinMagFilter(GL_NEAREST,GL_NEAREST);
     fontsheet.getTextureReference().setTextureWrap(GL_ZERO, GL_ZERO);
     
-    tex.allocate(80,50,GL_RGBA);
+    tex.allocate(CONSOLE_WIDTH,CONSOLE_HEIGHT,GL_RGBA);
     
     shader.load("shaders/s.vert", "shaders/s.frag");
     shader.setUniformTexture("colorMap", fontsheet, 1 );
@@ -27,12 +27,12 @@ void Console::init() {
 }
 
 //--------------------------------------------------------------
-Pixel Console::getPixel(BYTE x, BYTE y) {
+Pixel Console::getPixel(const BYTE x, const BYTE y) {
     Pixel p;
 
-    if (x>=0 && y>=0 && x<80 && y<50) {
+    if (x>=0 && y>=0 && x<CONSOLE_WIDTH && y<CONSOLE_HEIGHT) {
         
-        int idx = ((y*80)+x)*4;
+        int idx = ((y*CONSOLE_WIDTH)+x)*4;
         
         p.fg = pixels[idx];
         
@@ -48,34 +48,39 @@ Pixel Console::getPixel(BYTE x, BYTE y) {
 }
 
 //--------------------------------------------------------------
-void Console::setPixel(ofVec2f pp, Pixel p) {
-    setPixel(pp.x, pp.y, p.fg, p.bg, p.c);
+void Console::setPixel(const ofVec2i pp, const Pixel p) {
+    setPixel(pp.x, pp.y, p);
     
 }
 
 
 //--------------------------------------------------------------
-void Console::setFGPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c) {
+void Console::setPixel(const BYTE x, const BYTE y, const Pixel p) {
     
-    if (x>=0 && y>=0 && x<80 && y<50) {
-        int idx = ((y*80)+x)*4;
+    if (x>=0 && y>=0 && x<CONSOLE_WIDTH && y<CONSOLE_HEIGHT) {
+        int idx = ((y*CONSOLE_WIDTH)+x)*4;
         
-        pixels[idx] = f;
+        pixels[idx] = p.fg;
+        
+
+        if (p.a>0) {
+            pixels[idx+1] = p.bg;
+        }
         
         // character
-        pixels[idx+2] = c;
+        pixels[idx+2] = p.c;
         
         // not used
-        pixels[idx+3] = 0;
+        pixels[idx+3] = p.a;
         
     }
     
 }
 //--------------------------------------------------------------
-void Console::setPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c) {
+void Console::setPixel(const BYTE x, const BYTE y, const BYTE f, const BYTE b, const BYTE c) {
     
-    if (x>=0 && y>=0 && x<80 && y<50) {
-        int idx = ((y*80)+x)*4;
+    if (x>=0 && y>=0 && x<CONSOLE_WIDTH && y<CONSOLE_HEIGHT) {
+        int idx = ((y*CONSOLE_WIDTH)+x)*4;
         
         pixels[idx] = f;
         
@@ -93,7 +98,7 @@ void Console::setPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c) {
 }
 
 //--------------------------------------------------------------
-void Console::writeString(int x, int y, string s) {
+void Console::writeString(const int x, const int y, const string s) {
     
     int sz = s.length();
     
@@ -106,7 +111,7 @@ void Console::writeString(int x, int y, string s) {
 }
 
 //--------------------------------------------------------------
-void Console::writeString(int x, int y, string s, BYTE fg, BYTE bg) {
+void Console::writeString(const int x, const int y, const string s, const BYTE fg, const BYTE bg) {
     
     int sz = s.length();
     
@@ -119,7 +124,7 @@ void Console::writeString(int x, int y, string s, BYTE fg, BYTE bg) {
 
 
 //--------------------------------------------------------------
-void Console::drawBox(ofRectangle r, BYTE bg) {
+void Console::drawBox(const ofRectangle r, const BYTE bg) {
     
     for (int y=r.getMinY(); y<r.getMaxY(); y++) {
         for (int x=r.getMinX(); x<r.getMaxX(); x++) {
@@ -134,7 +139,7 @@ void Console::drawBox(ofRectangle r, BYTE bg) {
 //--------------------------------------------------------------
 void Console::render() {
     
-    tex.loadData(pixels, 80, 50, GL_RGBA);
+    tex.loadData(pixels, CONSOLE_WIDTH, CONSOLE_HEIGHT, GL_RGBA);
     
     glEnable(tex.texData.textureTarget);
     glTexParameterf(tex.texData.textureTarget, GL_TEXTURE_WRAP_S, GL_ZERO);
@@ -154,9 +159,9 @@ void Console::render() {
 
     
     glTexCoord2f(0.f,  0.f);      glVertex3i(0.f,        0.f, 0);
-    glTexCoord2f(80.f, 0.f);      glVertex3i(0.f + dim.x, 0.f, 0);
-    glTexCoord2f(80.f, 50.f);     glVertex3i(0.f + dim.x, 0.f + dim.y, 0);
-    glTexCoord2f(0.f,  50.f);     glVertex3i(0.f,        0.f + dim.y, 0);
+    glTexCoord2f(CONSOLE_WIDTH, 0.f);      glVertex3i(0.f + dim.x, 0.f, 0);
+    glTexCoord2f(CONSOLE_WIDTH, CONSOLE_HEIGHT);     glVertex3i(0.f + dim.x, 0.f + dim.y, 0);
+    glTexCoord2f(0.f,  CONSOLE_HEIGHT);     glVertex3i(0.f,        0.f + dim.y, 0);
     glEnd();
     shader.end();
     

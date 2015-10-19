@@ -10,6 +10,7 @@
 #define Actor_h
 
 #include <stdio.h>
+#include "ActorEvent.hpp"
 #include "ObjectFactory.h"
 #include "Weapon.h"
 
@@ -60,6 +61,8 @@ public:
         int xp = 0;
         int gold = 0;
         
+        DWORD inventory[255];
+        
     };
     
     data_t data;
@@ -79,6 +82,9 @@ public:
         REFLECT(charisma)
         
     }
+    
+    Actor();
+    ~Actor();
     
     virtual int armorBonus();
     int ac();
@@ -276,9 +282,13 @@ public:
     
     float chargeProbability();
     float retreatProbability();
+    
+    void actorEvent(ActorEvent &e);
+
 
     DEBT standStill();
     DEBT attack(Actor * a);
+    DEBT fire(Actor * a);
     DEBT actionDebt = 0;
     DEBT tryMoving(ofVec2i moveVector);
 

@@ -345,7 +345,7 @@ void Map::load() {
         }
     } else {
         for (int i=0; i<width*height; i++ ) {
-            tiles[i].mat = materials.mats[VoidMat];
+            tiles[i].mat = materials.mats[Material::Void];
         }
     }
     
@@ -358,7 +358,7 @@ void Map::drawRoom(ofRectangle r) {
     for (int x=r.getMinX(); x<r.getMaxX(); x++) {
         for (int y=r.getMinY(); y<r.getMaxY(); y++) {
             tiles[x+y*width].canWalk = true;
-            tiles[x+y*width].mat = materials.mats[StoneFloorMat];
+            tiles[x+y*width].mat = materials.mats[Material::StoneFloor];
         }
     }
     
@@ -372,12 +372,12 @@ void Map::drawLine(ofVec2f p0, ofVec2f p1) {
         if (p0.y<p1.y) {
             for (int i=p0.y; i<=p1.y; i++) {
                 tiles[(int)p0.x+i*width].canWalk = true;
-                tiles[(int)p0.x+i*width].mat = materials.mats[StoneFloorMat];
+                tiles[(int)p0.x+i*width].mat = materials.mats[Material::StoneFloor];
             }
         } else {
             for (int i=p1.y; i<=p0.y; i++) {
                 tiles[(int)p0.x+i*width].canWalk = true;
-                tiles[(int)p0.x+i*width].mat = materials.mats[StoneFloorMat];
+                tiles[(int)p0.x+i*width].mat = materials.mats[Material::StoneFloor];
 
             }
         }
@@ -385,13 +385,13 @@ void Map::drawLine(ofVec2f p0, ofVec2f p1) {
         if (p0.x<p1.x) {
             for (int i=p0.x; i<=p1.x; i++) {
                 tiles[i+(int)p0.y*width].canWalk = true;
-                tiles[i+(int)p0.y*width].mat = materials.mats[StoneFloorMat];
+                tiles[i+(int)p0.y*width].mat = materials.mats[Material::StoneFloor];
 
             }
         } else {
             for (int i=p1.x; i<=p0.x; i++) {
                 tiles[i+(int)p0.y*width].canWalk = true;
-                tiles[i+(int)p0.y*width].mat = materials.mats[StoneFloorMat];
+                tiles[i+(int)p0.y*width].mat = materials.mats[Material::StoneFloor];
                 
             }
         }
@@ -403,7 +403,7 @@ void Map::drawLine(ofVec2f p0, ofVec2f p1) {
 
 
 //--------------------------------------------------------------
-void Map::placeMaterial(int x, int y, MaterialType mt) {
+void Map::placeMaterial(int x, int y, Material::MaterialType mt) {
     
     if (x>=0 && x<width && y>=0 && y<width) {
         Tile * t = &tiles[x+y*width];

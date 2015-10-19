@@ -9,6 +9,21 @@
 #include "Actor.h"
 #include "Core.h"
 
+Actor::Actor() {
+    ofAddListener(ActorEvent::actorEvent, this, &Actor::actorEvent);
+}
+
+Actor::~Actor() {
+    ofRemoveListener(ActorEvent::actorEvent, this, &Actor::actorEvent);
+}
+
+void Actor::actorEvent(ActorEvent &e) {
+    if (e.a != this) {
+        if (e.a == target) {
+            target = NULL;
+        }
+    }
+}
 
 
 bool Actor::withinRange() {
@@ -148,42 +163,48 @@ int Actor::ac() {
 
 DEBT Actor::attack(Actor * a) {
     
-    int d20 = (int)ofRandom(0,20)+1;
-    
-    bool hit = false;
-    bool crit = false;
-    
-    
-    if (d20==1) {
-        ofLog() << getName() << " rolled a natural 1! whiff!";
-        hit = false;
-    } else if (d20==20) {
-        ofLog() << getName() << " rolled a natural 20! crit!";
-        hit = true;
-        crit = true;
-    } else {
-       
-        int ac = a->ac();
-        
-        int m =strMod() + data.tohit;
-        
-        ofLog() << getName() << " rolled a " << d20 << " + " << m <<", (ac:"<<ac<<")";
-        
-        if (d20+m>=ac) {
-            hit = true;
-            ofLog()<< getName() << " hit the " << a->getName();
-            
-        }
-    }
-    
     Weapon * w = rightHand();
     
     if (w!=NULL) {
+        
+        
+        float distanceToTarget = ofVec2i(x, y).distance(ofVec2i(a->x, a->y)) * FEET_PER_TILE; // 5 feet per square
+
+    
+        int d20 = (int)ofRandom(0,20)+1;
+        
+        bool hit = false;
+        bool crit = false;
+        
+        if (d20==1) {
+            ofLog() << getName() << " rolled a natural 1! whiff!";
+            hit = false;
+        } else if (d20==w->data.criticalThreat) {
+            ofLog() << getName() << " rolled a natural 20! crit!";
+            hit = true;
+            crit = true;
+        } else {
+           
+            int ac = a->ac();
+            
+            int m =strMod() + data.tohit;
+            
+            ofLog() << getName() << " rolled a " << d20 << " + " << m <<", (ac:"<<ac<<")";
+            
+            if (d20+m>=ac) {
+                hit = true;
+                ofLog()<< getName() << " hit the " << a->getName();
+                
+            }
+        }
+
         if (crit) {
             
             int dmg = w->rollAttack();
-            dmg += w->rollAttack();
             
+            for (int i=0; i<w->data.cricitalMultiplier; i++) {
+                dmg += w->rollAttack();
+            }
             
             ofLog()<< getName() << " critted the " << a->getName() << " for " << (int)dmg << " damage";
             
@@ -199,15 +220,18 @@ DEBT Actor::attack(Actor * a) {
         } else {
             ofLog()<< getName() << " missed " << a->getName();
         }
+        
     } else {
+        
         ofLog() << getName() << " has no weapon in hand!";
+        
     }
 
 
 
     
     
-    return round((float)100 * speedMultiplier);
+    return round((float)150 * speedMultiplier);
 
 }
 
@@ -266,11 +290,17 @@ void Actor::die() {
     
     // TODO:remove items in possesion
     
+    static ActorEvent ae;
+    ae.a = this;
+    ae.type = ActorEvent::DEATH_EVENT;
+    
+    ofNotifyEvent(ActorEvent::actorEvent, ae);
+    
+    
     Weapon * rhw = rightHand();
     if (rhw!=NULL) {
         delete rhw;
     };
-    
     
     delete this;
     

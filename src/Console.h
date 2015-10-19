@@ -21,19 +21,19 @@ class Console {
     ofImage fontsheet;
     
 public:
-    BYTE pixels[80*50*4];
+    BYTE pixels[CONSOLE_WIDTH*CONSOLE_HEIGHT*4];
 
     void init();
     
-    void drawBox(ofRectangle r, BYTE bg);
+    void drawBox(const ofRectangle r, const BYTE bg);
     
-    void setPixel(ofVec2f pp, Pixel p);
-    void setPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c);
-    void setFGPixel(BYTE x, BYTE y, BYTE f, BYTE b, BYTE c);
-    
-    Pixel getPixel(BYTE x, BYTE y);
-    void writeString(int x, int y, string s, BYTE fg, BYTE bg);
-    void writeString(int x, int y, string s);
+    void setPixel(const ofVec2i pp, const Pixel p);
+    void setPixel(const BYTE x, const BYTE y, const BYTE f, const BYTE b, const BYTE c);
+    void setPixel(const BYTE x, const BYTE y, const Pixel p);
+
+    Pixel getPixel(const BYTE x, const BYTE y);
+    void writeString(const int x, const int y, const string s, const BYTE fg, const BYTE bg);
+    void writeString(const int x, const int y, const string s);
     
     
     

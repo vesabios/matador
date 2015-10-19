@@ -53,7 +53,7 @@ public:
     };
     
     
-    MStoneWall(MaterialType mt) : Material(mt) {}
+    MStoneWall(Material::MaterialType mt) : Material(mt) {}
     string getName() override { return "Stone Wall"; }
     
     float isOpaque() override { return 1.0; }

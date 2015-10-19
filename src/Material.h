@@ -29,7 +29,14 @@ class Material {
     
 public:
     
-    
+    enum MaterialType {
+        Void,
+        StoneWall,
+        StoneFloor,
+        Algae,
+        GreenGrass,
+        DenseForest
+    };
     
     ofxFloatSlider * aFreq;
     ofxFloatSlider * aAmp;
@@ -42,7 +49,7 @@ public:
     ofxFloatSlider * cOffset;
     
     
-    static char dither(int x, int y, float c0) {
+    static char dither(const int x, const int y, const float c0) {
         
         float v = c0;
         char a = 0;
@@ -62,8 +69,8 @@ public:
     }
     
     
-    Material(MaterialType t) : mt(t) {};
-    MaterialType mt;
+    Material(Material::MaterialType t) : mt(t) {};
+    Material::MaterialType mt;
     
     virtual string getName() = 0;
     virtual float isOpaque() = 0;

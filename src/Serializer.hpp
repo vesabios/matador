@@ -14,7 +14,6 @@
 #include <msgpack.hpp>
 
 class Serializer {
-    
 
 public:
     

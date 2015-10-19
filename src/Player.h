@@ -31,8 +31,12 @@ public:
 
     void init() override;
     int armorBonus() override;
-
     
+    void cycleWeapons();
+
+    Weapon * findWeaponByGuid(DWORD guid);
+    bool hasWeaponTypeEquipped(Weapon::WeaponType t);
+
     OBJTYPE(Player);
     MSGPACK_DEFINE(type, guid, bundle, x, y, z);
     

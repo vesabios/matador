@@ -8,7 +8,6 @@
 
 #ifndef Item_h
 #define Item_h
-#include "ObjectFactory.h"
 
 class Actor;
 

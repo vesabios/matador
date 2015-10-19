@@ -156,12 +156,12 @@ public:
     }
     
     Object() {
-        ofLog() << "object ctor: " ;
+        ofLog() << "object ctor";
         elements().push_back(this);
     }
     
     virtual ~Object() {
-        ofLog() << "object dtor" ;
+        ofLog() << "object dtor";
         elements().erase(std::remove(elements().begin(), elements().end(), this), elements().end());
     }
     

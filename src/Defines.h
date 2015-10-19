@@ -50,11 +50,18 @@ typedef int DEBT;
 
 #define VOID_LOCATION 20000
 
+
+#define FEET_PER_TILE 5
+
+#define CONSOLE_WIDTH 80
+#define CONSOLE_HEIGHT 50
+
 enum GameState {
-    NormalState,
-    EditState,
-    PaintState,
-    InspectState
+    NORMAL_STATE,
+    EQUIP_STATE,
+    EDIT_STATE,
+    PAINT_STATE,
+    INSPECT_STATE
 };
 
 
@@ -91,6 +98,8 @@ public:
     BYTE bg;
     BYTE c;
     BYTE a;
+    Pixel(BYTE f, BYTE b, BYTE c, BYTE a) : fg(f), bg(b), c(c), a(a) {}
+
     Pixel() : fg(0), bg(0), c(0), a(255) {}
 };
 

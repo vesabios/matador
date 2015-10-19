@@ -10,15 +10,43 @@
 #include "ObjectFactory.h"
 #include "Weapon.h"
 
+class Fists : public Weapon {
+public:
+    
+    void init() override {
+        data.die = 3;
+        data.numberOfDice = 1;
+        data.weaponType = LIGHT_WEAPON;
+        
+    }
+    
+    string getName() override  { return "Fists"; }
+    
+    Pixel render(float luma) override {
+        Pixel p;
+        p.fg = makeColor(5,5,0);
+        p.bg = 0;
+        p.c = toascii(' ');
+        return p;
+    }
+    
+    OBJTYPE(Fists);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
+    
+};
+
+REGISTER_OBJTYPE(Fists);
+
+
 class Club : public Weapon {
 public:
     
     void init() override {
         data.die = 4;
         data.numberOfDice = 1;
-    }
-    
+        data.weaponType = ONE_HANDED_WEAPON;
 
+    }
     
     string getName() override  { return "Club"; }
 
@@ -36,3 +64,33 @@ public:
 };
 
 REGISTER_OBJTYPE(Club);
+
+
+
+class Sling : public Weapon {
+public:
+    
+    void init() override {
+        data.die = 3;
+        data.numberOfDice = 1;
+        data.weaponType = PROJECTILE_WEAPON;
+        BYTE rangeIncrememt = 50; // 50 ft range
+    }
+    
+    
+    string getName() override  { return "Sling"; }
+    
+    Pixel render(float luma) override {
+        Pixel p;
+        p.fg = makeColor(5,5,0);
+        p.bg = 0;
+        p.c = toascii('/');
+        return p;
+    }
+    
+    OBJTYPE(Sling);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
+    
+};
+
+REGISTER_OBJTYPE(Sling);

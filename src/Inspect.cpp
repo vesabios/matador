@@ -26,7 +26,7 @@ void Inspect::toggle() {
 
 void Inspect::show() {
     visible = true;
-    core->state = InspectState;
+    core->state = INSPECT_STATE;
 }
 
 
@@ -34,7 +34,7 @@ void Inspect::hide() {
     visible = false;
     currentObject = NULL;
 
-    core->state = InspectState;
+    core->state = INSPECT_STATE;
 }
 
 void Inspect::update(const float delaTime) {
@@ -224,7 +224,7 @@ void Inspect::inspectObject(Object * o) {
 
 void Inspect::render() {
     
-    if (menuPos<80) {
+    if (menuPos<CONSOLE_WIDTH) {
         ofRectangle r = ofRectangle((int)menuPos,2,28,40);
         
         unsigned char bg = makeColor(0,1,3);

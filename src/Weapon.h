@@ -8,18 +8,39 @@
 
 #ifndef Weapons_h
 #define Weapons_h
+#pragma once
 
 #include "Item.h"
 #include "Actor.h"
+
+class Item;
 
 
 
 class Weapon : public Item {
 public:
+    
+    enum WeaponType {
+        REACH_WEAPON,
+        DOUBLE_WEAPON,
+        THROWN_WEAPON,
+        PROJECTILE_WEAPON,
+        AMMUNITION_WEAPON,
+        LIGHT_WEAPON,
+        ONE_HANDED_WEAPON,
+        TWO_HANDED_WEAPON
+    };
+    
     struct data_t {
         BYTE numberOfDice = 1;
-        BYTE die = 4;
+        BYTE die = 4; // type of die, 1d4 in this case
         BYTE modifier = 0;
+        BYTE cricitalMultiplier = 1; // standard 1x crit
+        BYTE criticalThreat = 20; // standard natural 20 crit roll
+        BYTE rangeIncrememt = 0; // normal range, 1 square or 5 ft
+        int weaponType = (int)ONE_HANDED_WEAPON;
+        int weight = 1; // 1 pound
+        BYTE cost = 1; // 1 gp
     };
     
     data_t data;
