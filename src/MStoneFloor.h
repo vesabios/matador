@@ -10,8 +10,8 @@
 #define MStoneFloor_h
 
 #include <stdio.h>
-#include "ofMain.h"
-#include "Defines.h"
+//#include "ofMain.h"
+//#include "Defines.h"
 #include "Material.h"
 
 

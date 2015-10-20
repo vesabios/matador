@@ -6,8 +6,11 @@
 //
 //
 
+
 #include "Actor.h"
 #include "Core.h"
+#include "ActorEvent.h"
+#include "CombatEvent.h"
 
 Actor::Actor() {
     ofAddListener(ActorEvent::actorEvent, this, &Actor::actorEvent);
@@ -95,7 +98,6 @@ void Actor::moveTowardTarget() {
         tryMoving(ofVec2i(sgn(d.x), 0));
     } else {
         tryMoving(ofVec2i(0,sgn(d.y)));
-     
     }
     
 }
@@ -140,7 +142,7 @@ DEBT Actor::standStill() {
     
     target = static_cast<Actor*>(core->player);
     
-    return 100;
+    return 1;
     
 }
 
@@ -176,50 +178,61 @@ DEBT Actor::attack(Actor * a) {
         bool hit = false;
         bool crit = false;
         
+        static CombatEvent ce;
+        ce.a = this;
+        ce.b = a;
+        
+        ce.type = CombatEvent::MISS_EVENT;
+        ce.dmg = 0;
+        
         if (d20==1) {
-            ofLog() << getName() << " rolled a natural 1! whiff!";
             hit = false;
         } else if (d20==w->data.criticalThreat) {
-            ofLog() << getName() << " rolled a natural 20! crit!";
+            ce.type = CombatEvent::CRIT_EVENT;
             hit = true;
             crit = true;
         } else {
            
             int ac = a->ac();
-            
             int m =strMod() + data.tohit;
             
             ofLog() << getName() << " rolled a " << d20 << " + " << m <<", (ac:"<<ac<<")";
             
             if (d20+m>=ac) {
                 hit = true;
-                ofLog()<< getName() << " hit the " << a->getName();
-                
+                ce.type = CombatEvent::HIT_EVENT;
             }
+            
+            
         }
 
         if (crit) {
             
-            int dmg = w->rollAttack();
+            ce.dmg = w->rollAttack();
             
             for (int i=0; i<w->data.cricitalMultiplier; i++) {
-                dmg += w->rollAttack();
+                ce.dmg += w->rollAttack();
             }
             
-            ofLog()<< getName() << " critted the " << a->getName() << " for " << (int)dmg << " damage";
-            
-            a->takeDamage(dmg);
             
         } else if (hit) {
             BYTE dmg = w->rollAttack();
-
-            ofLog()<< getName() << " hit the " << a->getName() << " for " << (int)dmg << " damage";;
             
-            a->takeDamage(dmg);
+            ce.dmg = (int)dmg;
 
-        } else {
-            ofLog()<< getName() << " missed " << a->getName();
         }
+        
+        
+        ofNotifyEvent(CombatEvent::combatEvent, ce);
+        
+        a->takeDamage(ce.dmg); // TODO: move this logic to a combat resolution class
+        
+        DEBT newDebt = ((float)w->data.attackDebt) * ((float)data.attackSpeed / 100.0f);
+
+        
+        ofLog()<<newDebt;
+
+        return newDebt;
         
     } else {
         
@@ -231,7 +244,7 @@ DEBT Actor::attack(Actor * a) {
 
     
     
-    return round((float)150 * speedMultiplier);
+    return 0;
 
 }
 
@@ -282,11 +295,9 @@ void Actor::takeDamage(int dmg) {
 }
 
 void Actor::die() {
-    ofLog() << "death!";
     
     // any on-death actions should happen here.
     // class removal/cleanup/GC should happen at a higher level
-    
     
     // TODO:remove items in possesion
     
@@ -296,6 +307,12 @@ void Actor::die() {
     
     ofNotifyEvent(ActorEvent::actorEvent, ae);
     
+    cleanup();
+   
+}
+
+
+void Actor::cleanup() {
     
     Weapon * rhw = rightHand();
     if (rhw!=NULL) {
@@ -303,9 +320,7 @@ void Actor::die() {
     };
     
     delete this;
-    
 }
-
 
 DEBT Actor::tryMoving(ofVec2i moveVector) {
    
@@ -334,8 +349,10 @@ DEBT Actor::tryMoving(ofVec2i moveVector) {
             
         }
     }
+    
+    newDebt = MAX(newDebt, 100);
 
-    actionDebt+= round((float)newDebt * speedMultiplier);
+    actionDebt+= round((float)newDebt * (((float)data.movementSpeed) / 100.0f));
     return newDebt;
     
 }

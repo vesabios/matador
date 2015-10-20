@@ -104,11 +104,20 @@ void Console::writeString(const int x, const int y, const string s) {
     
     
     for (int i=0; i<sz; i++) {
-        console.setPixel(x+i, y, makeColor(5,5,2), makeColor(0,2,2), s.at(i));
+        Pixel p;
+        p.fg =makeColor(3,3,2);
+        p.bg = 0;
+        p.a = 0;
+        p.c = s.at(i);
+        console.setPixel(x+i, y, p);
+    
+       // console.setPixel(x+i, y, makeColor(5,5,2), makeColor(0,2,2), s.at(i));
     }
     
     
 }
+
+
 
 //--------------------------------------------------------------
 void Console::writeString(const int x, const int y, const string s, const BYTE fg, const BYTE bg) {

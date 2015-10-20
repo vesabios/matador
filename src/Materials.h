@@ -9,6 +9,8 @@
 #ifndef Materials_h
 #define Materials_h
 
+#include "Defines.h"
+
 #include "Material.h"
 #include "MStoneWall.h"
 #include "MStoneFloor.h"

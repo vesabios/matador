@@ -38,6 +38,7 @@ public:
         BYTE cricitalMultiplier = 1; // standard 1x crit
         BYTE criticalThreat = 20; // standard natural 20 crit roll
         BYTE rangeIncrememt = 0; // normal range, 1 square or 5 ft
+        DEBT attackDebt = 100; // how much action debt does usage incur
         int weaponType = (int)ONE_HANDED_WEAPON;
         int weight = 1; // 1 pound
         BYTE cost = 1; // 1 gp
@@ -54,7 +55,7 @@ public:
     InteractionType getInteractionTypeForInteractor(Object *) override { return Take; }
     DEBT traversable() override { return TRAVERSE_NORMAL; }
     bool isPortable() override { return true; }
-    void update(DEBT d) override {}
+    float update(DEBT d) override { return 0.0f; }
     DEBT use(Actor * a) override {
         return 0;
     }

@@ -45,7 +45,7 @@ public:
     
     DEBT traversable() override { return data.open ? TRAVERSE_NORMAL : TRAVERSE_BLOCKED; }
     bool isPortable() override { return false; }
-    void update(DEBT d) override {}
+    float update(DEBT d) override { return 0.0f; }
     Pixel render(float luma) override {
         Pixel p;
         p.fg = makeColor(5,5,5);
@@ -115,7 +115,7 @@ public:
     
     DEBT traversable() override { return TRAVERSE_NORMAL; }
     bool isPortable() override { return false; }
-    void update(DEBT d) override {}
+    float update(DEBT d) override { return 0.0f; }
     Pixel render(float luma) override {
         Pixel p;
         p.fg = makeColor(5,5,5);
@@ -161,7 +161,7 @@ public:
     DEBT interactable() override { return 1; }
     DEBT traversable() override { return TRAVERSE_NORMAL; }
     bool isPortable() override { return true; }
-    void update(DEBT d) override {}
+    float update(DEBT d) override { return 0.0f; }
     Pixel render(float luma) override {
         Pixel p;
         p.fg = makeColor(5,5,0);

@@ -35,7 +35,7 @@ public:
     virtual DEBT traversable() override { return 0; }
     virtual bool isPortable() override { return false; }
     virtual Pixel render(float luma) override { Pixel p; return p;};
-    virtual void update(DEBT d) override {};
+    virtual float update(DEBT d) override { return 0.0f; };
     virtual InteractionType getInteractionTypeForInteractor(Object *) override { return None; }
     virtual void init() override  {};
     

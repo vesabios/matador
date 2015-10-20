@@ -146,6 +146,8 @@ public:
     };
     
     data_t data;
+    
+    bool removeFlag = false;
    
     
     
@@ -171,7 +173,7 @@ public:
     virtual DEBT traversable() = 0;
     virtual bool isPortable() = 0;
     virtual Pixel render(float luma) = 0;
-    virtual void update(DEBT d) = 0;
+    virtual float update(DEBT d) = 0;
     virtual InteractionType getInteractionTypeForInteractor(Object *) = 0;
     virtual void init() = 0;
 
@@ -222,6 +224,12 @@ public:
     static map<ObjectType, ObjectFactory*> &factories() {
         static map<Object::ObjectType, ObjectFactory*> f;
         return f;
+    }
+    
+    
+    static vector<Object*> removeList() {
+        static vector<Object*> t;
+        return t;
     }
 
     

@@ -16,8 +16,8 @@
 #include "Inspect.h"
 #include "Equip.h"
 #include "EventLog.h"
+#include "VFX.hpp"
 
-#include "ActorEvent.hpp"
 
 
 
@@ -79,6 +79,9 @@ public:
     vector<ofVec2i> trail;
 
     bool torch = true;
+    
+    
+    bool resolvingTurn = false;
 
     float torchBrightness = 0.0f;
     float visionRadius = 0.0f;
@@ -101,7 +104,16 @@ public:
     
     void reset();
     
+    vector<Object*> updateList;
+    int updateDebt = 0;
+    int updateIndex = 0;
+    float resolveDelay = 0;
+    
+    void resolveTurn();
+    
     void populateMap();
+    
+    bool gameplayState();
     
     Object * placeObject(int x, int y, int mapNumber, Object::ObjectType it);
     

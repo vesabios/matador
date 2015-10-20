@@ -19,6 +19,9 @@ void Kobold::init() {
     data.wisdom = 7;
     data.charisma = 8;
     
+    data.attackSpeed = 100;
+    data.movementSpeed = 150;
+    
     data.tohit = 4;
     
     // kobolds need weapons too!
@@ -32,7 +35,6 @@ void Kobold::init() {
     
     // hit dice 1d8
     data.maxhp = data.hp = (int)ofRandom(8)+1;
-
     
 
 };
@@ -76,24 +78,23 @@ bool Kobold::canAttackTarget() {
     
 }
 
-void Kobold::update(DEBT d)  {
+float Kobold::update(DEBT d)  {
     
     if (actionDebt>0) actionDebt -= d;
     
     if (actionDebt<=0) {
     
-        setSpeedMultiplier(1.5f);
         DEBT newDebt = 0;
-    
+        
         if (damage > morale) {
-            ofLog() << "damage greater than morale..." ;
+            //ofLog() << "damage greater than morale..." ;
             if (canRunAwayFromTarget()) {
                 runAwayFromTarget();
             } else if (canAttackTarget()) {
                 newDebt = attackTarget();
             }
         } else if (tooFarFromTarget() && canAttackTarget() && canMoveTowardTarget()) {
-            ofLog() << "too far, moving towards or attacking" ;
+            //ofLog() << "too far, moving towards or attacking" ;
 
             if  (ofRandomf() < chargeProbability()) {
                 moveTowardTarget();
@@ -101,7 +102,7 @@ void Kobold::update(DEBT d)  {
                 newDebt = attackTarget();
             }
         } else if (tooCloseToTarget() && canAttackTarget() && canMoveAwayFromTarget()) {
-            ofLog() << "too close, moving away or attacking" ;
+           // ofLog() << "too close, moving away or attacking" ;
 
             if (ofRandomf() < retreatProbability()) {
                 moveAwayFromTarget();
@@ -109,24 +110,32 @@ void Kobold::update(DEBT d)  {
                 newDebt = attackTarget();
             }
         } else if (canAttackTarget()) {
-            ofLog() << "attacking";
+            //ofLog() << "attacking";
 
             newDebt = attackTarget();
         } else if (tooFarFromTarget() && canMoveTowardTarget()) {
-            ofLog() << "too far, moving towards" ;
+            //ofLog() << "too far, moving towards" ;
 
             moveTowardTarget();
         } else if (tooCloseToTarget() && canMoveAwayFromTarget()) {
             
-            ofLog() << "too close, moving away" ;
+            //ofLog() << "too close, moving away" ;
             moveAwayFromTarget();
         } else {
             newDebt = standStill();
         }
         
+        ofLog() << getName() << " update debt incurred: "<<newDebt;
+        
         actionDebt += newDebt;
         
+        return ((float)newDebt) / TIME_TO_DEBT_SCALAR;
+        
+    } else {
+        return 0.0f;
     }
+    
+   
     
     
 }

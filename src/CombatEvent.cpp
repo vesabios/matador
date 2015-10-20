@@ -6,6 +6,6 @@
 //
 //
 
-#include "CombatEvent.hpp"
+#include "CombatEvent.h"
 
 ofEvent <CombatEvent> CombatEvent::combatEvent;

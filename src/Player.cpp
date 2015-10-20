@@ -94,8 +94,6 @@ void Player::cycleWeapons() {
             return;
         }
     }
-
-    
     
 }
 
@@ -194,8 +192,12 @@ bool Player::isPortable()  {
     return false;
 }
 
-void Player::update(DEBT d)  {
+float Player::update(DEBT d)  {
     actionDebt -= d;
+    if (actionDebt<0) {
+        actionDebt = 0;
+    }
+    return 0.0f;
 }
 
 Pixel Player::render(float luma)  {

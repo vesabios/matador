@@ -56,6 +56,8 @@ typedef int DEBT;
 #define CONSOLE_WIDTH 80
 #define CONSOLE_HEIGHT 50
 
+#define TIME_TO_DEBT_SCALAR 300.0f
+
 enum GameState {
     NORMAL_STATE,
     EQUIP_STATE,

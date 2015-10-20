@@ -41,7 +41,8 @@ void Core::setup(){
     gui.add(cAmp.setup("Amp C",0.5,0,10));
     gui.add(cOffset.setup("Offset C",0,-2,2 ));
 
- 
+
+    vfx.init();
     console.init();
     engine.init();
     
@@ -200,7 +201,7 @@ void Core::raytrace(int x0, int y0, int x1, int y1)
 
 //--------------------------------------------------------------
 float Core::isOpaque(int x, int y, float currentOpaque) {
-    vis[x+y*CONSOLE_WIDTH]=255 - (currentOpaque*255.0f);
+    vis[x+y*CONSOLE_WIDTH] = MAX( vis[x+y*CONSOLE_WIDTH], 255 - (currentOpaque*255.0f));
     return (map->isWindowOpaque(x,y));
 }
 
@@ -212,6 +213,10 @@ void Core::renderWorld() {
     float amp = torchBrightness;
     float radius = visionRadius;
     
+    float ambient = 1.0f;
+    ambient = ((float)mapData[map->mapNumber]->data.ambient) / 255.0f;
+
+    
     for (int y=0; y<CONSOLE_HEIGHT; y++) {
         for (int x=0; x<CONSOLE_WIDTH; x++) {
             
@@ -220,30 +225,31 @@ void Core::renderWorld() {
             
             float att = 0.0f;
             float luma = 0.0f;
-            float ambient = 0.0f;
             
-            ambient = ((float)mapData[map->mapNumber]->data.ambient) / 255.0f;
             
             BYTE visible = isVisible(windowPos);
             if (state == EDIT_STATE) {
                 visible = 255;
                 ambient = 1.0;
+                luma = 1.0f;
+            } else {
+                if (visible>0) {
+                    
+                    //radius += (float)ambient * 0.25f;
+                    
+                    float d = windowPos.distance(worldToWindow(player->getPos()) +flickerOffset);
+                    att = clamp(1.0 - ((d*d)/(radius*radius)), 0.0, 1.0);
+                    att *= att;
+                    luma = (att * flickerValue);
+                    luma *= 1.3f;
+                    luma += ambient;
+                    luma *= ((float)visible) / 255.0f;
+                    luma = MIN(luma, 1.0f);
+                    luma = MAX(luma, 0.0f);
+                }
             }
             
-            if (visible>0) {
-                
-                //radius += (float)ambient * 0.25f;
-                
-                float d = windowPos.distance(worldToWindow(player->getPos()) +flickerOffset);
-                att = clamp(1.0 - ((d*d)/(radius*radius)), 0.0, 1.0);
-                att *= att;
-                luma = (att * flickerValue);
-                luma *= 1.3f;
-                luma += ambient;
-                luma *= ((float)visible) / 255.0f;
-                luma = MIN(luma, 1.0f);
-                luma = MAX(luma, 0.0f);
-            }
+
             
             
             // if we can see it, refresh our memory
@@ -354,7 +360,7 @@ void Core::renderWorld() {
                 
         }
         
-        Pixel p(makeColor(5,5,0), 0, c, 0);
+        Pixel p(makeColor(1,5,5), 0, c, 0);
         console.setPixel(pp + reticle, p);
         
         
@@ -372,26 +378,13 @@ DEBT Core::traversable(int dx, int dy) {
     if (d>0) {
         for (int i=0; i<Object::elements().size(); i++) {
             Object* o = Object::elements()[i];
-            
-           // ofLog()<< "checking " << o->getName() << "..." ;
-            
-           // ofLog() << o->z << " == " << map->mapNumber;
-            
             if (o->z == map->mapNumber) {
-                //ofLog()<< "map..." ;
-
                 if (o->x == dx) {
-                    //ofLog()<< "x..." ;
                     if (o->y == dy) {
-                        //ofLog()<< "y..." ;
-
                         if (o->traversable()==TRAVERSE_BLOCKED) {
-                            //ofLog()<< "blocked" << endl;
                             d = 0;
                         } else {
                             d = MAX(d,o->traversable());
-
-                            ofLog()<< d << endl;
                         }
                     }
                 }
@@ -464,7 +457,6 @@ void Core::toggleFiring() {
     } else {
         
         firingIndex = 0;
-
         
         if (player->hasWeaponTypeEquipped(Weapon::PROJECTILE_WEAPON) ||
             player->hasWeaponTypeEquipped(Weapon::THROWN_WEAPON)) {
@@ -504,11 +496,8 @@ void Core::toggleFiring() {
                 fireTargeting = true;
                 player->target = firingList[firingIndex];
             }
-        
         }
-       
-        
-     }
+    }
 }
 
 
@@ -541,7 +530,7 @@ void Core::actorEvent(ActorEvent &e) {
     switch (e.type) {
         case ActorEvent::DEATH_EVENT: {
             if (e.a == player) {
-                ofLog() << "player has been killed!!";
+                ofLog() << "You have been killed!!";
             } else {
                 if (fireTargeting) {
                     toggleFiring();
@@ -552,13 +541,34 @@ void Core::actorEvent(ActorEvent &e) {
         default:
             break;
     }
-    
-   
-
-    
-
 }
 
+
+//--------------------------------------------------------------
+void Core::resolveTurn() {
+    
+    ofLog() << "resolve turn";
+    
+    resolvingTurn = true;
+    updateIndex = 0;
+    
+    updateList.clear();
+    
+    for (int i=0; i<Object::elements().size(); i++) {
+        Object * o = Object::elements()[i];
+        
+        //ofLog() << " testing " << o->getName();
+        
+        if (o->z== map->mapNumber) {
+            ofLog() << " adding to list " << o->getName();
+
+            updateList.push_back(o);
+        }
+    }
+    
+    ofLog() << "update list is: " << updateList.size() << " elements long";
+
+}
 
 //--------------------------------------------------------------
 void Core::update(){
@@ -571,7 +581,6 @@ void Core::update(){
     paint.update(deltaTime);
     inspect.update(deltaTime);
     
-
     if (torch) {
         torchBrightness += (1.1f - torchBrightness) * 0.1f;
         visionRadius += (16 - visionRadius) * 0.2f;
@@ -581,95 +590,173 @@ void Core::update(){
     }
     
     
-    
     bool moved = false;
     
     if (state==NORMAL_STATE) {
-        
+
         if (actionDebt>=0) actionDebt -= 15.0f * 60.0f * deltaTime;
         
-        if (controls.active()) {
+        if (resolvingTurn) {
+            
            
+            if (resolveDelay<=0) {
 
-            bool vert = false;
-            
-            
-            
-            if (actionDebt<=0) {
-                
-                trail.push_back(player->getPos());
-                if (trail.size()>30) {
-                    trail.erase (trail.begin());
-                }
-                
-                ofVec2i moveVector;
-                
-                if (controls.up) {
-                    moveVector.y = -1;
-                } else if (controls.down) {
-                    moveVector.y = 1;
-                }
-                
-                if (controls.left) {
-                    moveVector.x = -1;
-                } else if (controls.right) {
-                    moveVector.x = 1;
-                }
-                
-                newPlayerDebt = player->tryInteracting(moveVector);
-                
-                if (controls.fire) {
-                    newPlayerDebt += player->attack(player->target);
-                }
+               
+                DEBT remainingDebt = 0;
+                //ofLog() << "starting "<<remainingDebt;
 
-                
-                if (newPlayerDebt>=0 && newPlayerDebt < DEBT_TURN_THRESHOLD ) {
-                    newPlayerDebt += player->tryMoving(moveVector);
-                    if (newPlayerDebt >= DEBT_TURN_THRESHOLD) {
-                        moved = true;
-                    }
+                float d = 0.0f;
+                while (d==0 && updateIndex<updateList.size()) {
+                    
+                    Object * o = updateList[updateIndex];
+                    
+                    d = o->update(updateDebt);
+                   // ofLog() << "update result for " << o->getName() << ": "<<d;
+
+                    Actor * a = dynamic_cast<Actor*>(o);
+                    if (a) {
+
+                        remainingDebt += a->actionDebt;
+                        //ofLog() << "finding debt... ("<<a->actionDebt<<") + "<<remainingDebt << " for "<<a->getName();
+
+                    } 
+
+                    //resolveDelay+= 0.1f;
+                    updateIndex++;
                 }
                 
+                updateDebt = 0;
                 
-                if (!controlsHaveBeenActive) {
-                    if (newPlayerDebt>0) {
-                        actionDebt += 100;
+                if (updateIndex>=updateList.size()) {
+                    
+                    if (remainingDebt<0.0f) {
+                        
+                        //ofLog() << "Resolving... "<<remainingDebt;
+                        
+                        updateIndex = 0;
+                        
+                        //resolveDelay += 0.25f;
+
+                        //resolveTurn();
+                    } else {
+                        
+                        //ofLog() << "stopping resolve now!";
+                        resolvingTurn = false;
+   
                     }
                     
                 }
                 
-                actionDebt += newPlayerDebt;
+
+            
+            } else {
                 
-                if (controls.rest) {
-                    actionDebt += 100;
-                    moved = true;
-                }
+                //ofLog() << resolveDelay;
+                resolveDelay -= deltaTime;
+            }
+                    
+        } else {
+            
+            if (controls.active()) {
+
+                bool vert = false;
                 
-                for (int i=0; i<Object::elements().size(); i++) {
-                    if (Object::elements()[i]->z== map->mapNumber) {
-                        Object::elements()[i]->update(newPlayerDebt);
+                if (actionDebt<=0) {
+                    
+                    trail.push_back(player->getPos());
+                    if (trail.size()>30) {
+                        trail.erase (trail.begin());
                     }
+                    
+                    ofVec2i moveVector;
+                    
+                    if (controls.up) {
+                        moveVector.y = -1;
+                    } else if (controls.down) {
+                        moveVector.y = 1;
+                    }
+                    
+                    if (controls.left) {
+                        moveVector.x = -1;
+                    } else if (controls.right) {
+                        moveVector.x = 1;
+                    }
+                    
+                    newPlayerDebt = player->tryInteracting(moveVector);
+                    
+                    
+                    if (controls.fire) {
+                        newPlayerDebt += player->attack(player->target);
+                    }
+                    
+                    resolveDelay = MIN(0.2f,((float)newPlayerDebt) / TIME_TO_DEBT_SCALAR);
+
+                    
+                    
+                    if (newPlayerDebt>=0 && newPlayerDebt < DEBT_TURN_THRESHOLD ) {
+                        newPlayerDebt += player->tryMoving(moveVector);
+                        if (newPlayerDebt >= DEBT_TURN_THRESHOLD) {
+                            moved = true;
+                        }
+                    }
+                    
+                    
+                    if (!controlsHaveBeenActive) {
+                        if (newPlayerDebt>0) {
+                            actionDebt += 100;
+                        }
+                        
+                    }
+                    
+                    actionDebt += newPlayerDebt;
+                    
+                    if (controls.rest) {
+                        actionDebt += 100;
+                        moved = true;
+                    }
+                    
+                    // here we are arbitrarily updating every element. should change this to be the following sequence:
+                    
+                    // CHECK - lock controls
+                    
+                    // CHECK - create vector of items on map
+                    
+                    // --- sort vector based on initiative first, ambient/not engaged in combat second
+                    
+                    // for each element in vector:
+                    
+                    // CHECK --- update with new player debt
+                    // --- all each element to generate events if necessary
+                    // CHECK --- once event chain has completed, go to next element
+                    
+                    // CHECK unlock controls
+
+                    
+                    if (newPlayerDebt>0) {
+                        updateDebt = newPlayerDebt;
+                    
+                        resolveTurn();
+                    }
+                    
+                    newPlayerDebt = 0;
+                    
+                    map->upkeep();
+                    
                 }
                 
-                newPlayerDebt = 0;
+                controlsHaveBeenActive = true;
                 
-                map->upkeep();
-                
+
+            } else {
+                controlsHaveBeenActive = false;
             }
             
-            controlsHaveBeenActive = true;
+            if (actionDebt<0) {
+                flickerOffset = ofVec2i(ofRandomuf()-0.5f, ofRandomuf()-0.5f) ;
+                flickerValue = (ofRandomuf()*0.02f)+0.9f;
+                actionDebt+=100;
+            }
             
-
-        } else {
-            controlsHaveBeenActive = false;
-        }
-        
-        
-        
-        if (actionDebt<0) {
-            flickerOffset = ofVec2i(ofRandomuf()-0.5f, ofRandomuf()-0.5f) ;
-            flickerValue = (ofRandomuf()*0.02f)+0.9f;
-            actionDebt+=800;
         }
     
     } else if (state==EDIT_STATE) {
@@ -724,74 +811,86 @@ void Core::update(){
     adjustWindow();
 
     
-    // reset visibility
-    for (int i=0; i<CONSOLE_WIDTH*CONSOLE_HEIGHT; i++) {
-        vis[i]=0;
-    }
-    
-    ofPoint tl =map->window.getTopLeft();
-    ofVec2i pp = player->getPos() - ofVec2i(tl.x, tl.y);
-    
-    // calculate visibilty from character position
-    for (int i=0; i<CONSOLE_HEIGHT; i++) {
-        raytrace(pp.x, pp.y, 0,i);
-        raytrace(pp.x, pp.y, 79,i);
-    }
-    
-    for (int j=0; j<CONSOLE_WIDTH; j++) {
-        raytrace(pp.x, pp.y, j, 0);
-        raytrace(pp.x, pp.y, j, 49);
-    }
-    
-    // post processing, fix visibility problem with walls
-    
-    for (int y=0; y<CONSOLE_HEIGHT; y++) {
-        for (int x=0; x<CONSOLE_WIDTH; x++) {
-            int index = y*CONSOLE_WIDTH+x;
-            if (vis[index]<255 && map->isWindowOpaque(x,y)) {
-                // visibility is off here
-                if (x<pp.x) {
-                    if (!map->isWindowOpaque(x+1,y)) {
-                        if (vis[index+1]==255) {
-                            vis[index] = 255;
-                        }
-                    }
-                } else if (x>pp.x) {
-                    if (!map->isWindowOpaque(x-1,y)) {
-                        if (vis[index-1]==255) {
-                            vis[index] = 255;
-                        }
-                    }
-                }
-                
-                
-                if (y<pp.y) {
-                    if (!map->isWindowOpaque(x,y+1)) {
-                        if (vis[index+CONSOLE_WIDTH]==255) {
-                            vis[index] = 255;
-                        }
-                    }
-                } else if (y>pp.y) {
-                    if (!map->isWindowOpaque(x,y-1)) {
-                        if (vis[index-CONSOLE_WIDTH]==255) {
-                            vis[index] = 255;
 
+    
+    if (state==NORMAL_STATE || state==EQUIP_STATE) {
+        
+        // reset visibility
+        for (int i=0; i<CONSOLE_WIDTH*CONSOLE_HEIGHT; i++) {
+            vis[i]=0;
+        }        
+        
+    
+        ofPoint tl =map->window.getTopLeft();
+        ofVec2i pp = player->getPos() - ofVec2i(tl.x, tl.y);
+        
+        // calculate visibilty from character position
+        for (int i=0; i<CONSOLE_HEIGHT; i++) {
+            raytrace(pp.x, pp.y, 0,i);
+            raytrace(pp.x, pp.y, 79,i);
+        }
+        
+        for (int j=0; j<CONSOLE_WIDTH; j++) {
+            raytrace(pp.x, pp.y, j, 0);
+            raytrace(pp.x, pp.y, j, 49);
+        }
+        
+        // post processing, fix visibility problem with walls
+        
+        for (int y=0; y<CONSOLE_HEIGHT; y++) {
+            for (int x=0; x<CONSOLE_WIDTH; x++) {
+                int index = y*CONSOLE_WIDTH+x;
+                if (vis[index]<255 && map->isWindowOpaque(x,y)) {
+                    // visibility is off here
+                    if (x<pp.x) {
+                        if (!map->isWindowOpaque(x+1,y)) {
+                            if (vis[index+1]==255) {
+                                vis[index] = 255;
+                            }
+                        }
+                    } else if (x>pp.x) {
+                        if (!map->isWindowOpaque(x-1,y)) {
+                            if (vis[index-1]==255) {
+                                vis[index] = 255;
+                            }
                         }
                     }
+                    
+                    
+                    if (y<pp.y) {
+                        if (!map->isWindowOpaque(x,y+1)) {
+                            if (vis[index+CONSOLE_WIDTH]==255) {
+                                vis[index] = 255;
+                            }
+                        }
+                    } else if (y>pp.y) {
+                        if (!map->isWindowOpaque(x,y-1)) {
+                            if (vis[index-CONSOLE_WIDTH]==255) {
+                                vis[index] = 255;
+
+                            }
+                        }
+                    }
+                    
+                    // fix corners
+                    
+                    if (!map->isWindowOpaque(x+1,y+1) && (vis[index+(CONSOLE_WIDTH+1)]==255))
+                        vis[index] = 255;
+                    if (!map->isWindowOpaque(x+1,y-1) && (vis[index-(CONSOLE_WIDTH-1)]==255))
+                        vis[index] = 255;
+                    if (!map->isWindowOpaque(x-1,y+1) && (vis[index+(CONSOLE_WIDTH-1)]==255))
+                        vis[index] = 255;
+                    if (!map->isWindowOpaque(x-1,y-1) && (vis[index-(CONSOLE_WIDTH+1)]==255))
+                        vis[index] = 255;
                 }
-                
-                // fix corners
-                
-                if (!map->isWindowOpaque(x+1,y+1) && (vis[index+(CONSOLE_WIDTH+1)]==255))
-                    vis[index] = 255;
-                if (!map->isWindowOpaque(x+1,y-1) && (vis[index-(CONSOLE_WIDTH-1)]==255))
-                    vis[index] = 255;
-                if (!map->isWindowOpaque(x-1,y+1) && (vis[index+(CONSOLE_WIDTH-1)]==255))
-                    vis[index] = 255;
-                if (!map->isWindowOpaque(x-1,y-1) && (vis[index-(CONSOLE_WIDTH+1)]==255))
-                    vis[index] = 255;
             }
         }
+        
+    } else {
+        for (int i=0; i<CONSOLE_WIDTH*CONSOLE_HEIGHT; i++) {
+            vis[i]=1;
+        }
+        
     }
     
     if (state != PAINT_STATE) {
@@ -799,6 +898,9 @@ void Core::update(){
     } else {
         paint.render();
     }
+    
+    vfx.update(deltaTime);
+
     
     menu.render();
     inspect.render();
@@ -847,6 +949,8 @@ void Core::update(){
         equip.render();
     }
     
+    eventLog.render();
+    
     
     
 }
@@ -865,7 +969,7 @@ void Core::adjustWindow() {
             map->window.translate(1,0);
         }
         
-        while ((player->y - map->window.getMinY()) < 20) {
+        while ((player->y - map->window.getMinY()) < 10) {
             map->window.translate(0,-1);
         }
         

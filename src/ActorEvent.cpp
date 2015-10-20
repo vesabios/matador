@@ -6,6 +6,6 @@
 //
 //
 
-#include "ActorEvent.hpp"
+#include "ActorEvent.h"
 
 ofEvent <ActorEvent> ActorEvent::actorEvent;

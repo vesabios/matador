@@ -12,6 +12,7 @@
 		CE117CD51BCCE936003DFD6A /* Materials.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE117CD11BCCE936003DFD6A /* Materials.cpp */; settings = {ASSET_TAGS = (); }; };
 		CE2CD48C1BC2FDC9000014AC /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2CD48A1BC2FDC9000014AC /* Map.cpp */; settings = {ASSET_TAGS = (); }; };
 		CE2CD4921BC369F6000014AC /* AStar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE2CD4901BC369F6000014AC /* AStar.cpp */; settings = {ASSET_TAGS = (); }; };
+		CE525D0A1BD5DB6B0028DDB9 /* VFX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE525D081BD5DB6B0028DDB9 /* VFX.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEB9D1F61BCC52C7003FC036 /* ObjectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEB9D1F41BCC52C7003FC036 /* ObjectFactory.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEBB0E0B1BC2FD7A007948D9 /* Delaunay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEBB0E061BC2FD7A007948D9 /* Delaunay.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEBB0E0C1BC2FD7A007948D9 /* ofxDelaunay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEBB0E091BC2FD7A007948D9 /* ofxDelaunay.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -144,6 +145,8 @@
 		CE2CD48B1BC2FDC9000014AC /* Map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		CE2CD4901BC369F6000014AC /* AStar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AStar.cpp; sourceTree = "<group>"; };
 		CE2CD4911BC369F6000014AC /* AStar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AStar.h; sourceTree = "<group>"; };
+		CE525D081BD5DB6B0028DDB9 /* VFX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VFX.cpp; sourceTree = "<group>"; };
+		CE525D091BD5DB6B0028DDB9 /* VFX.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VFX.hpp; sourceTree = "<group>"; };
 		CE6A566B1BD06798007C8BBC /* Weapon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Weapon.h; sourceTree = "<group>"; };
 		CEB05CB41BC553F4008343B3 /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
 		CEB9D1F41BCC52C7003FC036 /* ObjectFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectFactory.cpp; sourceTree = "<group>"; };
@@ -198,9 +201,9 @@
 		CEE6C0131BD47A97000C5478 /* EventLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventLog.cpp; sourceTree = "<group>"; };
 		CEE6C0141BD47A97000C5478 /* EventLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventLog.h; sourceTree = "<group>"; };
 		CEE6C0181BD4903C000C5478 /* ActorEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActorEvent.cpp; sourceTree = "<group>"; };
-		CEE6C0191BD4903C000C5478 /* ActorEvent.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ActorEvent.hpp; sourceTree = "<group>"; };
+		CEE6C0191BD4903C000C5478 /* ActorEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActorEvent.h; sourceTree = "<group>"; };
 		CEE6C01C1BD4B951000C5478 /* CombatEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CombatEvent.cpp; sourceTree = "<group>"; };
-		CEE6C01D1BD4B951000C5478 /* CombatEvent.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CombatEvent.hpp; sourceTree = "<group>"; };
+		CEE6C01D1BD4B951000C5478 /* CombatEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CombatEvent.h; sourceTree = "<group>"; };
 		CEF10E8E1BC62C6D00CDB768 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		CEF10E8F1BC62C6D00CDB768 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		CEFCE5951BBF55CB00D68A81 /* s.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = s.frag; path = bin/data/shaders/s.frag; sourceTree = SOURCE_ROOT; };
@@ -502,9 +505,13 @@
 			isa = PBXGroup;
 			children = (
 				CEE6C0181BD4903C000C5478 /* ActorEvent.cpp */,
-				CEE6C0191BD4903C000C5478 /* ActorEvent.hpp */,
+				CEE6C0191BD4903C000C5478 /* ActorEvent.h */,
 				CEE6C01C1BD4B951000C5478 /* CombatEvent.cpp */,
-				CEE6C01D1BD4B951000C5478 /* CombatEvent.hpp */,
+				CEE6C01D1BD4B951000C5478 /* CombatEvent.h */,
+				CEE6C0131BD47A97000C5478 /* EventLog.cpp */,
+				CEE6C0141BD47A97000C5478 /* EventLog.h */,
+				CE525D081BD5DB6B0028DDB9 /* VFX.cpp */,
+				CE525D091BD5DB6B0028DDB9 /* VFX.hpp */,
 			);
 			name = Events;
 			sourceTree = "<group>";
@@ -560,8 +567,6 @@
 				CEBD73061BC5596C003B1D7D /* Engine.h */,
 				CEDB24291BCF80B600D8CBE4 /* FSM.h */,
 				CEE6C0101BD43D87000C5478 /* Equip.cpp */,
-				CEE6C0131BD47A97000C5478 /* EventLog.cpp */,
-				CEE6C0141BD47A97000C5478 /* EventLog.h */,
 				CEE6C0111BD43D87000C5478 /* Equip.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* Core.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* Core.h */,
@@ -700,6 +705,7 @@
 				CEB9D1F61BCC52C7003FC036 /* ObjectFactory.cpp in Sources */,
 				CEE6C0121BD43D87000C5478 /* Equip.cpp in Sources */,
 				CEE6C0081BD30AE6000C5478 /* ofxButton.cpp in Sources */,
+				CE525D0A1BD5DB6B0028DDB9 /* VFX.cpp in Sources */,
 				CEDB241E1BCEF46500D8CBE4 /* Actor.cpp in Sources */,
 				CE117CD51BCCE936003DFD6A /* Materials.cpp in Sources */,
 				CEF10E901BC62C6D00CDB768 /* Console.cpp in Sources */,

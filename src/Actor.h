@@ -10,7 +10,7 @@
 #define Actor_h
 
 #include <stdio.h>
-#include "ActorEvent.hpp"
+#include "ActorEvent.h"
 #include "ObjectFactory.h"
 #include "Weapon.h"
 
@@ -284,6 +284,8 @@ public:
     float retreatProbability();
     
     void actorEvent(ActorEvent &e);
+    
+    void cleanup();
 
 
     DEBT standStill();

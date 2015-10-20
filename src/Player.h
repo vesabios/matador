@@ -25,7 +25,7 @@ public:
     string getName() override;
     DEBT traversable() override;
     bool isPortable() override;
-    void update(DEBT d) override;
+    float update(DEBT d) override;
     Pixel render(float luma) override;
     void die() override;
 
