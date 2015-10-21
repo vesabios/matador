@@ -1,0 +1,12 @@
+<group>
+	<Freq_A>0.05</Freq_A>
+	<Amp_A>1.95</Amp_A>
+	<Offset_A>1.2</Offset_A>
+	<Freq_B>0.21</Freq_B>
+	<Amp_B>2.35</Amp_B>
+	<Offset_B>1.1</Offset_B>
+	<Freq_C>0.34</Freq_C>
+	<Amp_C>3.35</Amp_C>
+	<Offset_C>3.1</Offset_C>
+<group/>
+</group>
