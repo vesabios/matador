@@ -178,17 +178,17 @@ DEBT Actor::attack(Actor * a) {
         bool hit = false;
         bool crit = false;
         
-        static CombatEvent ce;
-        ce.a = this;
-        ce.b = a;
+        ofPtr<CombatEvent> ce = ofPtr<CombatEvent>(new CombatEvent());
+        ce->a = this;
+        ce->b = a;
         
-        ce.type = CombatEvent::MISS_EVENT;
-        ce.dmg = 0;
+        ce->type = CombatEvent::MISS_EVENT;
+        ce->dmg = 0;
         
         if (d20==1) {
             hit = false;
         } else if (d20==w->data.criticalThreat) {
-            ce.type = CombatEvent::CRIT_EVENT;
+            ce->type = CombatEvent::CRIT_EVENT;
             hit = true;
             crit = true;
         } else {
@@ -200,7 +200,7 @@ DEBT Actor::attack(Actor * a) {
             
             if (d20+m>=ac) {
                 hit = true;
-                ce.type = CombatEvent::HIT_EVENT;
+                ce->type = CombatEvent::HIT_EVENT;
             }
             
             
@@ -208,24 +208,41 @@ DEBT Actor::attack(Actor * a) {
 
         if (crit) {
             
-            ce.dmg = w->rollAttack();
+            ce->dmg = w->rollAttack();
             
             for (int i=0; i<w->data.cricitalMultiplier; i++) {
-                ce.dmg += w->rollAttack();
+                ce->dmg += w->rollAttack();
             }
             
             
         } else if (hit) {
             BYTE dmg = w->rollAttack();
             
-            ce.dmg = (int)dmg;
+            ce->dmg = (int)dmg;
 
         }
         
+
         
-        ofNotifyEvent(CombatEvent::combatEvent, ce);
+        if (w->data.weaponType == Weapon::PROJECTILE_WEAPON) {
+            
+            
+            ofPtr<CombatEvent> ae = ofPtr<CombatEvent>(new CombatEvent());
+            
+            ae->a = this;
+            ae->b = target;
+            ae->nextEvent = ce;
+            ae->type = CombatEvent::ARROW_EVENT;
+            ofNotifyEvent(CombatEvent::combatEvent, *ae);
+            
+        } else {
+            
+            ofNotifyEvent(CombatEvent::combatEvent, *ce);
+
+            
+        }
         
-        a->takeDamage(ce.dmg); // TODO: move this logic to a combat resolution class
+        //a->takeDamage(ce->dmg); // TODO: move this logic to a combat resolution class
         
         DEBT newDebt = ((float)w->data.attackDebt) * ((float)data.attackSpeed / 100.0f);
 
@@ -288,9 +305,7 @@ void Actor::takeDamage(int dmg) {
     
     data.hp -= dmg;
     
-    if (data.hp<=0) {
-        die();
-    }
+
     
 }
 
@@ -307,12 +322,7 @@ void Actor::die() {
     
     ofNotifyEvent(ActorEvent::actorEvent, ae);
     
-    cleanup();
-   
-}
-
-
-void Actor::cleanup() {
+    //cleanup();
     
     Weapon * rhw = rightHand();
     if (rhw!=NULL) {
@@ -320,6 +330,18 @@ void Actor::cleanup() {
     };
     
     delete this;
+    
+   
+}
+
+
+void Actor::cleanup() {
+    
+    if (data.hp<=0) {
+        die();
+    }
+    
+
 }
 
 DEBT Actor::tryMoving(ofVec2i moveVector) {

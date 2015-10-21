@@ -125,7 +125,7 @@ float Kobold::update(DEBT d)  {
             newDebt = standStill();
         }
         
-        ofLog() << getName() << " update debt incurred: "<<newDebt;
+       // ofLog() << getName() << " update debt incurred: "<<newDebt;
         
         actionDebt += newDebt;
         

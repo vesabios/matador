@@ -11,17 +11,23 @@
 
 #include <stdio.h>
 #include "ofEvents.h"
+#include "ofTypes.h"
 
 class Actor;
 class CombatEvent : public ofEventArgs {
     
 public:
     
+    ~CombatEvent() {
+        printf("dtor combat event\n");
+    }
+    
     enum EventType {
         NULL_EVENT,
         MISS_EVENT,
         HIT_EVENT,
-        CRIT_EVENT
+        CRIT_EVENT,
+        ARROW_EVENT
     };
     
     Actor * a;
@@ -29,7 +35,11 @@ public:
 
     EventType type;
     int dmg;
-   
+    
+    
+    ofPtr<CombatEvent> nextEvent;
+    
+    
     CombatEvent() {
         a = NULL;
         b = NULL;
@@ -38,6 +48,7 @@ public:
     }
     
     static ofEvent <CombatEvent> combatEvent;
+
 };
 
 #endif /* CombatEvent_h */

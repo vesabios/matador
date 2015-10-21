@@ -320,8 +320,16 @@ void Core::renderWorld() {
         
         double i;
         float f = modf(ofGetElapsedTimef() * 1.5f, &i);
-        BYTE reticleIndex = int(f * 8.0f);
         
+        
+        BYTE v = int(f*6.0f);
+        Pixel p(0, makeColor(0,v, v), 0, 1);
+        console.setPixel(pp, p);
+        
+        /*
+         
+        BYTE reticleIndex = int(f * 8.0f);
+         
         ofVec2i reticle;
         BYTE c;
         switch (reticleIndex) {
@@ -360,8 +368,10 @@ void Core::renderWorld() {
                 
         }
         
+        
         Pixel p(makeColor(1,5,5), 0, c, 0);
         console.setPixel(pp + reticle, p);
+         */
         
         
     }
@@ -431,6 +441,9 @@ void Core::transitActor(Actor * a, int x, int y, int z) {
         
         map->mapNumber = z;
         map->load();
+        
+        map->setWindow(player->x-40,player->x-25);
+
         
         
     } else {
@@ -519,7 +532,8 @@ void Core::reset() {
     
     map->mapNumber = player->z;
     map->load();
-    adjustWindow();
+    
+    map->setWindow(player->x-40,player->x-25);
     
     
 }
@@ -547,11 +561,10 @@ void Core::actorEvent(ActorEvent &e) {
 //--------------------------------------------------------------
 void Core::resolveTurn() {
     
-    ofLog() << "resolve turn";
+    //ofLog() << "resolve turn";
     
     resolvingTurn = true;
     updateIndex = 0;
-    
     updateList.clear();
     
     for (int i=0; i<Object::elements().size(); i++) {
@@ -560,13 +573,13 @@ void Core::resolveTurn() {
         //ofLog() << " testing " << o->getName();
         
         if (o->z== map->mapNumber) {
-            ofLog() << " adding to list " << o->getName();
+            //ofLog() << " adding to list " << o->getName();
 
             updateList.push_back(o);
         }
     }
     
-    ofLog() << "update list is: " << updateList.size() << " elements long";
+   // ofLog() << "update list is: " << updateList.size() << " elements long";
 
 }
 
@@ -600,52 +613,64 @@ void Core::update(){
             
            
             if (resolveDelay<=0) {
-
-               
-                DEBT remainingDebt = 0;
-                //ofLog() << "starting "<<remainingDebt;
-
-                float d = 0.0f;
-                while (d==0 && updateIndex<updateList.size()) {
-                    
-                    Object * o = updateList[updateIndex];
-                    
-                    d = o->update(updateDebt);
-                   // ofLog() << "update result for " << o->getName() << ": "<<d;
-
-                    Actor * a = dynamic_cast<Actor*>(o);
-                    if (a) {
-
-                        remainingDebt += a->actionDebt;
-                        //ofLog() << "finding debt... ("<<a->actionDebt<<") + "<<remainingDebt << " for "<<a->getName();
-
-                    } 
-
-                    //resolveDelay+= 0.1f;
-                    updateIndex++;
-                }
                 
-                updateDebt = 0;
-                
-                if (updateIndex>=updateList.size()) {
+                if (!vfx.busy()) {
                     
-                    if (remainingDebt<0.0f) {
+                    DEBT remainingDebt = 0;
+                    //ofLog() << "starting "<<remainingDebt;
+                    
+                    float d = 0.0f;
+                    while (d==0 && updateIndex<updateList.size()) {
                         
-                        //ofLog() << "Resolving... "<<remainingDebt;
+                        Object * o = updateList[updateIndex];
                         
-                        updateIndex = 0;
+                        d = o->update(updateDebt);
+                        // ofLog() << "update result for " << o->getName() << ": "<<d;
                         
-                        //resolveDelay += 0.25f;
-
-                        //resolveTurn();
-                    } else {
+                        Actor * a = dynamic_cast<Actor*>(o);
+                        if (a) {
+                            
+                            remainingDebt += a->actionDebt;
+                            //ofLog() << "finding debt... ("<<a->actionDebt<<") + "<<remainingDebt << " for "<<a->getName();
+                            
+                        }
                         
-                        //ofLog() << "stopping resolve now!";
-                        resolvingTurn = false;
-   
+                        //resolveDelay+= 0.1f;
+                        updateIndex++;
                     }
                     
+                    updateDebt = 0;
+                    
+                    if (updateIndex>=updateList.size()) {
+                        
+                        if (remainingDebt<0.0f) {
+                            
+                            //ofLog() << "Resolving... "<<remainingDebt;
+                            
+                            updateIndex = 0;
+                            
+                            //resolveDelay += 0.25f;
+                            
+                            //resolveTurn();
+                        } else {
+                            
+                            //ofLog() << "stopping resolve now!";
+                            resolvingTurn = false;
+                            
+                            
+                            for (int i=0; i<updateList.size(); i++) {
+                                
+                                Actor *a = dynamic_cast<Actor*>(updateList[i]);
+                                if (a) a->cleanup();
+                            }
+                            
+                        }
+                        
+                    }
                 }
+
+               
+
                 
 
             
@@ -961,25 +986,38 @@ void Core::adjustWindow() {
     
     if (state==NORMAL_STATE || state==EQUIP_STATE) {
         
+        int failsafe = 0;
+        
         while ((player->x - map->window.getMinX()) < 35) {
-            map->window.translate(-1,0);
+            map->setWindow( map->window.x -1 , map->window.y);
+            
+            failsafe++;
+            if (failsafe>3) break;
         }
         
         while ((map->window.getMaxX() - player->x) < 35) {
-            map->window.translate(1,0);
+            map->setWindow( map->window.x +1 , map->window.y);
+            failsafe++;
+            if (failsafe>3) break;
+
         }
         
-        while ((player->y - map->window.getMinY()) < 10) {
-            map->window.translate(0,-1);
+        while ((player->y - map->window.getMinY()) < 15) {
+            map->setWindow( map->window.x , map->window.y -1);
+            failsafe++;
+            if (failsafe>3) break;
+
         }
         
         while((map->window.getMaxY() - player->y) < 20) {
-            map->window.translate(0,1);
+            map->setWindow( map->window.x , map->window.y +1);
+            failsafe++;
+            if (failsafe>3) break;
+
         }
         
     } else {
-        map->window.x = cursorPos.x - CONSOLE_WIDTH/2;
-        map->window.y = cursorPos.y - CONSOLE_HEIGHT/2;
+        map->setWindow( cursorPos.x - CONSOLE_WIDTH/2, cursorPos.y - CONSOLE_HEIGHT/2);
     }
     
     
@@ -1022,9 +1060,10 @@ void Core::keyPressed(int key){
         if (key=='f') {
             if (fireTargeting) {
                 controls.fire = true;
-            } else {
-                toggleFiring();
             }
+            
+            toggleFiring();
+            
         } else if (key == OF_KEY_TAB) {
             if (fireTargeting) {
                 firingIndex++;

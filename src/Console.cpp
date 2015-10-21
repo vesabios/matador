@@ -60,7 +60,9 @@ void Console::setPixel(const BYTE x, const BYTE y, const Pixel p) {
     if (x>=0 && y>=0 && x<CONSOLE_WIDTH && y<CONSOLE_HEIGHT) {
         int idx = ((y*CONSOLE_WIDTH)+x)*4;
         
-        pixels[idx] = p.fg;
+        if (p.a!=1) {
+            pixels[idx] = p.fg;
+        }
         
 
         if (p.a>0) {
@@ -68,7 +70,11 @@ void Console::setPixel(const BYTE x, const BYTE y, const Pixel p) {
         }
         
         // character
-        pixels[idx+2] = p.c;
+        
+        
+        if (p.a!=1) {
+            pixels[idx+2] = p.c;
+        }
         
         // not used
         pixels[idx+3] = p.a;
@@ -96,6 +102,28 @@ void Console::setPixel(const BYTE x, const BYTE y, const BYTE f, const BYTE b, c
     }
     
 }
+
+//--------------------------------------------------------------
+void Console::writeString(const int x, const int y, const BYTE fg, const string s) {
+    
+    int sz = s.length();
+    
+    
+    for (int i=0; i<sz; i++) {
+        Pixel p;
+        p.fg = fg;
+        p.bg = 0;
+        p.a = 0;
+        p.c = s.at(i);
+        console.setPixel(x+i, y, p);
+        
+        // console.setPixel(x+i, y, makeColor(5,5,2), makeColor(0,2,2), s.at(i));
+    }
+    
+    
+}
+
+
 
 //--------------------------------------------------------------
 void Console::writeString(const int x, const int y, const string s) {

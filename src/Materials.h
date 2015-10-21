@@ -23,9 +23,6 @@
 class Materials {
 public:
     
-
-    
-    
     Material * mats[256];
 
     void init();

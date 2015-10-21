@@ -48,6 +48,8 @@ public:
         DWORD rightHandGuid = 0;
         DWORD leftHandGuid = 0;
         
+        DWORD rangedGuid = 0;
+        
         BYTE strength = 10;
         BYTE dexterity = 10;
         BYTE constitution = 10;

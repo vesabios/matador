@@ -33,6 +33,7 @@ public:
 
     Pixel getPixel(const BYTE x, const BYTE y);
     void writeString(const int x, const int y, const string s, const BYTE fg, const BYTE bg);
+    void writeString(const int x, const int y, const BYTE fg, const string s);
     void writeString(const int x, const int y, const string s);
     
     

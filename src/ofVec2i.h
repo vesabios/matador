@@ -112,7 +112,8 @@ public:
      */
     int dot( const ofVec2i& vec ) const;
     
-    
+    int cross( const ofVec2i& b ) const;
+
     
     
     //---------------------------------------
@@ -529,6 +530,12 @@ inline int ofVec2i::squareLength() const {
  */
 inline int ofVec2i::dot( const ofVec2i& vec ) const {
     return x*vec.x + y*vec.y ;
+}
+
+
+inline int ofVec2i::cross( const ofVec2i &b) const {
+
+    return x * b.y - y * b.x;
 }
 
 

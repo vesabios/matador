@@ -456,7 +456,7 @@ void Map::setWindow(int x, int y) {
     
     x = MAX(0,MIN(x, width - window.width));
     y = MAX(0,MIN(y, height - window.height));
-   
+ 
     window.setPosition(x,y);
 }
 

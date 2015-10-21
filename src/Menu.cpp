@@ -103,36 +103,41 @@ void Menu::keyReleased(int key) {
 
 void Menu::mouseDragged(int inx, int iny, int button) {
     
-    if (inx < (int)menuPos) {
+    
+    if (currentMainMenu==MaterialMenu) {
         
-        ofVec2i pp;
-        
-        if (ortho) {
-            printf("ortho\n");
+        if (inx < (int)menuPos) {
             
-            if (orthoAxis==AXIS_NONE) {
+            ofVec2i pp;
+            
+            if (ortho) {
+                printf("ortho\n");
                 
-                if ((int)startMousePoint.x!=inx) {
-                    orthoAxis = AXIS_HORIZONTAL;
-                } else if ((int)startMousePoint.y!=iny) {
-                    orthoAxis = AXIS_VERTICAL;
+                if (orthoAxis==AXIS_NONE) {
+                    
+                    if ((int)startMousePoint.x!=inx) {
+                        orthoAxis = AXIS_HORIZONTAL;
+                    } else if ((int)startMousePoint.y!=iny) {
+                        orthoAxis = AXIS_VERTICAL;
+                    }
+                    
+                    pp = core->windowToWorld(ofVec2i(inx, iny));
+
+                } else if (orthoAxis == AXIS_HORIZONTAL) {
+                    pp = core->windowToWorld(ofVec2i(inx, startMousePoint.y));
+                } else if (orthoAxis == AXIS_VERTICAL) {
+                    pp = core->windowToWorld(ofVec2i(startMousePoint.x, iny));
                 }
                 
+            } else {
                 pp = core->windowToWorld(ofVec2i(inx, iny));
-
-            } else if (orthoAxis == AXIS_HORIZONTAL) {
-                pp = core->windowToWorld(ofVec2i(inx, startMousePoint.y));
-            } else if (orthoAxis == AXIS_VERTICAL) {
-                pp = core->windowToWorld(ofVec2i(startMousePoint.x, iny));
+                
             }
             
-        } else {
-            pp = core->windowToWorld(ofVec2i(inx, iny));
-            
+            brushMaterial(pp, (Material::MaterialType)core->map->currentMaterial);
+
         }
         
-        brushMaterial(pp, (Material::MaterialType)core->map->currentMaterial);
-
     }
     
 }
@@ -198,6 +203,14 @@ void Menu::mousePressed(int x, int y, int button) {
             ofVec2i pp = core->windowToWorld(ofVec2f(x,y));
             
             brushMaterial(pp, (Material::MaterialType)core->map->currentMaterial);
+        } else {
+            
+            ofVec2i pp = core->windowToWorld(ofVec2f(x,y));
+
+            
+            core->placeObject(pp.x, pp.y, core->map->mapNumber, (Object::ObjectType)core->currentObject);
+
+            
         }
         
     }

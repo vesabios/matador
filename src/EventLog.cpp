@@ -52,18 +52,36 @@ void EventLog::combatEvent(CombatEvent &e) {
             stringstream ss;
             ss << e.a->getName() << " missed " << e.b->getName() << ".";
             addMessage(ss.str());
+            
+            ofLog() << ss;
+
             break;
         }
         case CombatEvent::HIT_EVENT: {
             stringstream ss;
             ss << e.a->getName() << " hit " << e.b->getName() << " for " << e.dmg << " damage.";
             addMessage(ss.str());
+            ofLog() << ss;
+            
+            e.b->takeDamage(e.dmg);
+
             break;
         }
         case CombatEvent::CRIT_EVENT: {
             stringstream ss;
-            ss << e.a->getName() << " critted " << e.b->getName() << " for " << e.dmg << " damage!";
+            ss << e.a->getName();
+            ss << " critted ";
+            ss << e.b->getName();
+            ss << " for ";
+            ss << e.dmg;
+            ss << " damage!";
             addMessage(ss.str());
+            
+            ofLog() << ss;
+
+            
+            e.b->takeDamage(e.dmg); 
+
             break;
         }
         default:

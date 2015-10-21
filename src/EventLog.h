@@ -22,6 +22,8 @@ public:
     vector<string> messages;
     
     void actorEvent(ActorEvent &e);
+    void combatEventPtr(ofPtr<CombatEvent> e);
+
     void combatEvent(CombatEvent &e);
     
     void addMessage(string s);
