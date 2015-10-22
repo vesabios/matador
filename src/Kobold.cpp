@@ -86,7 +86,7 @@ float Kobold::update(DEBT d)  {
     
         DEBT newDebt = 0;
         
-        if (damage > morale) {
+        if (data.maxhp - data.hp > 1) {
             //ofLog() << "damage greater than morale..." ;
             if (canRunAwayFromTarget()) {
                 runAwayFromTarget();

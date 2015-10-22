@@ -95,7 +95,7 @@ public:
                     core->transitActor(a, o->x, o->y, o->z);
 
                     
-                    return -1;
+                    return 1;
                     
                 }
             }

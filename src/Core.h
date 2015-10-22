@@ -17,6 +17,7 @@
 #include "Equip.h"
 #include "EventLog.h"
 #include "VFX.hpp"
+#include "Dijkstra.hpp"
 
 
 
@@ -75,10 +76,13 @@ public:
     GameState state;
 
     Map *map;
+    
 
     vector<ofVec2i> trail;
 
     bool torch = true;
+    
+    bool debugGraph = false;
     
     
     bool resolvingTurn = false;

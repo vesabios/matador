@@ -116,19 +116,19 @@ void Inspect::createMenu() {
     unsigned char bg = makeColor(0,1,3);
     unsigned char fg = makeColor(5,5,5);
     
-    printf("creating menu!\n");
+    //printf("creating menu!\n");
     
     if (currentObject!=NULL) {
         vector<Reflector> v = currentObject->reflectors;
         
         for (int i=0; i<v.size(); i++) {
             
-            printf("%s\n", v[i].name.c_str());
-            printf("%s\n", v[i].t->name());
+            //printf("%s\n", v[i].name.c_str());
+            //printf("%s\n", v[i].t->name());
             
             if (*v[i].t == typeid(unsigned char)) {
-                printf("unsigned char identified\n");
-                printf("%d\n", *(BYTE*)v[i].ptr);
+                //printf("unsigned char identified\n");
+                //printf("%d\n", *(BYTE*)v[i].ptr);
                 
                 Clickable c;
                 c.fg = fg;
@@ -151,8 +151,8 @@ void Inspect::createMenu() {
                 btns.push_back(c);
                 
             } else if (*v[i].t == typeid(int)) {
-                printf("int identified\n");
-                printf("%d\n", *(int*)v[i].ptr);
+                //printf("int identified\n");
+                //printf("%d\n", *(int*)v[i].ptr);
 
                 
                 Clickable c;
@@ -177,8 +177,8 @@ void Inspect::createMenu() {
                 
             } else if (*v[i].t == typeid(bool)) {
                 
-                printf("bool identified\n");
-                printf("%d\n", *(bool*)v[i].ptr);
+                //printf("bool identified\n");
+                //printf("%d\n", *(bool*)v[i].ptr);
                 Clickable c;
                 c.fg = fg;
                 c.bg = bg;

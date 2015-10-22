@@ -193,6 +193,8 @@ bool Player::isPortable()  {
 }
 
 float Player::update(DEBT d)  {
+    
+    
     actionDebt -= d;
     if (actionDebt<0) {
         actionDebt = 0;

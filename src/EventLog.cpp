@@ -49,11 +49,10 @@ void EventLog::combatEvent(CombatEvent &e) {
             break;
         }
         case CombatEvent::MISS_EVENT: {
-            stringstream ss;
-            ss << e.a->getName() << " missed " << e.b->getName() << ".";
-            addMessage(ss.str());
-            
-            ofLog() << ss;
+            //stringstream ss;
+            //ss << e.a->getName() << " missed " << e.b->getName() << ".";
+            //addMessage(ss.str());
+            //ofLog() << ss;
 
             break;
         }

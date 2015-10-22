@@ -13,6 +13,7 @@
 #include "ActorEvent.h"
 #include "ObjectFactory.h"
 #include "Weapon.h"
+#include "Dijkstra.hpp"
 
 class Weapon;
 
@@ -260,6 +261,13 @@ public:
     int damage = 0;
     int morale = 100;
     
+    Dijkstra graph;
+
+    
+    
+    bool autoTravel = false;
+    ofVec2i destination;
+    
     Actor * target = NULL;
     
     bool withinRange();
@@ -284,6 +292,8 @@ public:
     
     float chargeProbability();
     float retreatProbability();
+    
+    void setDestination(ofVec2i d);
     
     void actorEvent(ActorEvent &e);
     

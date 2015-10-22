@@ -12,6 +12,7 @@
 #include "ActorEvent.h"
 #include "CombatEvent.h"
 
+
 Actor::Actor() {
     ofAddListener(ActorEvent::actorEvent, this, &Actor::actorEvent);
 }
@@ -82,23 +83,47 @@ bool Actor::canMoveTowardTarget() {
 void Actor::moveAwayFromTarget() {
     if (target==NULL) return;
     
-    ofLog() << "moving away..." ;
-}
-
-void Actor::moveTowardTarget() {
-    if (target==NULL) return;
-    
-    ofVec2f d = ofVec2f(target->x, target->y) - ofVec2f(x,y);
+    ofVec2f d = ofVec2f(x,y) - ofVec2f(target->x, target->y);
     d.normalize();
     
-  
-    if (abs(abs(d.x) - abs(d.y)) < 0.5f) {
+    if (abs(abs(d.x) - abs(d.y)) < 0.33333f) {
         tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
     } else if (abs(d.x)>abs(d.y)) {
         tryMoving(ofVec2i(sgn(d.x), 0));
     } else {
         tryMoving(ofVec2i(0,sgn(d.y)));
     }
+    
+    ofLog() << "moving away ... ";
+
+}
+
+void Actor::moveTowardTarget() {
+    if (target==NULL) return;
+    
+    graph.setWorldCenter(x,y);
+    graph.goal = ofVec2i(target->x, target->y);
+    graph.process();
+    
+    ofVec2i moveVector = graph.getMoveVector();
+    
+    tryMoving(moveVector);
+
+    
+    /*
+    
+    ofVec2f d = ofVec2f(target->x, target->y) - ofVec2f(x,y);
+    d.normalize();
+    
+  
+    if (abs(abs(d.x) - abs(d.y)) < 0.33333f) {
+        tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
+    } else if (abs(d.x)>abs(d.y)) {
+        tryMoving(ofVec2i(sgn(d.x), 0));
+    } else {
+        tryMoving(ofVec2i(0,sgn(d.y)));
+    }
+     */
     
 }
 
@@ -111,13 +136,16 @@ bool Actor::canRunAwayFromTarget() {
 void Actor::runAwayFromTarget() {
     if (target==NULL) return;
     
-    ofVec2i d = ofVec2i(x,y) - ofVec2i(target->x, target->y);
+    ofVec2f d = ofVec2f(x,y) - ofVec2f(target->x, target->y);
     d.normalize();
     
-    int mx = round(d.x+0.4f);
-    int my = round(d.y+0.4f);
-    
-    tryMoving(ofVec2i(mx,my));
+    if (abs(abs(d.x) - abs(d.y)) < 0.33333f) {
+        tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
+    } else if (abs(d.x)>abs(d.y)) {
+        tryMoving(ofVec2i(sgn(d.x), 0));
+    } else {
+        tryMoving(ofVec2i(0,sgn(d.y)));
+    }
     
     ofLog() << "running away ... ";
 }
@@ -168,7 +196,6 @@ DEBT Actor::attack(Actor * a) {
     Weapon * w = rightHand();
     
     if (w!=NULL) {
-        
         
         float distanceToTarget = ofVec2i(x, y).distance(ofVec2i(a->x, a->y)) * FEET_PER_TILE; // 5 feet per square
 
@@ -230,7 +257,7 @@ DEBT Actor::attack(Actor * a) {
             ofPtr<CombatEvent> ae = ofPtr<CombatEvent>(new CombatEvent());
             
             ae->a = this;
-            ae->b = target;
+            ae->b = a;
             ae->nextEvent = ce;
             ae->type = CombatEvent::ARROW_EVENT;
             ofNotifyEvent(CombatEvent::combatEvent, *ae);
@@ -344,6 +371,12 @@ void Actor::cleanup() {
 
 }
 
+void Actor::setDestination(const ofVec2i d) {
+    destination = d;
+    graph.goal = d;
+    autoTravel = true;
+}
+
 DEBT Actor::tryMoving(ofVec2i moveVector) {
    
     bool vert = false;
@@ -373,6 +406,13 @@ DEBT Actor::tryMoving(ofVec2i moveVector) {
     }
     
     newDebt = MAX(newDebt, 100);
+    
+    if (destination == ofVec2i(x,y)) {
+        autoTravel = false;
+    }
+    
+
+
 
     actionDebt+= round((float)newDebt * (((float)data.movementSpeed) / 100.0f));
     return newDebt;

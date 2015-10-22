@@ -23,6 +23,7 @@
 		CEDB241E1BCEF46500D8CBE4 /* Actor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB241C1BCEF46500D8CBE4 /* Actor.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB24241BCEF53300D8CBE4 /* Kobold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB24221BCEF53300D8CBE4 /* Kobold.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB24271BCEFAFF00D8CBE4 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB24251BCEFAFF00D8CBE4 /* Player.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEDE6B3F1BD7F9A10041FF0B /* Dijkstra.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDE6B3D1BD7F9A10041FF0B /* Dijkstra.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6BFEB1BD24B61000C5478 /* Weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6BFEE1BD24CAD000C5478 /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFED1BD24CAD000C5478 /* Item.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6BFF11BD2CC15000C5478 /* MapData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFF01BD2CC15000C5478 /* MapData.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -172,6 +173,8 @@
 		CEDB24291BCF80B600D8CBE4 /* FSM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSM.h; sourceTree = "<group>"; };
 		CEDB242A1BCF811200D8CBE4 /* ofVec4i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofVec4i.h; sourceTree = "<group>"; };
 		CEDB242B1BCF816C00D8CBE4 /* ofVec2i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofVec2i.h; sourceTree = "<group>"; };
+		CEDE6B3D1BD7F9A10041FF0B /* Dijkstra.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dijkstra.cpp; sourceTree = "<group>"; };
+		CEDE6B3E1BD7F9A10041FF0B /* Dijkstra.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dijkstra.hpp; sourceTree = "<group>"; };
 		CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Weapon.cpp; sourceTree = "<group>"; };
 		CEE6BFEC1BD24C91000C5478 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
 		CEE6BFED1BD24CAD000C5478 /* Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
@@ -563,28 +566,30 @@
 				CE2B25551BC9E1DC0091BE45 /* Objects */,
 				CEFCE5941BBF55A800D68A81 /* shaders */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
-				CEBD73051BC5596C003B1D7D /* Engine.cpp */,
-				CEBD73061BC5596C003B1D7D /* Engine.h */,
-				CEDB24291BCF80B600D8CBE4 /* FSM.h */,
-				CEE6C0101BD43D87000C5478 /* Equip.cpp */,
-				CEE6C0111BD43D87000C5478 /* Equip.h */,
+				CE2CD4901BC369F6000014AC /* AStar.cpp */,
+				CE2CD4911BC369F6000014AC /* AStar.h */,
+				CEF10E8E1BC62C6D00CDB768 /* Console.cpp */,
+				CEF10E8F1BC62C6D00CDB768 /* Console.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* Core.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* Core.h */,
 				CEB05CB41BC553F4008343B3 /* Defines.h */,
-				CE117BA51BCCA8EC003DFD6A /* Serializer.cpp */,
-				CE117BA61BCCA8EC003DFD6A /* Serializer.hpp */,
-				CEF10E8E1BC62C6D00CDB768 /* Console.cpp */,
-				CEF10E8F1BC62C6D00CDB768 /* Console.h */,
-				CE2CD4901BC369F6000014AC /* AStar.cpp */,
-				CE2CD4911BC369F6000014AC /* AStar.h */,
-				CED0B15D1BC76F4700FD1361 /* Menu.cpp */,
-				CED0B15E1BC76F4700FD1361 /* Menu.h */,
-				CE2CD48A1BC2FDC9000014AC /* Map.cpp */,
-				CE2CD48B1BC2FDC9000014AC /* Map.h */,
-				CEDB24151BCE0BE800D8CBE4 /* Paint.cpp */,
-				CEDB24161BCE0BE800D8CBE4 /* Paint.h */,
+				CEDE6B3D1BD7F9A10041FF0B /* Dijkstra.cpp */,
+				CEDE6B3E1BD7F9A10041FF0B /* Dijkstra.hpp */,
+				CEBD73051BC5596C003B1D7D /* Engine.cpp */,
+				CEBD73061BC5596C003B1D7D /* Engine.h */,
+				CEE6C0101BD43D87000C5478 /* Equip.cpp */,
+				CEE6C0111BD43D87000C5478 /* Equip.h */,
+				CEDB24291BCF80B600D8CBE4 /* FSM.h */,
 				CEDB241A1BCECAC900D8CBE4 /* Inspect.cpp */,
 				CEDB24191BCECA8400D8CBE4 /* Inspect.h */,
+				CE2CD48A1BC2FDC9000014AC /* Map.cpp */,
+				CE2CD48B1BC2FDC9000014AC /* Map.h */,
+				CED0B15D1BC76F4700FD1361 /* Menu.cpp */,
+				CED0B15E1BC76F4700FD1361 /* Menu.h */,
+				CEDB24151BCE0BE800D8CBE4 /* Paint.cpp */,
+				CEDB24161BCE0BE800D8CBE4 /* Paint.h */,
+				CE117BA51BCCA8EC003DFD6A /* Serializer.cpp */,
+				CE117BA61BCCA8EC003DFD6A /* Serializer.hpp */,
 				CEDB242B1BCF816C00D8CBE4 /* ofVec2i.h */,
 				CEDB242A1BCF811200D8CBE4 /* ofVec4i.h */,
 			);
@@ -696,6 +701,7 @@
 				CEE6C0091BD30AE6000C5478 /* ofxGuiGroup.cpp in Sources */,
 				CE2CD48C1BC2FDC9000014AC /* Map.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				CEDE6B3F1BD7F9A10041FF0B /* Dijkstra.cpp in Sources */,
 				CED0B15F1BC76F4700FD1361 /* Menu.cpp in Sources */,
 				CEE6BFEB1BD24B61000C5478 /* Weapon.cpp in Sources */,
 				CEDB24241BCEF53300D8CBE4 /* Kobold.cpp in Sources */,

@@ -111,7 +111,6 @@ void Menu::mouseDragged(int inx, int iny, int button) {
             ofVec2i pp;
             
             if (ortho) {
-                printf("ortho\n");
                 
                 if (orthoAxis==AXIS_NONE) {
                     

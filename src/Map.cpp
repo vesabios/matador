@@ -427,10 +427,7 @@ DEBT Map::traversable(int x, int y) {
 
 //--------------------------------------------------------------
 float Map::isWindowOpaque(int x, int y) {
-
-    //return !tiles[(x+(int)window.getMinX())+(y+(int)window.getMinY())*width].mat->isOpaque();
-
-    
+   
     Tile * t = getWindowTile(x,y);
     if (t!=NULL) {
         if (t->mat==NULL) {

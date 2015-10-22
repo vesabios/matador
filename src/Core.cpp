@@ -442,8 +442,9 @@ void Core::transitActor(Actor * a, int x, int y, int z) {
         map->mapNumber = z;
         map->load();
         
+        p->graph.process();
+        
         map->setWindow(player->x-40,player->x-25);
-
         
         
     } else {
@@ -610,7 +611,6 @@ void Core::update(){
         if (actionDebt>=0) actionDebt -= 15.0f * 60.0f * deltaTime;
         
         if (resolvingTurn) {
-            
            
             if (resolveDelay<=0) {
                 
@@ -682,7 +682,9 @@ void Core::update(){
                     
         } else {
             
-            if (controls.active()) {
+
+                
+           if (controls.active() || player->autoTravel ) {
 
                 bool vert = false;
                 
@@ -695,28 +697,43 @@ void Core::update(){
                     
                     ofVec2i moveVector;
                     
-                    if (controls.up) {
-                        moveVector.y = -1;
-                    } else if (controls.down) {
-                        moveVector.y = 1;
+
+                    
+                    if (player->autoTravel) {
+                        player->graph.setWorldCenter(player->x, player->y);
+                        player->graph.process();
+                        
+                        moveVector = player->graph.getMoveVector();
+                        
+                    } else {
+                        if (controls.up) {
+                            moveVector.y = -1;
+                        } else if (controls.down) {
+                            moveVector.y = 1;
+                        }
+                        
+                        if (controls.left) {
+                            moveVector.x = -1;
+                        } else if (controls.right) {
+                            moveVector.x = 1;
+                        }
+                        
                     }
                     
-                    if (controls.left) {
-                        moveVector.x = -1;
-                    } else if (controls.right) {
-                        moveVector.x = 1;
-                    }
                     
                     newPlayerDebt = player->tryInteracting(moveVector);
+                    
+                    if (newPlayerDebt>0) {
+                        player->autoTravel = false;
+                    }
                     
                     
                     if (controls.fire) {
                         newPlayerDebt += player->attack(player->target);
+                        controls.fire = false;
                     }
                     
                     resolveDelay = MIN(0.2f,((float)newPlayerDebt) / TIME_TO_DEBT_SCALAR);
-
-                    
                     
                     if (newPlayerDebt>=0 && newPlayerDebt < DEBT_TURN_THRESHOLD ) {
                         newPlayerDebt += player->tryMoving(moveVector);
@@ -925,6 +942,7 @@ void Core::update(){
     }
     
     vfx.update(deltaTime);
+    
 
     
     menu.render();
@@ -944,7 +962,11 @@ void Core::update(){
         console.setPixel(pp.x, pp.y, makeColor(5,5,0), makeColor(5,0,0), 'X');
     }
     
-
+    //ofVec2i pp = windowToWorld(mousePos);
+    //player->graph.goal = pp;
+    //player->graph.process();
+    
+    if (debugGraph) player->graph.render();
     
     if (state==NORMAL_STATE || state==EQUIP_STATE) {
         
@@ -1055,6 +1077,10 @@ void Core::keyPressed(int key){
         
         if (key=='e') {
             state=EQUIP_STATE;
+        }
+        
+        if (key=='g') {
+            debugGraph = !debugGraph;
         }
         
         if (key=='f') {
@@ -1183,8 +1209,16 @@ void Core::mouseDragged(int x, int y, int button){
 void Core::mousePressed(int x, int y, int button){
     
     mousePos = ofVec2i((x-1) / 16,(y-1) /16);
-
-    if (state==EDIT_STATE) {
+    
+    if (state==NORMAL_STATE) {
+        
+        ofVec2i pp = windowToWorld(mousePos);
+        
+        if (map->traversable(pp.x, pp.y)) {
+            player->setDestination(pp);
+        }
+        
+    } else if (state==EDIT_STATE) {
         menu.mousePressed(mousePos.x, mousePos.y, button);
     } else if (state==PAINT_STATE) {
         paint.mousePressed(mousePos.x, mousePos.y, button);
