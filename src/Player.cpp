@@ -20,7 +20,7 @@ void Player::init() {
     weapon->init();
     weapon->z = VOID_LOCATION;
     
-    data.rightHandGuid = weapon->guid;
+    data.meleeGuid = weapon->guid;
     data.inventory[1] = weapon->guid;
 
 
@@ -50,7 +50,7 @@ void Player::init() {
 
 bool Player::hasWeaponTypeEquipped(Weapon::WeaponType t) {
     
-    Weapon * w = findWeaponByGuid(data.rightHandGuid);
+    Weapon * w = findWeaponByGuid(data.meleeGuid);
     if (w != NULL) {
         if (w->data.weaponType == t) {
             return true;
@@ -70,7 +70,7 @@ void Player::cycleWeapons() {
     int startingIndex = -1;
     
     for (int i=0; i<254; i++) {
-        if (data.inventory[i]==data.rightHandGuid) {
+        if (data.inventory[i]==data.meleeGuid) {
             startingIndex = i;
         }
     }
@@ -82,7 +82,7 @@ void Player::cycleWeapons() {
         w = findWeaponByGuid(data.inventory[i]);
         if (w != NULL) {
             
-            data.rightHandGuid = w->guid;
+            data.meleeGuid = w->guid;
             return;
         }
     }
@@ -90,7 +90,7 @@ void Player::cycleWeapons() {
     for (int i=0; i<startingIndex; i++) {
         w = findWeaponByGuid(data.inventory[i]);
         if (w != NULL) {
-            data.rightHandGuid = w->guid;
+            data.meleeGuid = w->guid;
             return;
         }
     }
@@ -120,39 +120,50 @@ DEBT Player::traversable()  {
     return TRAVERSE_BLOCKED;
 }
 
-InteractionType Player::getInteractionTypeForInteractor(Object *) {
+InteractionType Player::getInteractionType(Object *) {
     return Attack;
 }
 
-DEBT Player::tryInteracting(ofVec2i moveVector) {
-
+void Player::tryInteracting(ofVec2i moveVector) {
+    
     for (int i=0; i<Object::elements().size(); i++) {
         Object * o = Object::elements()[i];
         if (o->z == core->map->mapNumber) {
             if (o->x == x + moveVector.x) {
                 if (o->y == y + moveVector.y) {
-                    DEBT d = o->interactable();
-                    if (d > 0) {
-                        return interact(o);
+                    InteractionType t = o->getInteractionType(this);
+                    if (t > 0) {
+                        autoTravel = false;
+                        interact(o);
                     }
                 }
             }
         }
     }
-    return 0;
 }
 
-DEBT Player::interact(Object * o) {
+
+
+void Player::interact(Object * o) {
     
     ofLog() << "interacting with " << o->getName() << endl;
     
-    InteractionType it = o->getInteractionTypeForInteractor(this);
+    InteractionType it = o->getInteractionType(this);
     
     switch (it) {
         case Stare:
             break;
         case Read:
+        {
+            Actor* a = dynamic_cast<Actor*>(o);
+            if (a) {
+                
+                a->readLines();
+                
+            }
+            
             break;
+        }
         case Take:
             break;
         case Use:
@@ -162,9 +173,7 @@ DEBT Player::interact(Object * o) {
                 
                 // call the object's use function and pass the player object along as the argument
                 
-                return i->use(static_cast<Actor*>(this));
-            } else {
-                return 0;
+                actionDebt += i->use(static_cast<Actor*>(this));
             }
             break;
         }
@@ -174,17 +183,15 @@ DEBT Player::interact(Object * o) {
             if (a) {
                 
                 // call the player's attack function and pass along the targeted actor (if it is one!) (it should be)
+                ofLog() << "attacking!";
 
-                return attack(a);
-            } else {
-                return 0;
+                attack(a);
             }
             break;
         }
         default:
             break;
     }
-    return 0;
     
 }
 
@@ -202,6 +209,10 @@ float Player::update(DEBT d)  {
     return 0.0f;
 }
 
+
+
+
+
 Pixel Player::render(float luma)  {
     Pixel p;
     p.fg = makeColor(5,5,5);
@@ -213,7 +224,6 @@ Pixel Player::render(float luma)  {
 
 
 void Player::die() {
-    ofLog() << "PLAYER death!";
     
 }
 

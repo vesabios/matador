@@ -30,11 +30,10 @@ Map::Map(int width, int height) : width(width), height(height) {
         
         tiles[x+y*width].canWalk = false;
         tiles[x+y*width].mat = mats[MStoneWall];
-        
-        
+     
     }
      
-     */
+    */
     
     
 }

@@ -35,11 +35,7 @@ public:
         return "Door";
     }
     
-    DEBT interactable() override {
-        return 1;
-    }
-    
-    InteractionType getInteractionTypeForInteractor(Object *) override {
+    InteractionType getInteractionType(Object *) override {
         return Use;
     }
     
@@ -95,7 +91,7 @@ public:
                     core->transitActor(a, o->x, o->y, o->z);
 
                     
-                    return 1;
+                    //return 1;
                     
                 }
             }
@@ -107,9 +103,8 @@ public:
     
     string getName() override { return "Transit"; }
     
-    DEBT interactable() override { return 1; }
     
-    InteractionType getInteractionTypeForInteractor(Object *) override {
+    InteractionType getInteractionType(Object *) override {
         return Use;
     }
     
@@ -149,7 +144,7 @@ public:
         REFLECT(amount)
     }
     
-    InteractionType getInteractionTypeForInteractor(Object *) override {
+    InteractionType getInteractionType(Object *) override {
         return Take;
     }
     
@@ -158,7 +153,6 @@ public:
     }
     
     string getName() override  { return "Coin"; }
-    DEBT interactable() override { return 1; }
     DEBT traversable() override { return TRAVERSE_NORMAL; }
     bool isPortable() override { return true; }
     float update(DEBT d) override { return 0.0f; }

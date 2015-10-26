@@ -18,6 +18,7 @@
 #include "EventLog.h"
 #include "VFX.hpp"
 #include "Dijkstra.hpp"
+#include "Dialog.hpp"
 
 
 
@@ -44,6 +45,7 @@ public:
         bool rest = false;
         bool space = false;
         bool fire = false;
+        bool tab = false;
         
         public: bool active() {
             return up || down || left || right || t || rest || space || fire;
@@ -51,6 +53,7 @@ public:
 
     
     };
+
 
     void setup();
     void update();
@@ -96,7 +99,8 @@ public:
     float isOpaque(int x, int y, float currentOpaque);
 
     void raytrace(int x0, int y0, int x1, int y1);
-    
+    bool losCheck(Object * a, Object * b);
+
     void transitActor(Actor* a, int x, int y, int z);
 
     void adjustWindow();
@@ -147,6 +151,7 @@ public:
     ofVec2i cursorPos;
     ofVec2i mousePos;
 
+    float reticleTime = 0.0f;
     float deltaTime = 0.0f;
     float lastTime = 0.0f;
 

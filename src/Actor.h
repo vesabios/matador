@@ -17,11 +17,21 @@
 
 class Weapon;
 
+
+
 class Actor : public Object {
     
 public:
     
-    enum State {
+    enum HealthState {
+        Uninjured,  // >75
+        Injured,    // >50
+        Wounded,    // >25
+        NearDeath,  // >0
+        Dead,       // 0
+    };
+    
+    enum ActorState {
         VOID,
         SLEEP,
         IDLE,
@@ -39,6 +49,7 @@ public:
     };
     
     
+    
     struct data_t {
         
         int maxhp = 10;
@@ -46,9 +57,8 @@ public:
         int movementSpeed = 100;
         int attackSpeed = 100;
         
-        DWORD rightHandGuid = 0;
-        DWORD leftHandGuid = 0;
-        
+        DWORD meleeGuid = 0;
+        DWORD offHandGuid = 0;
         DWORD rangedGuid = 0;
         
         BYTE strength = 10;
@@ -70,8 +80,17 @@ public:
     
     data_t data;
     
-    Weapon * leftHand();
-    Weapon * rightHand();
+    string lines[30];
+    
+    
+    Weapon * activeWeapon();
+    
+    void switchWeapons();
+
+    Weapon * offHand();
+    Weapon * melee();
+    Weapon * ranged();
+
     
     void initReflectors() override {
         REFLECT(hp)
@@ -123,7 +142,6 @@ public:
     int intMod() {
         return getModifier(intelligence());
     }
-
 
     int wisdom() {
         return data.wisdom;
@@ -255,11 +273,14 @@ public:
         
     }
     
-  
+    int weaponSet = 0;
+    
     float speedMultiplier = 1.0f;
     
     int damage = 0;
     int morale = 100;
+    
+    int fear = 0;
     
     Dijkstra graph;
 
@@ -271,25 +292,34 @@ public:
     Actor * target = NULL;
     
     bool withinRange();
+    bool withinMeleeRange();
+    bool withinRangedRange();
+    bool withinSwitchToMeleeRange();
+    
     bool canRunAwayFromTarget();
     void runAwayFromTarget();
     
     bool canAttackTarget();
-    DEBT attackTarget();
+    void attackTarget();
     
     bool tooCloseToTarget();
-    bool canMoveAwayFromTarget();
-    void moveAwayFromTarget();
+  //  bool canMoveAwayFromTarget();
+    bool moveAwayFromTarget();
+    bool moveTowardsOwnKind();
     
     bool tooFarFromTarget();
     bool canMoveTowardTarget();
     void moveTowardTarget();
     
+    float closestTypeDistance();
+
     void setSpeedMultiplier(float s);
     
     void takeDamage(int dmg);
-    virtual void die();
     
+    virtual void die();
+    virtual void readLines();
+  
     float chargeProbability();
     float retreatProbability();
     
@@ -298,13 +328,15 @@ public:
     void actorEvent(ActorEvent &e);
     
     void cleanup();
-
-
-    DEBT standStill();
-    DEBT attack(Actor * a);
-    DEBT fire(Actor * a);
+        
+    HealthState getGeneralHealth();
+    
+    bool canAct();
+    void standStill();
+    void attack(Actor * a);
+    void fire(Actor * a);
     DEBT actionDebt = 0;
-    DEBT tryMoving(ofVec2i moveVector);
+    bool tryMoving(ofVec2i moveVector);
 
 };
 

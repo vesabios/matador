@@ -20,5 +20,7 @@ void Materials::init() {
     mats[Material::Void] = new class MVoid(Material::Void);
     mats[Material::Algae] = new class MAlgae(Material::Algae);
     mats[Material::GreenGrass] = new class MGreenGrass(Material::GreenGrass);
-    
+    mats[Material::LightDirt] = new class MLightDirt(Material::LightDirt);
+    mats[Material::StoneRubble] = new class MStoneRubble(Material::StoneRubble);
+
 }

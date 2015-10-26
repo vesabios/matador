@@ -35,7 +35,9 @@ public:
         StoneFloor,
         Algae,
         GreenGrass,
-        DenseForest
+        DenseForest,
+        LightDirt,
+        StoneRubble
     };
     
     ofxFloatSlider * aFreq;

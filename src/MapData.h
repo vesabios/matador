@@ -31,12 +31,11 @@ public:
     
     
     virtual string getName() override { return "MapData"; }
-    virtual DEBT interactable() override { return 0; }
     virtual DEBT traversable() override { return 0; }
     virtual bool isPortable() override { return false; }
     virtual Pixel render(float luma) override { Pixel p; return p;};
     virtual float update(DEBT d) override { return 0.0f; };
-    virtual InteractionType getInteractionTypeForInteractor(Object *) override { return None; }
+    virtual InteractionType getInteractionType(Object *) override { return None; }
     virtual void init() override  {};
     
     OBJTYPE(MapData);

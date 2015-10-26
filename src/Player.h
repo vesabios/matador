@@ -16,11 +16,10 @@ class Player : public Actor {
 public:
     
  
-    InteractionType getInteractionTypeForInteractor(Object *) override;
-    DEBT interactable() override { return 0; }
+    InteractionType getInteractionType(Object *) override;
 
-    DEBT tryInteracting(ofVec2i moveVector);
-    DEBT interact(Object * o);
+    void tryInteracting(ofVec2i moveVector);
+    void interact(Object * o);
     
     string getName() override;
     DEBT traversable() override;

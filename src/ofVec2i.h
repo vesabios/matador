@@ -74,8 +74,8 @@ public:
     
     // Distance between two points.
     //
-    int distance( const ofVec2i& pnt) const;
-    int squareDistance( const ofVec2i& pnt ) const;
+    float distance( const ofVec2i& pnt) const;
+    float squareDistance( const ofVec2i& pnt ) const;
     
     
     // Linear interpolation.
@@ -105,8 +105,8 @@ public:
     
     // Length
     //
-    int length() const;
-    int squareLength() const;
+    float length() const;
+    float squareLength() const;
     /**
      * Dot Product.
      */
@@ -132,10 +132,10 @@ public:
     ofVec2i limited(int max) const;
     
     // squareLength
-    int lengthSquared() const;
+    float lengthSquared() const;
     
     // use squareDistance
-    int  distanceSquared( const ofVec2i& pnt ) const;
+    float  distanceSquared( const ofVec2i& pnt ) const;
     
     // use getInterpolated
     ofVec2i 	interpolated( const ofVec2i& pnt, int p ) const;
@@ -367,20 +367,20 @@ inline ofVec2i& ofVec2i::scale( const int length ) {
 // Distance between two points.
 //
 //
-inline int ofVec2i::distance( const ofVec2i& pnt) const {
-    int vx = x-pnt.x;
-    int vy = y-pnt.y;
+inline float ofVec2i::distance( const ofVec2i& pnt) const {
+    float vx = x-pnt.x;
+    float vy = y-pnt.y;
 
-    return (int)sqrt( vx*vx + vy*vy );
+    return (float)sqrt( vx*vx + vy*vy );
 }
 
-inline int ofVec2i::distanceSquared( const ofVec2i& pnt ) const {
+inline float ofVec2i::distanceSquared( const ofVec2i& pnt ) const {
     return squareDistance(pnt);
 }
 
-inline int ofVec2i::squareDistance( const ofVec2i& pnt ) const {
-    int vx = x-pnt.x;
-    int vy = y-pnt.y;
+inline float ofVec2i::squareDistance( const ofVec2i& pnt ) const {
+    float vx = x-pnt.x;
+    float vy = y-pnt.y;
 
     return vx*vx + vy*vy ;
 }
@@ -511,16 +511,16 @@ inline ofVec2i& ofVec2i::limit(int max) {
 // Length
 //
 //
-inline int ofVec2i::length() const {
-    return (int)sqrt( x*x + y*y  );
+inline float ofVec2i::length() const {
+    return (float)sqrt( x*x + y*y  );
 }
 
-inline int ofVec2i::lengthSquared() const {
+inline float ofVec2i::lengthSquared() const {
     return squareLength();
 }
 
-inline int ofVec2i::squareLength() const {
-    return (int)(x*x + y*y );
+inline float ofVec2i::squareLength() const {
+    return (float)(x*x + y*y );
 }
 
 

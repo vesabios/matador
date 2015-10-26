@@ -10,8 +10,7 @@
 #define MStoneWall_h
 
 #include <stdio.h>
-//#include "ofMain.h"
-//#include "Defines.h"
+
 #include "Material.h"
 
 
@@ -56,7 +55,7 @@ public:
     MStoneWall(Material::MaterialType mt) : Material(mt) {}
     string getName() override { return "Stone Wall"; }
     
-    float isOpaque() override { return 1.0; }
+    float isOpaque() override { return 1.0f; }
     DEBT traversable() override { return TRAVERSE_BLOCKED; }
     Pixel operator()(ofVec2i pos, float luma) override {
         

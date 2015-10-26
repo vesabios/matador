@@ -130,8 +130,11 @@ public:
         HeavyCrossbow,
         Longbow,
         Sword,
+        Falchion,
         Kobold = 65536,
-        Player
+        Player,
+        Magician,
+        Orc
         
     };
     
@@ -158,23 +161,20 @@ public:
     }
     
     Object() {
-        ofLog() << "object ctor";
         elements().push_back(this);
     }
     
     virtual ~Object() {
-        ofLog() << "object dtor";
         elements().erase(std::remove(elements().begin(), elements().end(), this), elements().end());
     }
     
     
     virtual string getName() = 0;
-    virtual DEBT interactable() = 0;
     virtual DEBT traversable() = 0;
     virtual bool isPortable() = 0;
     virtual Pixel render(float luma) = 0;
     virtual float update(DEBT d) = 0;
-    virtual InteractionType getInteractionTypeForInteractor(Object *) = 0;
+    virtual InteractionType getInteractionType(Object *) = 0;
     virtual void init() = 0;
 
     vector<Reflector> reflectors;
@@ -225,7 +225,6 @@ public:
         static map<Object::ObjectType, ObjectFactory*> f;
         return f;
     }
-    
     
     static vector<Object*> removeList() {
         static vector<Object*> t;

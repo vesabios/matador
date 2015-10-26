@@ -28,6 +28,6 @@ void Equip::keyPressed(int key) {
 void Equip::render() {
     
     console.writeString(5,6,"RH: ", makeColor(4,4,4), 0);
-    console.writeString(9,6,core->player->rightHand()->getName(), makeColor(5,5,0), 0);
+    console.writeString(9,6,core->player->melee()->getName(), makeColor(5,5,0), 0);
     
 }

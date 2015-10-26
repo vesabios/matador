@@ -45,7 +45,7 @@ public:
         data.die = 4;
         data.numberOfDice = 1;
         data.weaponType = ONE_HANDED_WEAPON;
-        data.attackDebt = 300;
+        data.attackDebt = 150;
 
 
     }
@@ -76,8 +76,8 @@ public:
         data.die = 3;
         data.numberOfDice = 1;
         data.weaponType = PROJECTILE_WEAPON;
-        BYTE rangeIncrememt = 50; // 50 ft range
-        data.attackDebt = 200;
+        data.range = 50; // 50 ft range
+        data.attackDebt = 400;
 
     }
     
@@ -98,3 +98,37 @@ public:
 };
 
 REGISTER_OBJTYPE(Sling);
+
+
+
+class Falchion : public Weapon {
+public:
+    
+    void init() override {
+        data.die = 4;
+        data.numberOfDice = 2;
+        data.criticalThreat = 18; // standard natural 20 crit roll
+        data.toHit = 4;
+        data.damageBonus = 4;
+        data.weaponType = TWO_HANDED_WEAPON;
+        data.attackDebt = 300;
+        
+    }
+    
+    
+    string getName() override  { return "Falchion"; }
+    
+    Pixel render(float luma) override {
+        Pixel p;
+        p.fg = makeColor(5,5,0);
+        p.bg = 0;
+        p.c = toascii('/');
+        return p;
+    }
+    
+    OBJTYPE(Falchion);
+    MSGPACK_DEFINE(type, guid, bundle, x, y, z);
+    
+};
+
+REGISTER_OBJTYPE(Falchion);

@@ -50,6 +50,7 @@ typedef int DEBT;
 
 #define VOID_LOCATION 20000
 
+#define OMIT_VALUE 10000
 
 #define FEET_PER_TILE 5
 

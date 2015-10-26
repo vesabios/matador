@@ -177,10 +177,19 @@ void Core::raytrace(int x0, int y0, int x1, int y1)
     
     float opaque = 0;
     
+    float ambient = ((float)mapData[map->mapNumber]->data.ambient) / 255.0f;
+    
     for (; n > 0; --n)
     {
         opaque += isOpaque(x, y, opaque);
+        
         if (opaque>=1.0f) break;
+
+        if (opaque>0.5f) {
+            opaque -= ambient * 0.05f;
+        }
+        
+        opaque = MAX(0.0f, opaque);
         
         if (error > 0)
         {
@@ -293,7 +302,7 @@ void Core::renderWorld() {
         if (o->z == map->mapNumber) {
             ofVec2i pp = worldToWindow(ofVec2i(o->x, o->y));
             if ((pp.x>=0) && (pp.x<CONSOLE_WIDTH) && (pp.y>=0) && (pp.y<CONSOLE_HEIGHT)) {
-                if (vis[(int)pp.x+((int)pp.y*CONSOLE_WIDTH)]>0) {
+                if (vis[(int)pp.x+((int)pp.y*CONSOLE_WIDTH)]>128) {
                     Pixel p = o->render(1.0f);
                     console.setPixel(pp.x, pp.y, p);
                 }
@@ -304,7 +313,7 @@ void Core::renderWorld() {
     
     ofVec2i pp = worldToWindow(ofVec2i(player->x, player->y));
     if ((pp.x>=0) && (pp.x<CONSOLE_WIDTH) && (pp.y>=0) && (pp.y<CONSOLE_HEIGHT)) {
-        if (vis[(int)pp.x+((int)pp.y*CONSOLE_WIDTH)]>0) {
+        if (vis[(int)pp.x+((int)pp.y*CONSOLE_WIDTH)]>128) {
             Pixel p = player->render(1.0f);
             console.setPixel(pp.x, pp.y, p);
         }
@@ -313,13 +322,14 @@ void Core::renderWorld() {
     
     
     if (fireTargeting) {
+        reticleTime += deltaTime;
         
         Actor * a = firingList[firingIndex];
         
         ofVec2i pp = worldToWindow(ofVec2i(a->x, a->y));
         
         double i;
-        float f = modf(ofGetElapsedTimef() * 1.5f, &i);
+        float f = modf(reticleTime * 1.5f, &i);
         
         
         BYTE v = int(f*6.0f);
@@ -463,25 +473,30 @@ void Core::transitActor(Actor * a, int x, int y, int z) {
 
 void Core::toggleFiring() {
     
+    
     if (fireTargeting) {
         fireTargeting = false;
         firingList.clear();
         firingIndex = 0;
+        ofLog()<< "toggleFiring off";
 
     } else {
         
         firingIndex = 0;
-        
+        ofLog()<< "toggleFiring building new index";
+
         if (player->hasWeaponTypeEquipped(Weapon::PROJECTILE_WEAPON) ||
             player->hasWeaponTypeEquipped(Weapon::THROWN_WEAPON)) {
             
             // create a list of all possible firing targets
             
+            float closestDistance = 10000.0f;
+            bool usingLastTarget = false;
+            
             for (int i=0; i<Object::elements().size(); i++) {
                 Object * o = Object::elements()[i];
                 
                 if (o->z == map->mapNumber) {
-                    
                     
                     if (o != player) {
                         Actor* a = dynamic_cast<Actor*>(o);
@@ -490,14 +505,24 @@ void Core::toggleFiring() {
                             ofVec2i pp = worldToWindow(ofVec2i(o->x, o->y));
                             if ((pp.x>=0) && (pp.x<CONSOLE_WIDTH) && (pp.y>=0) && (pp.y<CONSOLE_HEIGHT)) {
                                 if (vis[(int)pp.x+((int)pp.y*CONSOLE_WIDTH)]>0) {
-                                    
-                                    // actor is visible
-                                    
-                                    // float distance = ofVec2i(player->x, player->y).distance(ofVec2i(a->x, a->y));
-                                    
+                                  
                                     ofLog() << "adding " << a->getName() << " to firing list";
                                     firingList.push_back(a);
                                     
+                                    if (a==player->target) {
+                                        firingIndex = firingList.size()-1;
+                                        usingLastTarget = true;
+                                        ofLog() << "using last target";
+                                    } else if (!usingLastTarget) {
+                                        float dist = a->getPos().distance(player->getPos());
+                                        if (closestDistance > dist) {
+                                            closestDistance = dist;
+                                            firingIndex = firingList.size()-1;
+                                            ofLog() << "found closer target";
+
+                                        }
+                                    }
+
                                 }
                             }
                         }
@@ -508,7 +533,11 @@ void Core::toggleFiring() {
             // don't follow through unless there are actual targets to show
             if (firingList.size()>0) {
                 fireTargeting = true;
-                player->target = firingList[firingIndex];
+                if (!usingLastTarget) {
+                    ofLog() << "setting target "<<firingIndex<<" : "<< firingList[firingIndex]->getName();
+
+                    player->target = firingList[firingIndex];
+                }
             }
         }
     }
@@ -604,34 +633,32 @@ void Core::update(){
     }
     
     
-    bool moved = false;
     
     if (state==NORMAL_STATE) {
 
         if (actionDebt>=0) actionDebt -= 15.0f * 60.0f * deltaTime;
         
         if (resolvingTurn) {
-           
+            
             if (resolveDelay<=0) {
-                
+
                 if (!vfx.busy()) {
-                    
-                    DEBT remainingDebt = 0;
-                    //ofLog() << "starting "<<remainingDebt;
-                    
+
                     float d = 0.0f;
                     while (d==0 && updateIndex<updateList.size()) {
-                        
+
                         Object * o = updateList[updateIndex];
-                        
-                        d = o->update(updateDebt);
-                        // ofLog() << "update result for " << o->getName() << ": "<<d;
+
                         
                         Actor * a = dynamic_cast<Actor*>(o);
                         if (a) {
                             
-                            remainingDebt += a->actionDebt;
-                            //ofLog() << "finding debt... ("<<a->actionDebt<<") + "<<remainingDebt << " for "<<a->getName();
+                            //ofLog() << "updating actor " << o->getName() << " at index: "<<updateIndex << " with " << updateDebt << " debt (currently has: "<<a->actionDebt<<")";
+                            
+                            d = o->update(updateDebt);
+                            
+                            //ofLog() << "actor now has " << a->actionDebt << " debt";
+
                             
                         }
                         
@@ -639,15 +666,16 @@ void Core::update(){
                         updateIndex++;
                     }
                     
-                    updateDebt = 0;
+                    
                     
                     if (updateIndex>=updateList.size()) {
                         
-                        if (remainingDebt<0.0f) {
-                            
-                            //ofLog() << "Resolving... "<<remainingDebt;
+                        if (player->actionDebt>=100) {
+                           
                             
                             updateIndex = 0;
+                            
+                            updateDebt = 100;
                             
                             //resolveDelay += 0.25f;
                             
@@ -669,10 +697,6 @@ void Core::update(){
                     }
                 }
 
-               
-
-                
-
             
             } else {
                 
@@ -685,10 +709,14 @@ void Core::update(){
 
                 
            if (controls.active() || player->autoTravel ) {
+               
 
                 bool vert = false;
                 
                 if (actionDebt<=0) {
+                    
+                    //ofLog() << "####################################################";
+
                     
                     trail.push_back(player->getPos());
                     if (trail.size()>30) {
@@ -696,6 +724,8 @@ void Core::update(){
                     }
                     
                     ofVec2i moveVector;
+                    
+                    DEBT currentDebt = player->actionDebt;
                     
 
                     
@@ -720,29 +750,32 @@ void Core::update(){
                         
                     }
                     
+                    dialog.active = false;
                     
-                    newPlayerDebt = player->tryInteracting(moveVector);
-                    
-                    if (newPlayerDebt>0) {
-                        player->autoTravel = false;
+                    if (moveVector.length()>0) {
+                        player->tryInteracting(moveVector);
                     }
                     
-                    
                     if (controls.fire) {
-                        newPlayerDebt += player->attack(player->target);
+                        ofLog()<< "controls.fire";
+                        player->attack(player->target);
                         controls.fire = false;
                     }
                     
-                    resolveDelay = MIN(0.2f,((float)newPlayerDebt) / TIME_TO_DEBT_SCALAR);
-                    
-                    if (newPlayerDebt>=0 && newPlayerDebt < DEBT_TURN_THRESHOLD ) {
-                        newPlayerDebt += player->tryMoving(moveVector);
-                        if (newPlayerDebt >= DEBT_TURN_THRESHOLD) {
-                            moved = true;
-                        }
+                    if (controls.tab) {
+                        ofLog() << "controls.tab";
+                        player->switchWeapons();
+                        controls.tab = false;
                     }
                     
-                    
+                    resolveDelay = MIN(0.2f,((float)newPlayerDebt) / TIME_TO_DEBT_SCALAR);
+               
+                    newPlayerDebt = player->actionDebt-currentDebt;
+                    if (newPlayerDebt>=0 && newPlayerDebt < DEBT_TURN_THRESHOLD ) {
+                        player->tryMoving(moveVector);
+                    }
+                    newPlayerDebt = player->actionDebt-currentDebt;
+
                     if (!controlsHaveBeenActive) {
                         if (newPlayerDebt>0) {
                             actionDebt += 100;
@@ -754,7 +787,6 @@ void Core::update(){
                     
                     if (controls.rest) {
                         actionDebt += 100;
-                        moved = true;
                     }
                     
                     // here we are arbitrarily updating every element. should change this to be the following sequence:
@@ -773,10 +805,11 @@ void Core::update(){
                     
                     // CHECK unlock controls
 
-                    
+                    //ofLog() << "newPlayerDebt: "<<newPlayerDebt;
+
                     if (newPlayerDebt>0) {
-                        updateDebt = newPlayerDebt;
-                    
+                        updateDebt = 100;
+
                         resolveTurn();
                     }
                     
@@ -943,6 +976,9 @@ void Core::update(){
     
     vfx.update(deltaTime);
     
+    
+    dialog.render();
+    
 
     
     menu.render();
@@ -962,9 +998,6 @@ void Core::update(){
         console.setPixel(pp.x, pp.y, makeColor(5,5,0), makeColor(5,0,0), 'X');
     }
     
-    //ofVec2i pp = windowToWorld(mousePos);
-    //player->graph.goal = pp;
-    //player->graph.process();
     
     if (debugGraph) player->graph.render();
     
@@ -1084,6 +1117,7 @@ void Core::keyPressed(int key){
         }
         
         if (key=='f') {
+            reticleTime = 0.0f;
             if (fireTargeting) {
                 controls.fire = true;
             }
@@ -1095,6 +1129,8 @@ void Core::keyPressed(int key){
                 firingIndex++;
                 firingIndex %= firingList.size();
                 player->target = firingList[firingIndex];
+            } else {
+                controls.tab = true;
             }
         } else {
             if (fireTargeting) {
@@ -1168,6 +1204,8 @@ void Core::keyReleased(int key) {
 
     } else if (key== ' ') {
         controls.space = false;
+    } else if (key==OF_KEY_TAB) {
+        controls.tab = false;
     }
     
     if (state==PAINT_STATE) {
@@ -1269,4 +1307,34 @@ void Core::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void Core::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+//--------------------------------------------------------------
+bool Core::losCheck(Object * a, Object * b) {
+    
+    int x0 = a->x;
+    int y0 = a->y;
+    int x1 = b->x;
+    int y1 = b->y;
+    
+    int dx = abs(x1-x0), sx = x0<x1 ? 1 : -1;
+    int dy = abs(y1-y0), sy = y0<y1 ? 1 : -1;
+    int err = (dx>dy ? dx : -dy)/2, e2;
+        
+    for(;;){
+        
+        ofVec2i pp = worldToWindow(ofVec2i(x0,y0));
+        
+        if (vis[pp.x+pp.y*CONSOLE_WIDTH]<127) {
+            return false;
+        }
+        
+        if (x0==x1 && y0==y1) return true;
+        e2 = err;
+        if (e2 >-dx) { err -= dy; x0 += sx; }
+        if (e2 < dy) { err += dx; y0 += sy; }
+    }
+    
+    return true;
+    
 }

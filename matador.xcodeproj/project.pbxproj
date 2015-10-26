@@ -17,7 +17,10 @@
 		CEBB0E0B1BC2FD7A007948D9 /* Delaunay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEBB0E061BC2FD7A007948D9 /* Delaunay.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEBB0E0C1BC2FD7A007948D9 /* ofxDelaunay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEBB0E091BC2FD7A007948D9 /* ofxDelaunay.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEBD73071BC5596C003B1D7D /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEBD73051BC5596C003B1D7D /* Engine.cpp */; settings = {ASSET_TAGS = (); }; };
+		CED065F81BDB0DEE00BF9746 /* Orc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CED065F61BDB0DEE00BF9746 /* Orc.cpp */; settings = {ASSET_TAGS = (); }; };
 		CED0B15F1BC76F4700FD1361 /* Menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CED0B15D1BC76F4700FD1361 /* Menu.cpp */; settings = {ASSET_TAGS = (); }; };
+		CED1B7CC1BD9C31A00A84E63 /* Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CED1B7CA1BD9C31A00A84E63 /* Dialog.cpp */; settings = {ASSET_TAGS = (); }; };
+		CED1B7CF1BD9CB6500A84E63 /* Magician.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CED1B7CD1BD9CB6500A84E63 /* Magician.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB24171BCE0BE800D8CBE4 /* Paint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB24151BCE0BE800D8CBE4 /* Paint.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB241B1BCECAC900D8CBE4 /* Inspect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB241A1BCECAC900D8CBE4 /* Inspect.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB241E1BCEF46500D8CBE4 /* Actor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB241C1BCEF46500D8CBE4 /* Actor.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -158,8 +161,17 @@
 		CEBB0E0A1BC2FD7A007948D9 /* ofxDelaunay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxDelaunay.h; sourceTree = "<group>"; };
 		CEBD73051BC5596C003B1D7D /* Engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Engine.cpp; sourceTree = "<group>"; };
 		CEBD73061BC5596C003B1D7D /* Engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Engine.h; sourceTree = "<group>"; };
+		CEC129861BDA993D002F23B4 /* MLightDirt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MLightDirt.h; sourceTree = "<group>"; };
+		CEC129871BDA9B6D002F23B4 /* MStoneRubble.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MStoneRubble.h; sourceTree = "<group>"; };
+		CED065F61BDB0DEE00BF9746 /* Orc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orc.cpp; sourceTree = "<group>"; };
+		CED065F71BDB0DEE00BF9746 /* Orc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orc.h; sourceTree = "<group>"; };
+		CED065F91BDBB31700BF9746 /* StateMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StateMachine.h; sourceTree = "<group>"; };
 		CED0B15D1BC76F4700FD1361 /* Menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Menu.cpp; sourceTree = "<group>"; };
 		CED0B15E1BC76F4700FD1361 /* Menu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Menu.h; sourceTree = "<group>"; };
+		CED1B7CA1BD9C31A00A84E63 /* Dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dialog.cpp; sourceTree = "<group>"; };
+		CED1B7CB1BD9C31A00A84E63 /* Dialog.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dialog.hpp; sourceTree = "<group>"; };
+		CED1B7CD1BD9CB6500A84E63 /* Magician.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Magician.cpp; sourceTree = "<group>"; };
+		CED1B7CE1BD9CB6500A84E63 /* Magician.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Magician.hpp; sourceTree = "<group>"; };
 		CEDB24151BCE0BE800D8CBE4 /* Paint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Paint.cpp; sourceTree = "<group>"; };
 		CEDB24161BCE0BE800D8CBE4 /* Paint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Paint.h; sourceTree = "<group>"; };
 		CEDB24191BCECA8400D8CBE4 /* Inspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Inspect.h; sourceTree = "<group>"; };
@@ -308,8 +320,10 @@
 				CE117CD11BCCE936003DFD6A /* Materials.cpp */,
 				CE117CD21BCCE936003DFD6A /* Materials.h */,
 				CE117CD31BCCE936003DFD6A /* MStoneFloor.h */,
+				CEC129871BDA9B6D002F23B4 /* MStoneRubble.h */,
 				CE117CD41BCCE936003DFD6A /* MStoneWall.h */,
 				CEE6BFF21BD2DE7B000C5478 /* MGreenGrass.h */,
+				CEC129861BDA993D002F23B4 /* MLightDirt.h */,
 				CEE6C00F1BD327DF000C5478 /* MDenseForest.h */,
 				CE117CCF1BCCE936003DFD6A /* MAlgae.h */,
 			);
@@ -412,6 +426,8 @@
 			children = (
 				CEB9D1F41BCC52C7003FC036 /* ObjectFactory.cpp */,
 				CEB9D1F51BCC52C7003FC036 /* ObjectFactory.h */,
+				CED1B7CD1BD9CB6500A84E63 /* Magician.cpp */,
+				CED1B7CE1BD9CB6500A84E63 /* Magician.hpp */,
 				CEE6BFED1BD24CAD000C5478 /* Item.cpp */,
 				CEE6BFEC1BD24C91000C5478 /* Item.h */,
 				CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */,
@@ -420,6 +436,8 @@
 				CEDB241D1BCEF46500D8CBE4 /* Actor.h */,
 				CEDB24221BCEF53300D8CBE4 /* Kobold.cpp */,
 				CEDB24231BCEF53300D8CBE4 /* Kobold.h */,
+				CED065F61BDB0DEE00BF9746 /* Orc.cpp */,
+				CED065F71BDB0DEE00BF9746 /* Orc.h */,
 				CEDB24251BCEFAFF00D8CBE4 /* Player.cpp */,
 				CEDB24261BCEFAFF00D8CBE4 /* Player.h */,
 				CEE6BFEF1BD2CA75000C5478 /* MapData.h */,
@@ -573,6 +591,8 @@
 				E4B69E1E0A3A1BDC003C02F2 /* Core.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* Core.h */,
 				CEB05CB41BC553F4008343B3 /* Defines.h */,
+				CED1B7CA1BD9C31A00A84E63 /* Dialog.cpp */,
+				CED1B7CB1BD9C31A00A84E63 /* Dialog.hpp */,
 				CEDE6B3D1BD7F9A10041FF0B /* Dijkstra.cpp */,
 				CEDE6B3E1BD7F9A10041FF0B /* Dijkstra.hpp */,
 				CEBD73051BC5596C003B1D7D /* Engine.cpp */,
@@ -590,6 +610,7 @@
 				CEDB24161BCE0BE800D8CBE4 /* Paint.h */,
 				CE117BA51BCCA8EC003DFD6A /* Serializer.cpp */,
 				CE117BA61BCCA8EC003DFD6A /* Serializer.hpp */,
+				CED065F91BDBB31700BF9746 /* StateMachine.h */,
 				CEDB242B1BCF816C00D8CBE4 /* ofVec2i.h */,
 				CEDB242A1BCF811200D8CBE4 /* ofVec4i.h */,
 			);
@@ -706,9 +727,12 @@
 				CEE6BFEB1BD24B61000C5478 /* Weapon.cpp in Sources */,
 				CEDB24241BCEF53300D8CBE4 /* Kobold.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* Core.cpp in Sources */,
+				CED1B7CF1BD9CB6500A84E63 /* Magician.cpp in Sources */,
 				CEBB0E0B1BC2FD7A007948D9 /* Delaunay.cpp in Sources */,
 				CEE6BFEE1BD24CAD000C5478 /* Item.cpp in Sources */,
 				CEB9D1F61BCC52C7003FC036 /* ObjectFactory.cpp in Sources */,
+				CED1B7CC1BD9C31A00A84E63 /* Dialog.cpp in Sources */,
+				CED065F81BDB0DEE00BF9746 /* Orc.cpp in Sources */,
 				CEE6C0121BD43D87000C5478 /* Equip.cpp in Sources */,
 				CEE6C0081BD30AE6000C5478 /* ofxButton.cpp in Sources */,
 				CE525D0A1BD5DB6B0028DDB9 /* VFX.cpp in Sources */,

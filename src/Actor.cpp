@@ -30,15 +30,42 @@ void Actor::actorEvent(ActorEvent &e) {
 }
 
 
+
 bool Actor::withinRange() {
-    
-    if (target==NULL) return false;
-    
+    if (weaponSet==0) {
+        return withinMeleeRange();
+    } else if (weaponSet==1) {
+        return withinRangedRange();
+    }
+    return false;
+}
+
+
+bool Actor::withinMeleeRange() {
     ofVec2i d = ofVec2i(target->x, target->y) - ofVec2i(x,y);
-    
-    return d.length()<1.5; // technically this just needs to be less than the square root of 2, to test for diagonals
+    return d.length()<1.5;
     
 }
+
+bool Actor::withinSwitchToMeleeRange() {
+    ofVec2i d = ofVec2i(target->x, target->y) - ofVec2i(x,y);
+    return d.length()<3.5;
+    
+}
+
+
+bool Actor::withinRangedRange() {
+    if (target==NULL) return false;
+    Weapon * w = melee();
+    
+    if (w!=NULL) {
+        ofVec2i d = ofVec2i(target->x, target->y) - ofVec2i(x,y);
+        return d.length()<(w->data.range / 5);
+    }
+    return false;
+}
+
+
 
 bool Actor::canAttackTarget() {
     if (target==NULL) return false;
@@ -46,24 +73,18 @@ bool Actor::canAttackTarget() {
     return true;
 }
 
-DEBT Actor::attackTarget() {
+void Actor::attackTarget() {
     if (target==NULL) return 0;
     
-    return attack((Actor*)(target));
-
+    attack((Actor*)(target));
     
 }
 
 bool Actor::tooCloseToTarget() {
     if (target==NULL) return false;
+    
+    return target->getPos().distance(getPos()) < 5;
 
-    return false;
-}
-
-bool Actor::canMoveAwayFromTarget() {
-    if (target==NULL) return false;
-
-    return true;
 }
 
 
@@ -80,21 +101,70 @@ bool Actor::canMoveTowardTarget() {
 }
 
 
-void Actor::moveAwayFromTarget() {
-    if (target==NULL) return;
+float Actor::closestTypeDistance() {
     
-    ofVec2f d = ofVec2f(x,y) - ofVec2f(target->x, target->y);
-    d.normalize();
+    float dist = 10000.0f;
     
-    if (abs(abs(d.x) - abs(d.y)) < 0.33333f) {
-        tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
-    } else if (abs(d.x)>abs(d.y)) {
-        tryMoving(ofVec2i(sgn(d.x), 0));
-    } else {
-        tryMoving(ofVec2i(0,sgn(d.y)));
+    for(auto it = elements().begin(); it != elements().end(); it++) {
+        Actor * a = dynamic_cast<Actor*>(*it);
+        if (a) {
+            if (a->z == z) {
+                if (a->type == type) {
+                    if (a!=this) {
+                        dist = MIN(dist, a->getPos().distance(getPos()));
+                    }
+                }
+            }
+        }
     }
     
-    ofLog() << "moving away ... ";
+    return dist;
+    
+}
+
+
+bool Actor::moveTowardsOwnKind() {
+    if (target==NULL) return;
+    
+    graph.setWorldCenter(x,y);
+    graph.goal = ofVec2i(target->x, target->y);
+    graph.process();
+    
+    ///// use placeWorldGoal to place all other objects of this type in the graph
+    
+    for(auto it = elements().begin(); it != elements().end(); it++) {
+        Actor * a = dynamic_cast<Actor*>(*it);
+        if (a) {
+            if (a->z == z) {
+                if (a->type == type) {
+                    if (a!=this) {
+                        graph.placeWorldGoal(a->x, a->y, 100);
+                    }
+                }
+             }
+        }
+    }
+    
+    graph.retreat();
+    
+    ofVec2i moveVector = graph.getMoveVector();
+    
+    return tryMoving(moveVector);
+}
+
+
+bool Actor::moveAwayFromTarget() {
+    if (target==NULL) return;
+
+    graph.setWorldCenter(x,y);
+    graph.goal = ofVec2i(target->x, target->y);
+    graph.process();
+
+    graph.retreat();
+    
+    ofVec2i moveVector = graph.getMoveVector();
+    
+    return tryMoving(moveVector);
 
 }
 
@@ -103,27 +173,27 @@ void Actor::moveTowardTarget() {
     
     graph.setWorldCenter(x,y);
     graph.goal = ofVec2i(target->x, target->y);
-    graph.process();
+    graph.init();
+    
+    for(auto it = elements().begin(); it != elements().end(); it++) {
+        Actor * a = dynamic_cast<Actor*>(*it);
+        if (a) {
+            if (a->z == z) {
+                if (a!=this) {
+                    graph.placeWorldGoal(a->x, a->y, OMIT_VALUE);
+                }
+            }
+        }
+    }
+    
+    graph.setBasis();
+
+    
+    graph.iterate();
     
     ofVec2i moveVector = graph.getMoveVector();
     
     tryMoving(moveVector);
-
-    
-    /*
-    
-    ofVec2f d = ofVec2f(target->x, target->y) - ofVec2f(x,y);
-    d.normalize();
-    
-  
-    if (abs(abs(d.x) - abs(d.y)) < 0.33333f) {
-        tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
-    } else if (abs(d.x)>abs(d.y)) {
-        tryMoving(ofVec2i(sgn(d.x), 0));
-    } else {
-        tryMoving(ofVec2i(0,sgn(d.y)));
-    }
-     */
     
 }
 
@@ -136,18 +206,9 @@ bool Actor::canRunAwayFromTarget() {
 void Actor::runAwayFromTarget() {
     if (target==NULL) return;
     
-    ofVec2f d = ofVec2f(x,y) - ofVec2f(target->x, target->y);
-    d.normalize();
+    ofLog()<< "!!!!!!! DEPRECATED, NO EFFECT";
     
-    if (abs(abs(d.x) - abs(d.y)) < 0.33333f) {
-        tryMoving(ofVec2i(sgn(d.x),sgn(d.y)));
-    } else if (abs(d.x)>abs(d.y)) {
-        tryMoving(ofVec2i(sgn(d.x), 0));
-    } else {
-        tryMoving(ofVec2i(0,sgn(d.y)));
-    }
-    
-    ofLog() << "running away ... ";
+   
 }
 
 void Actor::setSpeedMultiplier(float s) {
@@ -165,13 +226,11 @@ float Actor::retreatProbability() {
     return 0.5f;
 }
 
-DEBT Actor::standStill() {
-    ofLog() << "standing still...";
+void Actor::standStill() {
+
+    // do nothing
     
-    target = static_cast<Actor*>(core->player);
-    
-    return 1;
-    
+    actionDebt += 20;
 }
 
 int Actor::armorBonus() {
@@ -191,9 +250,33 @@ int Actor::ac() {
     
 }
 
-DEBT Actor::attack(Actor * a) {
+
+
+Actor::HealthState Actor::getGeneralHealth() {
     
-    Weapon * w = rightHand();
+    float v = (float)data.hp / (float)data.maxhp ;
+    
+    if (v>0.75f) {
+        return Uninjured;
+    } else if (v>0.5f) {
+        return Injured;
+    } else if (v>0.25f) {
+        return Wounded;
+    } else if (v>0) {
+        return NearDeath;
+    } else {
+        return Dead;
+    }
+        
+    
+}
+
+
+
+
+void Actor::attack(Actor * a) {
+    
+    Weapon * w = activeWeapon();
     
     if (w!=NULL) {
         
@@ -212,47 +295,45 @@ DEBT Actor::attack(Actor * a) {
         ce->type = CombatEvent::MISS_EVENT;
         ce->dmg = 0;
         
+        int ac = a->ac();
+        int mod = strMod() + data.tohit;
+
+        
         if (d20==1) {
+            
+            // whiff!!
             hit = false;
-        } else if (d20==w->data.criticalThreat) {
-            ce->type = CombatEvent::CRIT_EVENT;
-            hit = true;
-            crit = true;
-        } else {
-           
-            int ac = a->ac();
-            int m =strMod() + data.tohit;
             
-            ofLog() << getName() << " rolled a " << d20 << " + " << m <<", (ac:"<<ac<<")";
+        } else if (d20>=w->data.criticalThreat) {
             
-            if (d20+m>=ac) {
+            // have critical threat, but roll again...
+            d20 = (int)ofRandom(0,20)+1;
+          
+            if (d20+mod>=ac) {
+                crit = true;
+                ce->type = CombatEvent::CRIT_EVENT;
+            } else {
                 hit = true;
                 ce->type = CombatEvent::HIT_EVENT;
             }
             
-            
+        } else {
+            if (d20+mod>=ac) {
+                hit = true;
+                ce->type = CombatEvent::HIT_EVENT;
+            }
         }
 
         if (crit) {
-            
             ce->dmg = w->rollAttack();
-            
             for (int i=0; i<w->data.cricitalMultiplier; i++) {
                 ce->dmg += w->rollAttack();
             }
-            
-            
         } else if (hit) {
-            BYTE dmg = w->rollAttack();
-            
-            ce->dmg = (int)dmg;
-
+            ce->dmg = w->rollAttack();
         }
         
-
-        
         if (w->data.weaponType == Weapon::PROJECTILE_WEAPON) {
-            
             
             ofPtr<CombatEvent> ae = ofPtr<CombatEvent>(new CombatEvent());
             
@@ -271,12 +352,10 @@ DEBT Actor::attack(Actor * a) {
         
         //a->takeDamage(ce->dmg); // TODO: move this logic to a combat resolution class
         
-        DEBT newDebt = ((float)w->data.attackDebt) * ((float)data.attackSpeed / 100.0f);
+        actionDebt += ((float)w->data.attackDebt) * ((float)data.attackSpeed / 100.0f);
 
         
-        ofLog()<<newDebt;
 
-        return newDebt;
         
     } else {
         
@@ -293,31 +372,52 @@ DEBT Actor::attack(Actor * a) {
 }
 
 
-Weapon * Actor::rightHand() {
+void Actor::switchWeapons() {
+    ofLog() << "switching weapons";
+    if (weaponSet==0) {
+        weaponSet = 1;
+    } else if (weaponSet==1) {
+        weaponSet = 0;
+    }
+    
+    actionDebt += 160;
+}
+
+
+Weapon * Actor::activeWeapon() {
+    if (weaponSet==0) {
+        return melee();
+    } else {
+        return ranged();
+    }
+    return NULL;
+}
+
+Weapon * Actor::melee() {
     Weapon * w;
     
-    if (data.rightHandGuid!=0) {
+    if (data.meleeGuid!=0) {
         for (int i=0; i<Object::elements().size(); i++) {
             Object * o = Object::elements()[i];
             if (Weapon* w = dynamic_cast<Weapon*>(o)) {
-                if (w->guid == data.rightHandGuid) {
+                if (w->guid == data.meleeGuid) {
                     return w;
                 
                 }
             }
         }
     }
-    return w;
+    return NULL;
 }
 
-Weapon * Actor::leftHand() {
+Weapon * Actor::offHand() {
     Weapon * w;
 
-    if (data.leftHandGuid!=0) {
+    if (data.offHandGuid!=0) {
         for (int i=0; i<Object::elements().size(); i++) {
             Object * o = Object::elements()[i];
             if (Weapon* w = dynamic_cast<Weapon*>(o)) {
-                if (w->guid == data.rightHandGuid) {
+                if (w->guid == data.offHandGuid) {
                     return w;
                     
                 }
@@ -325,8 +425,27 @@ Weapon * Actor::leftHand() {
         }
         
     }
-    return w;
+    return NULL;
 }
+
+
+Weapon * Actor::ranged() {
+    Weapon * w;
+    
+    if (data.rangedGuid!=0) {
+        for (int i=0; i<Object::elements().size(); i++) {
+            Object * o = Object::elements()[i];
+            if (Weapon* w = dynamic_cast<Weapon*>(o)) {
+                if (w->guid == data.rangedGuid) {
+                    return w;
+                }
+            }
+        }
+        
+    }
+    return NULL;
+}
+
 
 void Actor::takeDamage(int dmg) {
     
@@ -341,7 +460,6 @@ void Actor::die() {
     // any on-death actions should happen here.
     // class removal/cleanup/GC should happen at a higher level
     
-    // TODO:remove items in possesion
     
     static ActorEvent ae;
     ae.a = this;
@@ -349,11 +467,23 @@ void Actor::die() {
     
     ofNotifyEvent(ActorEvent::actorEvent, ae);
     
-    //cleanup();
     
-    Weapon * rhw = rightHand();
-    if (rhw!=NULL) {
-        delete rhw;
+    
+    // TODO:remove all items in possesion
+
+    Weapon * w = melee();
+    if (w!=NULL) {
+        delete w;
+    };
+    
+    w = offHand();
+    if (w!=NULL) {
+        delete w;
+    };
+    
+    w = ranged();
+    if (w!=NULL) {
+        delete w;
     };
     
     delete this;
@@ -361,6 +491,12 @@ void Actor::die() {
    
 }
 
+void Actor::readLines() {}
+
+
+bool Actor::canAct() {
+    return data.hp>0;
+}
 
 void Actor::cleanup() {
     
@@ -377,7 +513,7 @@ void Actor::setDestination(const ofVec2i d) {
     autoTravel = true;
 }
 
-DEBT Actor::tryMoving(ofVec2i moveVector) {
+bool Actor::tryMoving(ofVec2i moveVector) {
    
     bool vert = false;
     
@@ -405,16 +541,19 @@ DEBT Actor::tryMoving(ofVec2i moveVector) {
         }
     }
     
-    newDebt = MAX(newDebt, 100);
-    
     if (destination == ofVec2i(x,y)) {
         autoTravel = false;
     }
     
-
-
-
-    actionDebt+= round((float)newDebt * (((float)data.movementSpeed) / 100.0f));
-    return newDebt;
+    DEBT nd = round((float)MAX(newDebt, 100) * (((float)data.movementSpeed) / 100.0f));
+    
+    actionDebt+= nd;
+    
+    return newDebt>0;
     
 }
+
+
+
+
+

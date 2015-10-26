@@ -16,7 +16,9 @@
 #include "MStoneFloor.h"
 #include "MAlgae.h"
 #include "MGreenGrass.h"
+#include "MLightDirt.h"
 #include "MDenseForest.h"
+#include "MStoneRubble.h"
 #include "MVoid.h"
 
 
