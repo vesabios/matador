@@ -636,7 +636,7 @@ void Core::update(){
     
     if (state==NORMAL_STATE) {
 
-        if (actionDebt>=0) actionDebt -= 15.0f * 60.0f * deltaTime;
+        if (actionDebt>=0) actionDebt -= 8.0f * 60.0f * deltaTime;
         
         if (resolvingTurn) {
             

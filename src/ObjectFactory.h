@@ -230,6 +230,15 @@ public:
         static vector<Object*> t;
         return t;
     }
+    
+    static BYTE d2() { return (int)ofRandom(0,4)+1;}
+    static BYTE d3() { return (int)ofRandom(0,4)+1;}
+    static BYTE d4() { return (int)ofRandom(0,4)+1;}
+    static BYTE d6() { return (int)ofRandom(0,6)+1;}
+    static BYTE d8() { return (int)ofRandom(0,8)+1;}
+    static BYTE d10() { return (int)ofRandom(0,10)+1;}
+    static BYTE d20() { return (int)ofRandom(0,20)+1;}
+    static BYTE d100() { return (int)ofRandom(0,100)+1;}
 
     
     

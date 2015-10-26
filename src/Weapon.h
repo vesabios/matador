@@ -35,8 +35,8 @@ public:
         BYTE numberOfDice = 1;
         BYTE die = 4; // type of die, 1d4 in this case
         BYTE toHit = 0;
-        BYTE damageBonus = 0;
-        BYTE cricitalMultiplier = 1; // standard 1x crit
+        int damageBonus = 0;
+        BYTE criticalMultiplier = 2; // standard 2x crit
         BYTE criticalThreat = 20; // standard natural 20 crit roll
         BYTE range = 5; // normal range, 1 square or 5 ft
         DEBT attackDebt = 100; // how much action debt does usage incur

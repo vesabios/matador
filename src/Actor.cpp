@@ -80,13 +80,24 @@ void Actor::attackTarget() {
     
 }
 
-bool Actor::tooCloseToTarget() {
+bool Actor::tooCloseForRanged() {
     if (target==NULL) return false;
     
-    return target->getPos().distance(getPos()) < 5;
+    return target->getPos().distance(getPos()) < 25 / FEET_PER_TILE;
 
 }
 
+bool Actor::tooFarForRanged() {
+    if (target==NULL) return false;
+    
+    Weapon * w = ranged();
+    
+    if (w!=NULL) {
+        return target->getPos().distance(getPos()) < w->data.range / FEET_PER_TILE;
+    }
+    return false;
+    
+}
 
 bool Actor::tooFarFromTarget() {
     if (target==NULL) return false;
@@ -239,11 +250,19 @@ int Actor::armorBonus() {
 
 int Actor::ac() {
     
-    int a = 0;
+    if (type==Object::Player) {
+        
+        //10 + armor bonus + shield bonus + Dexterity modifier + size modifier
+        
+        return 10 + 5 + dexMod();
+
+        
+    } else {
+        
+        return data.armorClass;
+    }
     
-    a+= armorBonus();
-    a+= dexMod();
-    return a;
+    return 10;
     
     
 //   armor bonus + shield bonus + Dexterity modifier + other modifiers
@@ -296,7 +315,53 @@ void Actor::attack(Actor * a) {
         ce->dmg = 0;
         
         int ac = a->ac();
-        int mod = strMod() + data.tohit;
+        
+        int attackBonus = data.tohit + w->data.toHit;
+        int damageBonus = data.damageBonus + w->data.damageBonus;
+
+        if (type==Object::Player) {
+            
+            attackBonus = data.tohit + w->data.toHit;
+
+            switch (w->data.weaponType) {
+                case Weapon::LIGHT_WEAPON:
+                case Weapon::REACH_WEAPON:
+                case Weapon::DOUBLE_WEAPON:
+                case Weapon::ONE_HANDED_WEAPON:
+                case Weapon::TWO_HANDED_WEAPON:
+                {
+                    attackBonus += strMod();
+                    break;
+                }
+                    
+                case Weapon::THROWN_WEAPON:
+                case Weapon::PROJECTILE_WEAPON:
+                case Weapon::AMMUNITION_WEAPON:
+                {
+                    attackBonus += dexMod();
+                }
+
+            }
+            
+            damageBonus = 1 + w->data.damageBonus;
+            
+        }
+
+        switch (w->data.weaponType) {
+            case Weapon::THROWN_WEAPON:
+            case Weapon::PROJECTILE_WEAPON:
+            case Weapon::AMMUNITION_WEAPON:
+            {
+                attackBonus -= MAX(0,distanceToTarget - w->data.range) / FEET_PER_TILE;
+            }
+                
+        }
+        
+        
+        ofLog() << getName() << "ac: " << ac << " tohit: "<<attackBonus<<" damageBonus: "<<damageBonus;
+
+        
+        
 
         
         if (d20==1) {
@@ -309,7 +374,7 @@ void Actor::attack(Actor * a) {
             // have critical threat, but roll again...
             d20 = (int)ofRandom(0,20)+1;
           
-            if (d20+mod>=ac) {
+            if (d20+attackBonus>=ac) {
                 crit = true;
                 ce->type = CombatEvent::CRIT_EVENT;
             } else {
@@ -318,19 +383,20 @@ void Actor::attack(Actor * a) {
             }
             
         } else {
-            if (d20+mod>=ac) {
+            if (d20+attackBonus>=ac) {
                 hit = true;
                 ce->type = CombatEvent::HIT_EVENT;
             }
         }
 
-        if (crit) {
-            ce->dmg = w->rollAttack();
-            for (int i=0; i<w->data.cricitalMultiplier; i++) {
-                ce->dmg += w->rollAttack();
+        if (crit||hit) {
+            ce->dmg = w->rollAttack() + damageBonus;
+            
+            if (crit) {
+                for (int i=1; i<w->data.criticalMultiplier; i++) {
+                    ce->dmg += w->rollAttack() + damageBonus;
+                }
             }
-        } else if (hit) {
-            ce->dmg = w->rollAttack();
         }
         
         if (w->data.weaponType == Weapon::PROJECTILE_WEAPON) {
@@ -380,7 +446,7 @@ void Actor::switchWeapons() {
         weaponSet = 0;
     }
     
-    actionDebt += 160;
+    actionDebt += 300;
 }
 
 

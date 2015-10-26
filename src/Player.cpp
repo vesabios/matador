@@ -113,7 +113,8 @@ Weapon * Player::findWeaponByGuid(DWORD guid) {
 }
 
 int Player::armorBonus() {
-    return 11; // TODO: base this on actual equipped armor
+    //10 + armor bonus + shield bonus + Dexterity modifier + size modifier
+    return 10 + 5 + dexMod();
 }
 
 DEBT Player::traversable()  {

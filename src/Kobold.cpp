@@ -23,28 +23,44 @@ Kobold::~Kobold() {
 
 //--------------------------------------------------------------
 void Kobold::Ready::update(Kobold*k) {
-    printf("-----------------------kobold combat ready update \n");
+    printf("-----------------------Kobold::Ready::update\n");
+
     // first check to see if it's hurt... if so, switch to retreat state
     
     HealthState h = k->getGeneralHealth();
         
-    if (h == NearDeath)
-        k->ChangeState(Retreat::instance());
-    if (h == Wounded)
-        k->ChangeState(Retreat::instance());
+    if (h == NearDeath) {
+        if (d4()>1) {
+            k->ChangeState(Retreat::instance());
+        }
+    }
+    if (h == Wounded) {
+        if (d4()>2) {
+            k->ChangeState(Retreat::instance());
+        }
+        
+    }
     
 
-    // is the current target injured at all?
     if (k->target!=NULL) {
         
-        float ctd = k->closestTypeDistance();
-        if (ctd < 32 && ctd>10) {
-            k->moveTowardsOwnKind();
-            return;
-            
+        
+        if (d4()>=2) {
+            float ctd = k->closestTypeDistance();
+            if (ctd < 32 && ctd>5) {
+                printf("---------------moveTowardsOwnKind \n");
+                
+                k->moveTowardsOwnKind();
+                return;
+                    
+            }
         }
 
         
+
+
+        // is the current target injured at all?
+
         if (k->target->getGeneralHealth()==Uninjured) {
             
             // if the target is uninjured, the kobold should try to
@@ -53,8 +69,14 @@ void Kobold::Ready::update(Kobold*k) {
             ofLog() << "target is uninjured";
             
             
-
-            if (k->tooCloseToTarget()) {
+            if (d20()==1) k->ChangeState(Bezerk::instance());
+            
+            if (k->tooFarForRanged()) {
+                
+                k->moveTowardTarget();
+                return;
+                
+            } else if (k->tooCloseForRanged()) {
                 
                 ofLog() << ".. too close to target";
 
@@ -112,10 +134,19 @@ void Kobold::Ready::update(Kobold*k) {
                         k->switchWeapons();
                         return;
                     }
-                    ofLog() << ".... attacking target";
+                    
+                    int d4 = (int)ofRandom(0,4)+1;
+                    
+                    if (d4>1) {
+                        k->attackTarget();
+                        ofLog() << ".... attacking target";
+                        
+                    } else {
+                        k->moveTowardTarget();
 
-                    k->attackTarget();
-                    return;
+                    }
+
+
                 }
                 ofLog() << ".. moving away from target (no ranged weapon)";
 
@@ -143,8 +174,12 @@ void Kobold::Ready::update(Kobold*k) {
             
             if (k->canAttackTarget()) {
                 k->attackTarget();
+                return;
+                
             } else {
                 k->moveTowardTarget();
+                return;
+                
             }
             
         }
@@ -157,7 +192,8 @@ void Kobold::Ready::update(Kobold*k) {
 
 //--------------------------------------------------------------
 void Kobold::Idle::update(Kobold*k) {
-    
+    printf("-----------------------Kobold::Idle::update\n");
+  
     
     // scan for player
     float distance = core->player->getPos().distance(k->getPos());
@@ -165,7 +201,7 @@ void Kobold::Idle::update(Kobold*k) {
     ofLog() << "dist: " << distance;
 
     // if within range, set state to ready
-    if (distance<10) {
+    if (distance<20) {
         bool canSee = core->losCheck(k, core->player);
         if (canSee) {
             ofLog() << "canSee: true";
@@ -178,17 +214,20 @@ void Kobold::Idle::update(Kobold*k) {
         }
     }
     
-    printf("kobold standing around update \n");
 };
 
 //--------------------------------------------------------------
 void Kobold::Retreat::update(Kobold*k) {
-    
+    printf("-----------------------Kobold::Retreat::update\n");
+
     // scan for player
     float distance = core->player->getPos().distance(k->getPos());
     
     if (k->fear>8) {
-        k->ChangeState(Bezerk::instance());
+        int d4 = (int)ofRandom(0,4)+1;
+        if (d4>3) {
+            k->ChangeState(Bezerk::instance());
+        }
     }
     
     // if within range, set state to ready
@@ -218,6 +257,13 @@ void Kobold::Retreat::update(Kobold*k) {
 
 //--------------------------------------------------------------
 void Kobold::Bezerk::update(Kobold*k) {
+    printf("-----------------------Kobold::Bezerk::update\n");
+ 
+    
+    if (k->weaponSet==1) {
+        k->switchWeapons();
+        return;
+    }
     
     if (k->tooFarFromTarget()) {
         k->moveTowardTarget();
@@ -233,8 +279,8 @@ void Kobold::Bezerk::update(Kobold*k) {
 //--------------------------------------------------------------
 void Kobold::init() {
     
-    data.strength = 7;
-    data.dexterity = 15;
+    data.strength = 9;
+    data.dexterity = 13;
     data.constitution = 9;
     data.intelligence = 8;
     data.wisdom = 7;
@@ -242,11 +288,13 @@ void Kobold::init() {
     data.attackSpeed = 100;
     data.movementSpeed = 100;
     
-    data.tohit = 4;
+    data.tohit = 1;
+    data.armorClass = 15;
+    data.damageBonus = -1;
     
     // kobolds need weapons too!
     
-    Weapon * weapon = static_cast<Weapon*>(Object::create(Object::Club));
+    Weapon * weapon = static_cast<Weapon*>(Object::create(Object::Spear));
     weapon->init();
     weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
     data.meleeGuid = weapon->guid;
@@ -301,49 +349,9 @@ float Kobold::update(DEBT d)  {
     if (actionDebt<=0) {
         
         DEBT currentDebt = actionDebt;
-        
         fsm->update();
-    
-        /*
-        if (data.maxhp - data.hp > 1) {
-            if (canRunAwayFromTarget()) {
-                runAwayFromTarget();
-            } else if (canAttackTarget()) {
-                attackTarget();
-            }
-        } else if (tooFarFromTarget() && canAttackTarget() && canMoveTowardTarget()) {
-
-            if  (ofRandomf() < chargeProbability()) {
-                moveTowardTarget();
-            } else {
-                attackTarget();
-            }
-        } else if (tooCloseToTarget() && canAttackTarget() && canMoveAwayFromTarget()) {
-
-            if (ofRandomf() < retreatProbability()) {
-                moveAwayFromTarget();
-            } else {
-                attackTarget();
-            }
-        } else if (canAttackTarget()) {
-
-            attackTarget();
-        } else if (tooFarFromTarget() && canMoveTowardTarget()) {
-
-            moveTowardTarget();
-        } else if (tooCloseToTarget() && canMoveAwayFromTarget()) {
-            
-            moveAwayFromTarget();
-        } else {
-            standStill();
-        }
-         */
-        
-        
         DEBT newDebt = actionDebt - currentDebt;
-        
         if (newDebt==0) actionDebt += 20;
-        
         return ((float)newDebt) / TIME_TO_DEBT_SCALAR;
         
     } else {
@@ -362,7 +370,7 @@ void Kobold::ChangeState(State<Kobold>* pNewState)
 //--------------------------------------------------------------
 Pixel Kobold::render(float luma)  {
     Pixel p;
-    p.fg = makeColor(5,4,1);
+    p.fg = makeColor(round(5.0f*luma),round(4.0f*luma),round(1.0f*luma));
     p.bg = 0;
     p.a = 0;
     p.c = toascii('k');

@@ -22,7 +22,6 @@
 
 
 
-
 class Actor;
 class Engine;
 class Console;
@@ -30,9 +29,6 @@ class Player;
 
 class Core : public ofBaseApp {
     
-    
-
-
 public:
  
     struct ctrls {

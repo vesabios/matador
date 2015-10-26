@@ -68,8 +68,11 @@ public:
         BYTE wisdom = 10;
         BYTE charisma = 10;
         
-        BYTE tohit = 0;
+        int tohit = 0;
         BYTE armorBonus = 10;
+        int damageBonus = 0;
+        BYTE armorClass = 10;
+        
 
         int xp = 0;
         int gold = 0;
@@ -302,7 +305,8 @@ public:
     bool canAttackTarget();
     void attackTarget();
     
-    bool tooCloseToTarget();
+    bool tooCloseForRanged();
+    bool tooFarForRanged();
   //  bool canMoveAwayFromTarget();
     bool moveAwayFromTarget();
     bool moveTowardsOwnKind();
