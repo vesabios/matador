@@ -22,5 +22,10 @@ void Materials::init() {
     mats[Material::GreenGrass] = new class MGreenGrass(Material::GreenGrass);
     mats[Material::LightDirt] = new class MLightDirt(Material::LightDirt);
     mats[Material::StoneRubble] = new class MStoneRubble(Material::StoneRubble);
+    mats[Material::FortressFloor] = new class MFortressFloor(Material::FortressFloor);
+    mats[Material::FortressWall] = new class MFortressWall(Material::FortressWall);
+    mats[Material::Weeds] = new class MWeeds(Material::Weeds);
+
+    
 
 }

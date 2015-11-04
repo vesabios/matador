@@ -27,6 +27,7 @@
 		CEDB24241BCEF53300D8CBE4 /* Kobold.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB24221BCEF53300D8CBE4 /* Kobold.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDB24271BCEFAFF00D8CBE4 /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDB24251BCEFAFF00D8CBE4 /* Player.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEDE6B3F1BD7F9A10041FF0B /* Dijkstra.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEDE6B3D1BD7F9A10041FF0B /* Dijkstra.cpp */; settings = {ASSET_TAGS = (); }; };
+		CEE3D8EB1BE01871005AF406 /* Centipede.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE3D8E91BE01871005AF406 /* Centipede.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6BFEB1BD24B61000C5478 /* Weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6BFEE1BD24CAD000C5478 /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFED1BD24CAD000C5478 /* Item.cpp */; settings = {ASSET_TAGS = (); }; };
 		CEE6BFF11BD2CC15000C5478 /* MapData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEE6BFF01BD2CC15000C5478 /* MapData.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -187,6 +188,8 @@
 		CEDB242B1BCF816C00D8CBE4 /* ofVec2i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofVec2i.h; sourceTree = "<group>"; };
 		CEDE6B3D1BD7F9A10041FF0B /* Dijkstra.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dijkstra.cpp; sourceTree = "<group>"; };
 		CEDE6B3E1BD7F9A10041FF0B /* Dijkstra.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Dijkstra.hpp; sourceTree = "<group>"; };
+		CEE3D8E91BE01871005AF406 /* Centipede.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Centipede.cpp; sourceTree = "<group>"; };
+		CEE3D8EA1BE01871005AF406 /* Centipede.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Centipede.h; sourceTree = "<group>"; };
 		CEE6BFEA1BD24B61000C5478 /* Weapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Weapon.cpp; sourceTree = "<group>"; };
 		CEE6BFEC1BD24C91000C5478 /* Item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item.h; sourceTree = "<group>"; };
 		CEE6BFED1BD24CAD000C5478 /* Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Item.cpp; sourceTree = "<group>"; };
@@ -219,6 +222,9 @@
 		CEE6C0191BD4903C000C5478 /* ActorEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActorEvent.h; sourceTree = "<group>"; };
 		CEE6C01C1BD4B951000C5478 /* CombatEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CombatEvent.cpp; sourceTree = "<group>"; };
 		CEE6C01D1BD4B951000C5478 /* CombatEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CombatEvent.h; sourceTree = "<group>"; };
+		CEE7CF6D1BE2D8440086C488 /* MFortressFloor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MFortressFloor.h; sourceTree = "<group>"; };
+		CEE7CF6E1BE2D97D0086C488 /* MFortressWall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MFortressWall.h; sourceTree = "<group>"; };
+		CEE7CF6F1BE2DC170086C488 /* MWeeds.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MWeeds.h; sourceTree = "<group>"; };
 		CEF10E8E1BC62C6D00CDB768 /* Console.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Console.cpp; sourceTree = "<group>"; };
 		CEF10E8F1BC62C6D00CDB768 /* Console.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Console.h; sourceTree = "<group>"; };
 		CEFCE5951BBF55CB00D68A81 /* s.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = s.frag; path = bin/data/shaders/s.frag; sourceTree = SOURCE_ROOT; };
@@ -325,7 +331,10 @@
 				CEE6BFF21BD2DE7B000C5478 /* MGreenGrass.h */,
 				CEC129861BDA993D002F23B4 /* MLightDirt.h */,
 				CEE6C00F1BD327DF000C5478 /* MDenseForest.h */,
+				CEE7CF6D1BE2D8440086C488 /* MFortressFloor.h */,
+				CEE7CF6E1BE2D97D0086C488 /* MFortressWall.h */,
 				CE117CCF1BCCE936003DFD6A /* MAlgae.h */,
+				CEE7CF6F1BE2DC170086C488 /* MWeeds.h */,
 			);
 			name = Materials;
 			sourceTree = "<group>";
@@ -426,6 +435,8 @@
 			children = (
 				CEB9D1F41BCC52C7003FC036 /* ObjectFactory.cpp */,
 				CEB9D1F51BCC52C7003FC036 /* ObjectFactory.h */,
+				CEE3D8E91BE01871005AF406 /* Centipede.cpp */,
+				CEE3D8EA1BE01871005AF406 /* Centipede.h */,
 				CED1B7CD1BD9CB6500A84E63 /* Magician.cpp */,
 				CED1B7CE1BD9CB6500A84E63 /* Magician.hpp */,
 				CEE6BFED1BD24CAD000C5478 /* Item.cpp */,
@@ -746,6 +757,7 @@
 				CEBD73071BC5596C003B1D7D /* Engine.cpp in Sources */,
 				CEDB241B1BCECAC900D8CBE4 /* Inspect.cpp in Sources */,
 				CEE6C0151BD47A97000C5478 /* EventLog.cpp in Sources */,
+				CEE3D8EB1BE01871005AF406 /* Centipede.cpp in Sources */,
 				CEE6C0071BD30AE6000C5478 /* ofxBaseGui.cpp in Sources */,
 				CEE6C00B1BD30AE6000C5478 /* ofxPanel.cpp in Sources */,
 				CEE6C00D1BD30AE6000C5478 /* ofxSliderGroup.cpp in Sources */,

@@ -19,6 +19,10 @@
 #include "MLightDirt.h"
 #include "MDenseForest.h"
 #include "MStoneRubble.h"
+#include "MFortressFloor.h"
+#include "MFortressWall.h"
+#include "MWeeds.h"
+
 #include "MVoid.h"
 
 

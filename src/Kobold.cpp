@@ -23,7 +23,6 @@ Kobold::~Kobold() {
 
 //--------------------------------------------------------------
 void Kobold::Ready::update(Kobold*k) {
-    printf("-----------------------Kobold::Ready::update\n");
 
     // first check to see if it's hurt... if so, switch to retreat state
     
@@ -44,11 +43,9 @@ void Kobold::Ready::update(Kobold*k) {
 
     if (k->target!=NULL) {
         
-        
         if (d4()>=2) {
             float ctd = k->closestTypeDistance();
-            if (ctd < 32 && ctd>5) {
-                printf("---------------moveTowardsOwnKind \n");
+            if (ctd < 32 && ctd>6) {
                 
                 k->moveTowardsOwnKind();
                 return;
@@ -57,130 +54,134 @@ void Kobold::Ready::update(Kobold*k) {
         }
 
         
+        bool canSee = engine.losCheck(k, engine.player);
+        if (canSee) {
 
-
-        // is the current target injured at all?
-
-        if (k->target->getGeneralHealth()==Uninjured) {
+            k->lastSeenTargetCount = 0;
             
-            // if the target is uninjured, the kobold should try to
-            // get away from the target.
-            
-            ofLog() << "target is uninjured";
-            
-            
-            if (d20()==1) k->ChangeState(Bezerk::instance());
-            
-            if (k->tooFarForRanged()) {
-                
-                k->moveTowardTarget();
-                return;
-                
-            } else if (k->tooCloseForRanged()) {
-                
-                ofLog() << ".. too close to target";
+            // is the current target injured at all?
 
+            if (k->target->getGeneralHealth()==Uninjured) {
                 
-                // if we're too close, let's try to get away
+                // if the target is uninjured, the kobold should try to
+                // get away from the target.
                 
-                if (k->moveAwayFromTarget()) {
-                    ofLog() << ".... moved away from target";
-                    return;
-
-                } else {
-                    ofLog() << ".... can't move away from target";
-
-                }// if we can move, we're done this turn
                 
-                // if we can't move, we can't get away, and we need to prepare for battle
                 
-                // do we have a ranged weapon equipped?
-                if (k->weaponSet==1) {
-                    ofLog() << ".... switching to melee weapon";
-
-                    // switch to melee
-                    k->switchWeapons();
-                    return;
-                }
+                if (d20()==1) k->ChangeState(Bezerk::instance());
                 
-                // ok now we are too close, we can't run away, and we have the right weapon equipped
-                
-                // are we close enough to strike?
-                if (k->tooFarFromTarget()) {
-                    ofLog() << ".... too far from target to use melee weapon, moving towards";
-
-                    // then get close!
+                if (k->tooFarForRanged()) {
+                    
                     k->moveTowardTarget();
                     return;
-                } else {
-                    ".... attacking";
-                    k->attackTarget();
-                    return;
-                }
-                
-            } else {
-                
-                ofLog() << ".. not too close to target";
-                
-                bool hasRangedWeapon = (k->ranged() != NULL);
-                
-                if (hasRangedWeapon) {
+                    
+                } else if (k->tooCloseForRanged()) {
+                    
 
-                    ofLog() << ".... has a ranged weapon";
+                    
+                    // if we're too close, let's try to get away
+                    
+                    if (k->moveAwayFromTarget()) {
+                        return;
 
-                    if (k->weaponSet==0) {
-                        ofLog() << "...... switching to ranged weapon";
+                    } else {
 
+                    }// if we can move, we're done this turn
+                    
+                    // if we can't move, we can't get away, and we need to prepare for battle
+                    
+                    // do we have a ranged weapon equipped?
+                    if (k->weaponSet==1) {
+
+                        // switch to melee
                         k->switchWeapons();
                         return;
                     }
                     
-                    int d4 = (int)ofRandom(0,4)+1;
+                    // ok now we are too close, we can't run away, and we have the right weapon equipped
                     
-                    if (d4>1) {
-                        k->attackTarget();
-                        ofLog() << ".... attacking target";
-                        
-                    } else {
+                    // are we close enough to strike?
+                    if (k->tooFarFromTarget()) {
+
+                        // then get close!
                         k->moveTowardTarget();
+                        return;
+                    } else {
+                        k->attackTarget();
+                        return;
+                    }
+                    
+                } else {
+                    
+                    
+                    bool hasRangedWeapon = (k->ranged() != NULL);
+                    
+                    if (hasRangedWeapon) {
+
+
+                        if (k->weaponSet==0) {
+
+                            k->switchWeapons();
+                            return;
+                        }
+                        
+                        int d4 = (int)ofRandom(0,4)+1;
+                        
+                        if (d4>1) {
+                            k->attackTarget();
+                            
+                        } else {
+                            k->moveTowardTarget();
+
+                        }
+
 
                     }
 
+                    k->moveAwayFromTarget();
+                    return;
+                    
+                    
 
+                    
                 }
-                ofLog() << ".. moving away from target (no ranged weapon)";
-
-                k->moveAwayFromTarget();
-                return;
                 
+            } else {
                 
-
+                if (k->withinSwitchToMeleeRange()) {
+                    if (k->weaponSet==1) {
+                        k->switchWeapons();
+                        return;
+                    }
+                } else {
+                    if (k->weaponSet==0) {
+                        k->switchWeapons();
+                        return;
+                    }
+                }
+                
+                if (k->canAttackTarget()) {
+                    k->attackTarget();
+                    return;
+                    
+                } else {
+                    k->moveTowardTarget();
+                    return;
+                    
+                }
                 
             }
             
         } else {
             
-            if (k->withinSwitchToMeleeRange()) {
-                if (k->weaponSet==1) {
-                    k->switchWeapons();
-                    return;
-                }
-            } else {
-                if (k->weaponSet==0) {
-                    k->switchWeapons();
-                    return;
-                }
+            k->lastSeenTargetCount++;
+            
+            if (k->lastSeenTargetCount>6) {
+                k->ChangeState(Idle::instance());
+
             }
             
-            if (k->canAttackTarget()) {
-                k->attackTarget();
-                return;
-                
-            } else {
-                k->moveTowardTarget();
-                return;
-                
-            }
+            k->moveTowardTarget();
             
         }
         
@@ -192,25 +193,24 @@ void Kobold::Ready::update(Kobold*k) {
 
 //--------------------------------------------------------------
 void Kobold::Idle::update(Kobold*k) {
-    printf("-----------------------Kobold::Idle::update\n");
-  
+ 
     
     // scan for player
-    float distance = core->player->getPos().distance(k->getPos());
+    float distance = engine.player->getPos().distance(k->getPos());
     
-    ofLog() << "dist: " << distance;
+   // ofLog() << "dist: " << distance;
 
     // if within range, set state to ready
     if (distance<20) {
-        bool canSee = core->losCheck(k, core->player);
+        bool canSee = engine.losCheck(k, engine.player);
         if (canSee) {
-            ofLog() << "canSee: true";
+           // ofLog() << "canSee: true";
             
-            k->target = static_cast<Actor*>(core->player);
+            k->target = static_cast<Actor*>(engine.player);
             
             k->ChangeState(Ready::instance());
         } else {
-            ofLog() << "canSee: false";
+           // ofLog() << "canSee: false";
         }
     }
     
@@ -221,7 +221,7 @@ void Kobold::Retreat::update(Kobold*k) {
     printf("-----------------------Kobold::Retreat::update\n");
 
     // scan for player
-    float distance = core->player->getPos().distance(k->getPos());
+    float distance = engine.player->getPos().distance(k->getPos());
     
     if (k->fear>8) {
         int d4 = (int)ofRandom(0,4)+1;
@@ -232,7 +232,7 @@ void Kobold::Retreat::update(Kobold*k) {
     
     // if within range, set state to ready
     if (distance<12) {
-        bool canSee = core->losCheck(k, core->player);
+        bool canSee = engine.losCheck(k, engine.player);
         if (canSee) {
             //ofLog()<< "Kobold::Retreat::update::moveTowardsOwnKind";
             k->fear++;
@@ -257,8 +257,9 @@ void Kobold::Retreat::update(Kobold*k) {
 
 //--------------------------------------------------------------
 void Kobold::Bezerk::update(Kobold*k) {
-    printf("-----------------------Kobold::Bezerk::update\n");
+    //printf("-----------------------Kobold::Bezerk::update\n");
  
+    /*
     
     if (k->weaponSet==1) {
         k->switchWeapons();
@@ -272,6 +273,7 @@ void Kobold::Bezerk::update(Kobold*k) {
         k->attackTarget();
         return;
     }
+     */
     
 };
 
@@ -288,28 +290,30 @@ void Kobold::init() {
     data.attackSpeed = 100;
     data.movementSpeed = 100;
     
-    data.tohit = 1;
+    data.tohit = 0;
     data.armorClass = 15;
     data.damageBonus = -1;
+    
+    data.CR = 1.0f / 4.0f;
     
     // kobolds need weapons too!
     
     Weapon * weapon = static_cast<Weapon*>(Object::create(Object::Spear));
     weapon->init();
+    weapon->data.toHit = 1;
     weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
     data.meleeGuid = weapon->guid;
     
     
-    weapon = static_cast<Weapon*>(Object::create(Object::Sling));
-    weapon->init();
-    weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
-    data.rangedGuid = weapon->guid;
-    
-    ofLog() << "Kobold initted with club id: " << data.meleeGuid;
-    ofLog() << "Kobold initted with sling id: " << data.rangedGuid;
+    Weapon * r = static_cast<Weapon*>(Object::create(Object::Sling));
+    r->init();
+    r->data.toHit = 3;
 
+    r->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the kobold has no dedicated inventory
+    data.rangedGuid = r->guid;
+    
     // hit dice 1d8
-    data.maxhp = data.hp = (int)ofRandom(8)+1;
+    data.maxhp = data.hp = d8();
     
 
 };
@@ -345,18 +349,20 @@ bool Kobold::canAttackTarget() {
 //--------------------------------------------------------------
 float Kobold::update(DEBT d)  {
     
-    if (canAct() && actionDebt>0) actionDebt -= d;
-    if (actionDebt<=0) {
+    if (canAct()) actionDebt -= d;
+
+    if (actionDebt<0) {
         
         DEBT currentDebt = actionDebt;
         fsm->update();
         DEBT newDebt = actionDebt - currentDebt;
-        if (newDebt==0) actionDebt += 20;
+        if (newDebt==0) actionDebt += 100;
         return ((float)newDebt) / TIME_TO_DEBT_SCALAR;
         
     } else {
         return 0.0f;
     }
+
     
 }
 

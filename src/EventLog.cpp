@@ -62,7 +62,7 @@ void EventLog::combatEvent(CombatEvent &e) {
             addMessage(ss.str());
             ofLog() << ss;
             
-            e.b->takeDamage(e.dmg);
+            e.b->takeDamageFrom(e.dmg, e.a);
 
             break;
         }
@@ -79,7 +79,7 @@ void EventLog::combatEvent(CombatEvent &e) {
             ofLog() << ss;
 
             
-            e.b->takeDamage(e.dmg); 
+            e.b->takeDamageFrom(e.dmg, e.a);
 
             break;
         }

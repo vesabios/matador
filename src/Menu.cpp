@@ -133,7 +133,7 @@ void Menu::mouseDragged(int inx, int iny, int button) {
                 
             }
             
-            brushMaterial(pp, (Material::MaterialType)core->map->currentMaterial);
+            brushMaterial(pp, (Material::MaterialType)engine.map->currentMaterial);
 
         }
         
@@ -201,13 +201,13 @@ void Menu::mousePressed(int x, int y, int button) {
         if (currentMainMenu==MaterialMenu) {
             ofVec2i pp = core->windowToWorld(ofVec2f(x,y));
             
-            brushMaterial(pp, (Material::MaterialType)core->map->currentMaterial);
+            brushMaterial(pp, (Material::MaterialType)engine.map->currentMaterial);
         } else {
             
             ofVec2i pp = core->windowToWorld(ofVec2f(x,y));
 
             
-            core->placeObject(pp.x, pp.y, core->map->mapNumber, (Object::ObjectType)core->currentObject);
+            core->placeObject(pp.x, pp.y, engine.map->mapNumber, (Object::ObjectType)core->currentObject);
 
             
         }
@@ -245,7 +245,7 @@ void Menu::setMaterial(int v) {
 
 void Menu::_setMaterial(int v) {
     
-    core->map->currentMaterial = (Material::MaterialType)v;
+    engine.map->currentMaterial = (Material::MaterialType)v;
     
     for(auto it = materialBtns.begin(); it != materialBtns.end(); it++)
     {
@@ -296,9 +296,9 @@ void Menu::cycleMap(int v) {
 void Menu::_cycleMap(int v) {
     
     if (v==0) {
-        core->map->cycle(-1);
+        engine.map->cycle(-1);
     } else {
-        core->map->cycle(1);
+        engine.map->cycle(1);
     }
     
 }
@@ -313,7 +313,7 @@ void Menu::createMenu() {
     
     unsigned char bg = makeColor(0,1,3);
     unsigned char fg = makeColor(5,5,5);
-    
+   
     Clickable c;
     c.fg = fg;
     c.bg = bg;
@@ -333,7 +333,7 @@ void Menu::createMenu() {
     c.r = ofRectangle(x,y++,30,1);
     categoryBtns.push_back(c);
     
-
+    ofLog()<<"B";
     
     y = 10;
     for (int i=0; i<255; i++) {
@@ -351,7 +351,7 @@ void Menu::createMenu() {
     vector<Object::ObjectType> v = Object::getKeys();
     
     for (int j=0; j<v.size(); j++) {
-        if (dynamic_cast<Item *>(ofPtr<Object>(Object::create(v[j])).get())) {
+        if (dynamic_cast<Item *>(       ofPtr<Object>(Object::create(v[j])).get()       )) {
             c.text = Object::getNameFromType(v[j]);
             c.funptr = &setItem;
             c.arg = v[j];
@@ -362,7 +362,7 @@ void Menu::createMenu() {
 
     y = 10;
     for (int j=0; j<v.size(); j++) {
-        if (dynamic_cast<Actor *>(ofPtr<Object>(Object::create(v[j])).get())) {
+        if (dynamic_cast<Actor *>(      ofPtr<Object>(Object::create(v[j])).get()       )) {
             c.text = Object::getNameFromType(v[j]);
             c.funptr = &setItem;
             c.arg = v[j];
@@ -371,7 +371,7 @@ void Menu::createMenu() {
         }
     }
     
-    
+   
     c.fg = makeColor(5,5,0);
     c.bg = makeColor(0,3,0);
     c.text =string(1,CHAR_LEFT);
@@ -390,7 +390,6 @@ void Menu::createMenu() {
     
     mapSelectBtns.push_back(c);
     
-
 }
 
 
@@ -400,7 +399,7 @@ void Menu::brushMaterial(ofVec2i p, Material::MaterialType mt) {
     int offset = (brushSize -1) /2;
     for (int y=0; y<brushSize; y++) {
         for (int x=0; x<brushSize; x++) {
-            core->map->placeMaterial((p.x+x) - offset , (p.y+y) - offset, mt);
+            engine.map->placeMaterial((p.x+x) - offset , (p.y+y) - offset, mt);
             
         }
     }
@@ -421,7 +420,7 @@ void Menu::render() {
         console.writeString((int)menuPos+1, 3, "Map Edit", makeColor(5,0,5), bg);
 
         // map select buttons
-        console.writeString((int)menuPos+13, 3, ofToString(core->map->mapNumber), makeColor(5,5,5), makeColor(0,1,4));
+        console.writeString((int)menuPos+13, 3, ofToString(engine.map->mapNumber), makeColor(5,5,5), makeColor(0,1,4));
         for(auto it = mapSelectBtns.begin(); it != mapSelectBtns.end(); it++)
         {
             console.writeString((int)menuPos+it->r.x, it->r.y, it->text, it->fg, it->bg);

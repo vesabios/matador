@@ -46,7 +46,10 @@ void Serializer::save() {
 void Serializer::load() {
     
     for (int i=0; i<Object::elements().size(); i++) {
-        delete Object::elements()[i];
+        
+        MapData * md = dynamic_cast<MapData*>(Object::elements()[i]);
+        if (!md)
+            delete Object::elements()[i];
     }
     
     printf("loading\n");
@@ -81,11 +84,11 @@ void Serializer::load() {
                 n->unpack();
                 
                 if (t==Object::Player) {
-                    core->player = static_cast<Player *>(n);
+                    engine.player = static_cast<Player *>(n);
                 } else if (t==Object::MapData) {
                     MapData* md = dynamic_cast<MapData*>(n);
                     if (md) {
-                        core->mapData[md->id] = md;
+                        engine.mapData[md->id] = md;
                     }
                 }
                 

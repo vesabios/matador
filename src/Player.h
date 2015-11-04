@@ -15,6 +15,7 @@
 class Player : public Actor {
 public:
     
+    
  
     InteractionType getInteractionType(Object *) override;
 
@@ -31,7 +32,14 @@ public:
     void init() override;
     int armorBonus() override;
     
+    void addToInventory(Item*item);
+    
     void cycleWeapons();
+    
+    void renderUpdate();
+    
+    int displayXP = 0;
+    int displayGP = 0;
 
     Weapon * findWeaponByGuid(DWORD guid);
     bool hasWeaponTypeEquipped(Weapon::WeaponType t);

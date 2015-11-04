@@ -73,6 +73,7 @@ ofVec2i Dijkstra::getMoveVector() {
 
 
 void Dijkstra::iterate() {
+    
     // iterate through graph
     bool cont = true;
     bool changed = false;
@@ -114,6 +115,7 @@ void Dijkstra::iterate() {
 void Dijkstra::setWorldCenter(int x, int y) {
     tl.x = MIN(511-size,MAX(0,x-size/2));
     tl.y = MIN(511-size,MAX(0,y-size/2));
+
 }
 
 void Dijkstra::placeWorldGoal(int x, int y, int value) {
@@ -132,7 +134,7 @@ void Dijkstra::init() {
             int mx = x + tl.x;
             int my = y + tl.y;
             
-            int debt = (int)core->map->traversable(mx, my);
+            int debt = (int)engine.map->traversable(mx, my);
             
             if (debt==0) {
                 graph[x+y*size] = OMIT_VALUE;
@@ -155,7 +157,7 @@ void Dijkstra::process() {
 
 void Dijkstra::setBasis() {
     placeWorldGoal(goal.x, goal.y);
-    graph[(size/2)+(size/2) * size] = 1000;
+    //graph[(size/2)+(size/2) * size] = 1000;
 }
 
 

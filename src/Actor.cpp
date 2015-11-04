@@ -93,9 +93,9 @@ bool Actor::tooFarForRanged() {
     Weapon * w = ranged();
     
     if (w!=NULL) {
-        return target->getPos().distance(getPos()) < w->data.range / FEET_PER_TILE;
+        return target->getPos().distance(getPos()) > w->data.range / FEET_PER_TILE;
     }
-    return false;
+    return true;
     
 }
 
@@ -137,6 +137,8 @@ float Actor::closestTypeDistance() {
 bool Actor::moveTowardsOwnKind() {
     if (target==NULL) return;
     
+    ofLog()<<"move towards kind 1";
+    
     graph.setWorldCenter(x,y);
     graph.goal = ofVec2i(target->x, target->y);
     graph.process();
@@ -159,13 +161,15 @@ bool Actor::moveTowardsOwnKind() {
     graph.retreat();
     
     ofVec2i moveVector = graph.getMoveVector();
-    
+    ofLog()<<"move towards kind 2";
+
     return tryMoving(moveVector);
 }
 
 
 bool Actor::moveAwayFromTarget() {
     if (target==NULL) return;
+    ofLog()<<"move away 0";
 
     graph.setWorldCenter(x,y);
     graph.goal = ofVec2i(target->x, target->y);
@@ -174,6 +178,9 @@ bool Actor::moveAwayFromTarget() {
     graph.retreat();
     
     ofVec2i moveVector = graph.getMoveVector();
+    
+    ofLog()<<"move away 1";
+
     
     return tryMoving(moveVector);
 
@@ -250,11 +257,42 @@ int Actor::armorBonus() {
 
 int Actor::ac() {
     
+    /*
+     Level	Base Attack Bonus	Fort Save	Ref Save	Will Save	Special
+     1st	+1	+2	+0	+0	Bonus feat
+     2nd	+2	+3	+0	+0	Bonus feat
+     3rd	+3	+3	+1	+1
+     4th	+4	+4	+1	+1	Bonus feat
+     5th	+5	+4	+1	+1
+     6th	+6/+1	+5	+2	+2	Bonus feat
+     7th	+7/+2	+5	+2	+2
+     8th	+8/+3	+6	+2	+2	Bonus feat
+     9th	+9/+4	+6	+3	+3
+     10th	+10/+5	+7	+3	+3	Bonus feat
+     11th	+11/+6/+1	+7	+3	+3
+     12th	+12/+7/+2	+8	+4	+4	Bonus feat
+     13th	+13/+8/+3	+8	+4	+4
+     14th	+14/+9/+4	+9	+4	+4	Bonus feat
+     15th	+15/+10/+5	+9	+5	+5
+     16th	+16/+11/+6/+1	+10	+5	+5	Bonus feat
+     17th	+17/+12/+7/+2	+10	+5	+5
+     18th	+18/+13/+8/+3	+11	+6	+6	Bonus feat
+     19th	+19/+14/+9/+4	+11	+6	+6	
+     20th	+20/+15/+10/+5	+12	+6	+6	Bonus feat
+     */
+    
     if (type==Object::Player) {
         
         //10 + armor bonus + shield bonus + Dexterity modifier + size modifier
         
-        return 10 + 5 + dexMod();
+        int dodge  = 0;
+        if (level()>2) {
+            dodge = 1;
+            
+            
+        }
+        
+        return 10 + 5 + dexMod() + dodge;
 
         
     } else {
@@ -302,7 +340,7 @@ void Actor::attack(Actor * a) {
         float distanceToTarget = ofVec2i(x, y).distance(ofVec2i(a->x, a->y)) * FEET_PER_TILE; // 5 feet per square
 
     
-        int d20 = (int)ofRandom(0,20)+1;
+        int roll = d20();
         
         bool hit = false;
         bool crit = false;
@@ -318,6 +356,8 @@ void Actor::attack(Actor * a) {
         
         int attackBonus = data.tohit + w->data.toHit;
         int damageBonus = data.damageBonus + w->data.damageBonus;
+        
+      
 
         if (type==Object::Player) {
             
@@ -330,7 +370,7 @@ void Actor::attack(Actor * a) {
                 case Weapon::ONE_HANDED_WEAPON:
                 case Weapon::TWO_HANDED_WEAPON:
                 {
-                    attackBonus += strMod();
+                    attackBonus += strMod() ;
                     break;
                 }
                     
@@ -338,11 +378,13 @@ void Actor::attack(Actor * a) {
                 case Weapon::PROJECTILE_WEAPON:
                 case Weapon::AMMUNITION_WEAPON:
                 {
-                    attackBonus += dexMod();
+                    attackBonus += dexMod() ;
                 }
+                    
 
             }
             
+            attackBonus += level();
             damageBonus = 1 + w->data.damageBonus;
             
         }
@@ -358,23 +400,25 @@ void Actor::attack(Actor * a) {
         }
         
         
-        ofLog() << getName() << "ac: " << ac << " tohit: "<<attackBonus<<" damageBonus: "<<damageBonus;
+        //ofLog() << getName() << " > target ac: " << ac << " tohit: "<<attackBonus<<" damageBonus: "<<damageBonus;
 
         
-        
+        //ofLog() << "attack roll: " << roll << " +" << attackBonus << ", against ac: "<<ac;
 
         
-        if (d20==1) {
+        if (roll==1) {
             
             // whiff!!
             hit = false;
             
-        } else if (d20>=w->data.criticalThreat) {
+        } else if (roll>=w->data.criticalThreat) {
+            
+            //ofLog() << "Crit!";
             
             // have critical threat, but roll again...
-            d20 = (int)ofRandom(0,20)+1;
+            roll = d20();
           
-            if (d20+attackBonus>=ac) {
+            if (roll+attackBonus>=ac) {
                 crit = true;
                 ce->type = CombatEvent::CRIT_EVENT;
             } else {
@@ -382,11 +426,10 @@ void Actor::attack(Actor * a) {
                 ce->type = CombatEvent::HIT_EVENT;
             }
             
-        } else {
-            if (d20+attackBonus>=ac) {
-                hit = true;
-                ce->type = CombatEvent::HIT_EVENT;
-            }
+        } else if (roll+attackBonus>=ac) {
+            hit = true;
+            ce->type = CombatEvent::HIT_EVENT;
+            
         }
 
         if (crit||hit) {
@@ -398,6 +441,9 @@ void Actor::attack(Actor * a) {
                 }
             }
         }
+        
+        if (ce->dmg ==0) ce->type = CombatEvent::MISS_EVENT;
+
         
         if (w->data.weaponType == Weapon::PROJECTILE_WEAPON) {
             
@@ -514,9 +560,49 @@ Weapon * Actor::ranged() {
 
 
 void Actor::takeDamage(int dmg) {
-    
     data.hp -= dmg;
+}
+
+void Actor::takeDamageFrom(int dmg, Actor * a) {
+    takeDamage(dmg);
+    if (data.hp<=0) {
+        a->awardExperienceForKilling(this);
+    }
+}
+
+void Actor::awardExperienceForKilling(Actor * a) {
     
+    int cl = level();
+    
+    data.xp += experience(level(), a->data.CR);
+    
+    if (level()>cl) {
+        data.hp = data.maxhp;
+    }
+    
+    
+}
+
+
+
+vector<Item*> Actor::getInventory() {
+    
+    vector<Item*> items;
+    
+    for (int i=0; i<256; i++) {
+        DWORD id = data.inventory[i];
+        
+        for(auto it = elements().begin(); it != elements().end(); it++) {
+            Item * item = dynamic_cast<Item*>(*it);
+            if (item) {
+                if (item->guid == id) {
+                    items.push_back(item);
+                }
+            }
+        }
+    }
+    
+    return items;
 
     
 }
@@ -579,6 +665,8 @@ void Actor::setDestination(const ofVec2i d) {
     autoTravel = true;
 }
 
+
+
 bool Actor::tryMoving(ofVec2i moveVector) {
    
     bool vert = false;
@@ -586,7 +674,7 @@ bool Actor::tryMoving(ofVec2i moveVector) {
     DEBT newDebt = 0;
   
     if (moveVector.y!=0) {
-        DEBT d = core->traversable(x, y+moveVector.y);
+        DEBT d = engine.traversable(x, y+moveVector.y);
         if (d!=0) {
             vert = true;
             y += moveVector.y;
@@ -595,7 +683,7 @@ bool Actor::tryMoving(ofVec2i moveVector) {
     }
     
     if (moveVector.x!=0) {
-        DEBT d = core->traversable(x+moveVector.x,y);
+        DEBT d = engine.traversable(x+moveVector.x,y);
         if (d!=0) {
             x += moveVector.x;
             if (vert) {
@@ -607,11 +695,13 @@ bool Actor::tryMoving(ofVec2i moveVector) {
         }
     }
     
+    newDebt = newDebt;
+    
     if (destination == ofVec2i(x,y)) {
         autoTravel = false;
     }
     
-    DEBT nd = round((float)MAX(newDebt, 100) * (((float)data.movementSpeed) / 100.0f));
+    DEBT nd = round((float)MAX(newDebt, 10) * (((float)data.movementSpeed) / 100.0f));
     
     actionDebt+= nd;
     

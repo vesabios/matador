@@ -37,7 +37,10 @@ public:
         GreenGrass,
         DenseForest,
         LightDirt,
-        StoneRubble
+        StoneRubble,
+        FortressFloor,
+        FortressWall,
+        Weeds
     };
     
     ofxFloatSlider * aFreq;

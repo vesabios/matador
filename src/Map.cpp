@@ -299,13 +299,13 @@ void Map::cycle(int v) {
         if (mapNumber<256) {
             mapNumber++;
             load();
-            core->player->z = mapNumber;
+            engine.player->z = mapNumber;
         }
     } else if (v<0) {
         if (mapNumber>0) {
             mapNumber+=v;
             load();
-            core->player->z = mapNumber;
+            engine.player->z = mapNumber;
             
         }
         
@@ -345,6 +345,12 @@ void Map::load() {
     } else {
         for (int i=0; i<width*height; i++ ) {
             tiles[i].mat = materials.mats[Material::Void];
+        }
+    }
+    
+    for (int x=0; x < width; x++) {
+        for (int y=0; y < height; y++) {
+            tiles[x+y*width].lastSeen = 10000;
         }
     }
     
@@ -426,15 +432,18 @@ DEBT Map::traversable(int x, int y) {
 
 //--------------------------------------------------------------
 float Map::isWindowOpaque(int x, int y) {
-   
-    Tile * t = getWindowTile(x,y);
-    if (t!=NULL) {
-        if (t->mat==NULL) {
-            return 1.0f;
-        } else {
-            return t->mat->isOpaque();
+    
+    if ((x>=0) && (x<width) && (y>=0) && (y<height)) {
+        Tile * t = getWindowTile(x,y);
+        if (t!=NULL) {
+            if (t->mat==NULL) {
+                return 1.0f;
+            } else {
+                return t->mat->isOpaque();
+            }
         }
-    }
+    } 
+
     return 1.0f;
 }
 

@@ -8,6 +8,7 @@
 
 #include "Player.h"
 #include "Core.h"
+#include "Item.h"
 
 string Player::getName() {
     return "Player";
@@ -16,7 +17,7 @@ string Player::getName() {
 
 void Player::init() {
     
-    Weapon * weapon = static_cast<Weapon *>(Object::create(Object::Club));
+    Weapon * weapon = static_cast<Weapon *>(Object::create(Object::Longsword));
     weapon->init();
     weapon->z = VOID_LOCATION;
     
@@ -27,6 +28,8 @@ void Player::init() {
     weapon = static_cast<Weapon *>(Object::create(Object::Sling));
     weapon->init();
     weapon->z = VOID_LOCATION;
+    data.rangedGuid = weapon->guid;
+
     data.inventory[2] = weapon->guid;
 
     
@@ -37,7 +40,7 @@ void Player::init() {
     
     // set base stats
     
-    data.strength = 11;
+    data.strength = 16;
     data.dexterity = 17;
     data.constitution = 16;
     data.intelligence = 10;
@@ -50,7 +53,21 @@ void Player::init() {
 
 bool Player::hasWeaponTypeEquipped(Weapon::WeaponType t) {
     
-    Weapon * w = findWeaponByGuid(data.meleeGuid);
+    Weapon * w = melee();
+    if (w != NULL) {
+        if (w->data.weaponType == t) {
+            return true;
+        }
+    }
+    
+    w = offHand();
+    if (w != NULL) {
+        if (w->data.weaponType == t) {
+            return true;
+        }
+    }
+    
+    w = ranged();
     if (w != NULL) {
         if (w->data.weaponType == t) {
             return true;
@@ -129,7 +146,7 @@ void Player::tryInteracting(ofVec2i moveVector) {
     
     for (int i=0; i<Object::elements().size(); i++) {
         Object * o = Object::elements()[i];
-        if (o->z == core->map->mapNumber) {
+        if (o->z == engine.map->mapNumber) {
             if (o->x == x + moveVector.x) {
                 if (o->y == y + moveVector.y) {
                     InteractionType t = o->getInteractionType(this);
@@ -166,7 +183,14 @@ void Player::interact(Object * o) {
             break;
         }
         case Take:
+        {
+            Item* item = dynamic_cast<Item*>(o);
+            if (item) {
+                addToInventory(item);
+            }
             break;
+
+        }
         case Use:
         {
             Item* i = dynamic_cast<Item*>(o);
@@ -196,18 +220,57 @@ void Player::interact(Object * o) {
     
 }
 
+
+void Player::addToInventory(Item*item) {
+    
+    if (item->type == Object::Coin) {
+        
+        
+        class Coin * coin = dynamic_cast<class Coin*>(item);
+        if (coin) {
+            ofLog() << "adding " << coin->data.amount << " GP";
+            data.gp += coin->data.amount;
+            delete coin;
+        }
+        
+        
+    } else {
+        
+    }
+    
+    
+}
+
 bool Player::isPortable()  {
     return false;
 }
 
 float Player::update(DEBT d)  {
     
-    
     actionDebt -= d;
     if (actionDebt<0) {
         actionDebt = 0;
     }
     return 0.0f;
+}
+
+void Player::renderUpdate() {
+    
+    if (displayXP<data.xp) {
+        if (data.xp-displayXP>10) {
+            displayXP+= 10;
+        } else {
+            displayXP++;
+        }
+    }
+    if (displayGP<data.gp) {
+        if (data.gp-displayGP<10) {
+            displayGP+=10;
+        } else {
+            displayGP++;
+        }
+    }
+    
 }
 
 

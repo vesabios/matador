@@ -104,6 +104,10 @@ void Console::setPixel(const BYTE x, const BYTE y, const BYTE f, const BYTE b, c
 }
 
 //--------------------------------------------------------------
+void Console::writeString(const int x, const int y, const string s, const BYTE fg) {
+    writeString(x,y,fg,s);
+}
+
 void Console::writeString(const int x, const int y, const BYTE fg, const string s) {
     
     int sz = s.length();
@@ -126,6 +130,7 @@ void Console::writeString(const int x, const int y, const BYTE fg, const string 
 
 
 //--------------------------------------------------------------
+
 void Console::writeString(const int x, const int y, const string s) {
     
     int sz = s.length();

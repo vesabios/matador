@@ -13,13 +13,17 @@
 class MapData : public Object {
 public:
     
-    BYTE id = 0;
+    BYTE id = 255;
     
     struct data_t {
         bool visited = false;
         BYTE ambient = 0;
         bool procedural = false;
     };
+    
+    ~MapData() override {
+        printf("mapdata dtor %d\n", id);
+    }
     
     data_t data;
     

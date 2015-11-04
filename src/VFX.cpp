@@ -43,7 +43,7 @@ void VFX::combatEvent(CombatEvent &e) {
                 pb += ofVec2i(round(ofRandom(-2, 2)), round(ofRandom(-2, 2)));
             }
 
-            ofPoint tl = core->map->window.getTopLeft();
+            ofPoint tl = engine.map->window.getTopLeft();
 
             pa = pa - ofVec2i(tl.x, tl.y);
             pb = pb - ofVec2i(tl.x, tl.y);
@@ -66,7 +66,7 @@ void VFX::combatEvent(CombatEvent &e) {
             
             ofVec2i p = ofVec2i(a->x, a->y);
             
-            ofPoint tl = core->map->window.getTopLeft();
+            ofPoint tl = engine.map->window.getTopLeft();
             p = p - ofVec2i(tl.x, tl.y);
             
             VFXHit * fx = new VFXHit();
@@ -91,7 +91,7 @@ void VFX::combatEvent(CombatEvent &e) {
             
             ofVec2i p = ofVec2i(a->x, a->y);
             
-            ofPoint tl = core->map->window.getTopLeft();
+            ofPoint tl = engine.map->window.getTopLeft();
             p = p - ofVec2i(tl.x, tl.y);
             
             VFXHit * fx = new VFXHit();

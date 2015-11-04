@@ -69,13 +69,14 @@ public:
         BYTE charisma = 10;
         
         int tohit = 0;
-        BYTE armorBonus = 10;
         int damageBonus = 0;
+        BYTE armorBonus = 10;
         BYTE armorClass = 10;
         
+        float CR;
 
         int xp = 0;
-        int gold = 0;
+        int gp = 0;
         
         DWORD inventory[255];
         
@@ -270,13 +271,15 @@ public:
             return 3;
         } else if (data.xp>=300) {
             return 2;
-        } else {
-          1;
         }
+        return 1;
         
     }
     
     int weaponSet = 0;
+    
+    
+    vector<Item*> getInventory();
     
     float speedMultiplier = 1.0f;
     
@@ -287,7 +290,7 @@ public:
     
     Dijkstra graph;
 
-    
+    int lastSeenTargetCount = 0;
     
     bool autoTravel = false;
     ofVec2i destination;
@@ -320,7 +323,9 @@ public:
     void setSpeedMultiplier(float s);
     
     void takeDamage(int dmg);
-    
+    void takeDamageFrom(int dmg, Actor * a);
+    void awardExperienceForKilling(Actor * a);
+
     virtual void die();
     virtual void readLines();
   

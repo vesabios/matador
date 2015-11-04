@@ -134,7 +134,8 @@ public:
         Kobold = 65536,
         Player,
         Magician,
-        Orc
+        Orc,
+        Centipede,
         
     };
     
@@ -250,7 +251,7 @@ public:
 static DWORD genereateGuid() {
     static DWORD guid = 0;
     
-    return ++guid;
+    return rand();
 }
 
 

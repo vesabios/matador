@@ -24,28 +24,24 @@ void Magician::init() {
     
     data.tohit = 4;
     
-    // Magicians need weapons too!
-    
-    /*
-    Weapon * weapon = static_cast<Weapon*>(Object::create(Object::Club));
-    weapon->init();
-    weapon->z = VOID_LOCATION; // it's not on a map, it only exists abstractly as the Magician has no dedicated inventory
-    data.rightHandGuid = weapon->guid;
-    
-    ofLog() << "Magician initted with club id: " << data.rightHandGuid;
-    
-     */
     // hit dice 1d8
-    data.maxhp = data.hp = (int)ofRandom(8)+1;
+    data.maxhp = data.hp = d8();
+    
+    // the tomb of an old wizard has been discovered
+    
+
+    /*
+     
+     The forgotten tomb,
+     Recalls the last memory
+     of a magician.
+     
+     
+     */
+    
+
     
     
-    
-    lines[0] = "What shall we achieve?";
-    lines[1] = "Willpower and desire";
-    lines[2] = "yield revelation";
-    
-    
-    //Creation by willpower and desire. The mental image of what you want to achieve. Revelation.
     
 };
 
@@ -73,10 +69,9 @@ bool Magician::isPortable()  {
 void Magician::readLines() {
     
     
-    lines[0] = "What shall we achieve?";
-    lines[1] = "Willpower and desire";
-    lines[2] = "yield revelation";
-
+    lines[0] = "The forgotten tomb";
+    lines[1] = "Recalls the last night";
+    lines[2] = "of a magician";
     
     vector<string> l;
     
